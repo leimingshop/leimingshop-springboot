@@ -1,4 +1,4 @@
-# leimingshop-backend
+# 雷铭b2b2c多用户商城系统
 
 #### 介绍
 {**以下是 Gitee 平台说明，您可以替换此简介**
