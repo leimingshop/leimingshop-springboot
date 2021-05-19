@@ -1,0 +1,119 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    druid:
+      url: jdbc:mysql://127.0.0.1:3306/leimingshop?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+      username: root
+      password: 123456
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      connection-init-sqls: set names utf8mb4
+      filters : stat,wall,log4j
+      web-stat-filter:
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+        enabled: true
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        reset-enable: false
+        login-username: root
+        login-password: 123456
+  rabbitmq:
+    addresses: 127.0.0.1:5672
+    username: guest
+    password: guest
+    virtual-host: leimingshop
+    connection-timeout: 15000
+    publisher-confirms: true
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+      direct:
+        acknowledge-mode: manual
+    cache:
+      channel:
+        size: 300
+        checkout-timeout: 200
+  data:
+    mongodb:
+      uri: mongodb://127.0.0.1:27017/admin
+  redis:
+    database: 1
+    host: 127.0.0.1
+    port: 6379
+    timeout: 30s
+    password: 123456
+  boot:
+    admin:
+      client:
+        enabled: true
+        url: http://127.0.0.1:30101/monitor
+        username: leiming
+        password: 123456
+        period: 10000
+        auto-registration: true
+        instance:
+          prefer-ip: true
+data:
+  elasticsearch:
+    cluster-name: leimingshop
+    host: 127.0.0.1:9200
+    username: elastic
+    password: elastic
+    repositories:
+      enable: true
+    maxresout: 1000000
+    synonyms:
+      path: http://127.0.0.1/admin-api/synonym/es
+# jasypt加密秘钥
+jasypt:
+  encryptor:
+    password: JasyptKey
+# 日志相关配置
+leimingtech:
+  log:
+    file-path: /app/logs
+    format: JSON
+  export:
+    local-path: /app/logs/video
+  local-path: /app/file
+image:
+  base:
+    url: 127.0.0.1
+# 系统访问路径配置
+system:
+  address:
+    prefix: 127.0.0.1
+logging:
+  level:
+    com.leimingtech: debug
+fdfs:
+  so-timeout: 600000
+  connect-timeout: 6000
+  tracker-list:
+    - 127.0.0.1:22122
+wechat:
+  appid: @appid@
+  secret: @secret@
+appidtype:
+  website: @website@
+  public: @public@
+wx:
+  mp:
+    configs:
+      - appid: @appid@
+        secret: @secret@
+        token: @token@
+        aesKey: @aesKey@
+
+

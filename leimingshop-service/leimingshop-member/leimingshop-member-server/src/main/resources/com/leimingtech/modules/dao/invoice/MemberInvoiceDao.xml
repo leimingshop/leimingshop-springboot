@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.invoice.MemberInvoiceDao">
+
+    <resultMap type="com.leimingtech.modules.entity.invoice.MemberInvoiceEntity" id="memberInvoiceMap">
+        <result property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="company" column="company"/>
+        <result property="dutyParagraph" column="duty_paragraph"/>
+        <result property="registeredAddress" column="registered_address"/>
+        <result property="officePhone" column="office_phone"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="bankNumber" column="bank_number"/>
+        <result property="defaultFlag" column="default_flag"/>
+        <result property="vatFlag" column="vat_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <select id="selectInvoiceNames" resultType="com.leimingtech.modules.dto.invoice.MemberInvoiceNameDTO">
+        select id,company,defaultFlag from  lmshop_member_invoice where del_flag = 0 and member_id = #{memberId} order by default_flag desc ,update_date DESC
+    </select>
+
+
+</mapper>

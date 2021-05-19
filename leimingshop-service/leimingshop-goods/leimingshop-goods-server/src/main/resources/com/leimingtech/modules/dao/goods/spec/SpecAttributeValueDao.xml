@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goods.spec.SpecAttributeValueDao">
+
+    <resultMap type="com.leimingtech.modules.entity.goods.spec.GoodsSpecAttrValueEntity" id="specAttributeValueMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="specAttrId" column="spec_attr_id"/>
+        <result property="specAttrValue" column="spec_attr_value"/>
+        <result property="specPicture" column="spec_picture"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="isMain" column="is_main"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap id="picMap" type="com.leimingtech.modules.dto.goods.detail.SpecAttributePictureDetailDTO">
+        <result property="goodsId" column="goods_id"/>
+        <result property="specAttrValueId" column="id"/>
+        <result property="specAttrId" column="spec_attr_id"/>
+        <result property="specAttrValue" column="spec_attr_value"/>
+        <collection property="specAttributePictureDTOList" javaType="java.util.ArrayList" ofType="com.leimingtech.modules.dto.goods.detail.SpecAttributePictureUrlDTO">
+            <result property="pictureUrl" column="picture_url"/>
+            <result property="isMainPicture" column="is_main_picture"/>
+            <result property="sort" column="sort"/>
+        </collection>
+    </resultMap>
+    <select id="getPicListByGoodsId" parameterType="java.lang.Long" resultMap="picMap">
+        SELECT
+            lgsar.goods_id,
+            lgsar.id,
+            lgsar.spec_attr_id,
+            lgsar.spec_attr_value,
+            lgsap.picture_url,
+            lgsap.is_main_picture,
+            lgsap.sort
+        FROM
+            lmshop_goods_spec_attr_value lgsar
+            LEFT JOIN lmshop_goods_spec_attr_pic lgsap ON lgsap.spec_attr_value_id = lgsar.id  and lgsap.del_flag = 0
+        WHERE
+            lgsar.goods_id = #{goodsId}
+            AND lgsar.is_select = 1
+            AND lgsar.is_main = 1 and lgsar.del_flag = 0
+        ORDER BY
+            lgsap.sort
+    </select>
+    <insert id="insertBatch">
+        insert into lmshop_goods_spec_attr_value (
+        id,
+        goods_id,
+        spec_attr_id,
+        spec_attr_value,
+        spec_picture,
+        is_select,
+        is_main
+        ) values<foreach collection="goodsSpecAttrValueEntities" item="goodsSpecAttrValueEntity" separator=","  >
+        ( #{goodsSpecAttrValueEntity.id},
+        #{goodsSpecAttrValueEntity.goodsId},
+        #{goodsSpecAttrValueEntity.specAttrId},
+        #{goodsSpecAttrValueEntity.specAttrValue},
+        #{goodsSpecAttrValueEntity.specPicture},
+        #{goodsSpecAttrValueEntity.isSelect},
+        #{goodsSpecAttrValueEntity.isMain}
+        )
+    </foreach>
+    </insert>
+
+</mapper>

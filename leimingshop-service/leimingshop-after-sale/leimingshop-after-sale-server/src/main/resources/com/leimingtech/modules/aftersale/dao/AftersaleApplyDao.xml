@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.aftersale.dao.AftersaleApplyDao">
+
+    <select id="applyRecordPage" resultType="com.leimingtech.modules.aftersale.dto.AftersaleApplyRecordDTO">
+        select a.id,a.aftersale_sn,a.order_id,a.order_sn,a.order_goods_id,a.create_date,a.aftersale_type,a.audit_status,a.audit_result,a.refund_amount,
+        b.goods_id,b.goods_name,b.goods_num,b.spec_id,b.spec_name,b.spec_attr_name,b.spec_main_picture,b.is_gift,c.arbitration_status from lmshop_aftersale_apply a
+        left join (select aftersale_sn,goods_id,goods_name,goods_num,spec_id,spec_main_picture,spec_name,spec_attr_name,is_gift,spec_serial from lmshop_aftersale_goods) b on b.aftersale_sn=a.aftersale_sn
+        LEFT JOIN lmshop_arbitration  c on c.aftersale_sn = a.aftersale_sn
+        <where>
+            b.is_gift = 0
+            <if test=" '' != params.unionQuery and null != params.unionQuery">
+                and (a.order_sn = #{params.unionQuery} or b.goods_name like CONCAT(CONCAT('%', #{params.unionQuery}), '%') or b.spec_id = #{params.unionQuery} or b.spec_serial = #{params.unionQuery}
+                or a.aftersale_sn = #{params.unionQuery})
+            </if>
+            <if test="null != params.memberId">
+                and a.member_id = #{params.memberId}
+            </if>
+            <if test="params.applyTime != null and params.applyTime == 1">
+                and DATEDIFF(now(),a.create_date) &lt;=30
+            </if>
+            <if test="params.applyTime != null and params.applyTime == 2">
+                and DATEDIFF(now(),a.create_date) &gt;30 and DATEDIFF(now(),a.create_date) &lt;=180
+            </if>
+            <if test="params.applyTime != null and params.applyTime == 3">
+                and DATEDIFF(now(),a.create_date) &gt;180 and DATEDIFF(now(),a.create_date) &lt;=365
+            </if>
+            <if test="params.applyTime != null and params.applyTime == 4">
+                and DATEDIFF(now(),a.create_date) &gt;=365
+            </if>
+            <if test="params.createTime != null and params.createTime != '' and params.applyTime == 5">
+                AND a.create_date &gt;= #{params.createTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != '' and params.applyTime == 5">
+                AND a.create_date &lt;= #{params.endTime}
+            </if>
+        </where>
+        order by create_date desc
+    </select>
+
+    <sql id="whereStatement">
+        <where>
+            lar.del_flag = 0
+            <if test="params.aftersaleSn != null and params.aftersaleSn!=''">
+                AND lar.aftersale_sn = #{params.aftersaleSn}
+            </if>
+            <if test="params.specSerial != null and params.specSerial!=''">
+                AND lag.spec_serial = #{params.specSerial}
+            </if>
+            <if test="params.goodsName != null and params.goodsName!=''">
+                AND lag.goods_name LIKE concat('%', #{params.goodsName}, '%')
+            </if>
+            <if test="params.memberName != null and params.memberName!=''">
+                AND lar.member_name LIKE concat('%', #{params.memberName}, '%')
+            </if>
+            <if test="params.storeName != null and params.storeName!=''">
+                AND lar.store_name LIKE concat('%', #{params.storeName}, '%')
+            </if>
+
+            <if test="params.aftersaleType != null and params.aftersaleType!=''">
+                AND lar.aftersale_type = #{params.aftersaleType}
+            </if>
+            <if test="params.auditStatus != null and params.auditStatus!=''">
+                AND lar.audit_status = #{params.auditStatus}
+            </if>
+            <if test="params.auditResult != null and params.auditResult!=''">
+                AND lar.audit_result = #{params.auditResult}
+            </if>
+            <if test="params.startTime != null and params.startTime!=''">
+                AND lar.create_date &gt;= #{params.startTime}
+            </if>
+            <if test="params.endTime != null and params.endTime!=''">
+                AND lar.create_date &lt;= #{params.endTime}
+            </if>
+            <if test="params.storeId != null and params.storeId != ''">
+                AND lar.store_id = #{params.storeId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findPage" resultType="com.leimingtech.modules.aftersale.dto.AftersaleApplyPageDTO">
+        select
+        lar.aftersale_sn,lar.member_name,lar.store_name,lar.create_date,lar.refund_amount,
+        lag.spec_serial,lag.goods_name,lag.spec_id,lar.audit_status,lar.audit_result,lar.aftersale_type,lag.spec_main_picture
+        from lmshop_aftersale_apply lar
+        LEFT JOIN lmshop_aftersale_goods lag on lar.aftersale_sn = lag.aftersale_sn
+        LEFT JOIN lmshop_aftersale_return lae on lar.aftersale_sn = lae.aftersale_sn
+        <include refid="whereStatement"/>
+    </select>
+
+    <select id="findAutoApplyList" resultType="com.leimingtech.modules.aftersale.dto.AftersaleApplyDTO">
+      SELECT id, aftersale_sn, order_id, order_sn, order_goods_id, store_id, store_name, member_id, member_name,
+             aftersale_type, apply_num, aftersale_reason_id, aftersale_reason, aftersale_explain, aftersale_pics, audit_status, audit_result, receiver,
+             receiver_phone, receiver_address, contacts, contacts_phone, is_invoice FROM lmshop_aftersale_apply
+             where timestampdiff(SECOND,create_date,now())>#{agreeReturn}*86400 and aftersale_type=#{aftersaleType} and audit_status=#{auditStatus}
+    </select>
+
+    <select id="findBillOrderList" resultType="com.leimingtech.modules.dto.settle.ReturnBillDTO">
+            SELECT
+            lpt.refund_amount AS returnAmount,
+            lpt.aftersale_sn AS returnSn,
+            laa.create_date AS returnTime,
+            lag.spec_name AS goodsName,
+            lag.spec_id as specId,
+            lag.spec_main_picture as specMainPicture,
+            lag.spec_serial AS specSerial,
+            lpt.pay_type AS paymentName,
+            laa.update_date AS manageTime
+            FROM
+            lmshop_aftersale_return lpt
+            LEFT JOIN lmshop_aftersale_apply laa ON laa.aftersale_sn = lpt.aftersale_sn
+            LEFT JOIN lmshop_aftersale_goods lag ON lag.aftersale_sn = lpt.aftersale_sn
+            WHERE
+            lpt.del_flag = 0
+            AND lpt.aftersale_status =6
+            and lpt.store_id=#{storeId}
+            <if test="startDate!=null and startDate!=''">
+                and lpt.update_date &gt; #{startDate}
+            </if>
+            and lpt.update_date &lt;= #{endDate}
+    </select>
+    <select id="findAfterAuditCount" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_aftersale_apply
+        where del_flag = 0 AND audit_status =1 and store_id=#{storeId}
+    </select>
+
+</mapper>

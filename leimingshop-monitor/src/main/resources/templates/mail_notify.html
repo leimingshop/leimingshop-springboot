@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>邮件通知模板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .notify {
+            width: 100%;
+        }
+
+        .notify_content {
+            background-color: #DCDCDC;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .notify_indent_row {
+            padding-left: 30px;
+        }
+
+        .notify_row {
+            /*text-align: center;*/
+
+            border-bottom-color: #F8F8FF;
+            border-bottom-style: solid;
+            border-bottom-width: 1px;
+        }
+
+        .notify_row_left, .notify_row_right {
+            display: inline-block;
+            padding: 5px;
+        }
+        .notify_row_left {
+            text-align: right;
+
+            margin-left: 25px;
+            border-right-color: #F8F8FF;
+            border-right-style: solid;
+            border-right-width: 1px;
+        }
+        .notify_row_right {
+            text-align: left;
+        }
+
+        .notify_align_right_row {
+            width: 100%;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+<div class="notify">
+    <div>尊敬的【通知人】：</div>
+    <div class="notify_indent_row">您好！系统检测到部分应用的健康状态发生变更，特此发送通知与您知晓：</div>
+    <div class="notify_content">
+        <div class="notify_row">
+            <div class="notify_row_left"><label>通知事件：</label></div>
+            <div class="notify_row_right"><span th:text="${event}"></span></div>
+        </div>
+        <div class="notify_row">
+            <div class="notify_row_left"><label>实例名称：</label></div>
+            <div class="notify_row_right"><span th:text="${app}"></span></div>
+        </div>
+        <div class="notify_row">
+            <div class="notify_row_left"><label>当前状态：</label></div>
+            <div class="notify_row_right"><span th:text="${status}"></span></div>
+        </div>
+        <div class="notify_row">
+            <div class="notify_row_left"><label>发生环境：</label></div>
+            <div class="notify_row_right"><span th:text="${environment}"></span></div>
+        </div>
+        <div class="notify_row">
+            <div class="notify_row_left"><label>健康检查：</label></div>
+            <div class="notify_row_right"><span th:text="${ip}"></span></div>
+        </div>
+        <div class="notify_row">
+            <div class="notify_row_left"><label>发生时间：</label></div>
+            <div class="notify_row_right"><span th:text="${date}"></span></div>
+        </div>
+    </div>
+    <div class="notify_indent_row">祝：工作顺利！！</div>
+    <div class="notify_align_right_row">雷铭电商7.0产品运维组</div>
+    <div class="notify_align_right_row"><span th:text="${lastDate}"></span></div>
+</div>
+</body>
+</html>

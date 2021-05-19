@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.coupons.CouponsActivityDao">
+
+    <resultMap type="com.leimingtech.modules.entity.coupons.CouponsActivityEntity" id="couponsActivityMap">
+        <result property="id" column="id"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="activityScope" column="activity_scope"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="storeLogo" column="store_logo"/>
+        <result property="couponsType" column="coupons_type"/>
+        <result property="activityScene" column="activity_scene"/>
+        <result property="totalNum" column="total_num"/>
+        <result property="personLimit" column="person_limit"/>
+        <result property="memberGraderId" column="member_grader_id"/>
+        <result property="memberGraderName" column="member_grader_name"/>
+        <result property="limitAmount" column="limit_amount"/>
+        <result property="faceValue" column="face_value"/>
+        <result property="getStartDate" column="get_start_date"/>
+        <result property="getEndDate" column="get_end_date"/>
+        <result property="validityType" column="validity_type"/>
+        <result property="useStartDate" column="use_start_date"/>
+        <result property="useEndDate" column="use_end_date"/>
+        <result property="validityDays" column="validity_days"/>
+        <result property="surplusNum" column="surplus_num"/>
+        <result property="activityGoodsScope" column="activity_goods_scope"/>
+        <result property="shareFlag" column="share_flag"/>
+        <result property="auditState" column="audit_state"/>
+        <result property="activityState" column="activity_state"/>
+        <result property="activityDescription" column="activity_description"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.coupons.AdminCouponsActivityDetailDTO"
+               id="adminCouponsActivityDetailMap">
+        <result property="id" column="id"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="couponsType" column="coupons_type"/>
+        <result property="totalNum" column="total_num"/>
+        <result property="personLimit" column="person_limit"/>
+        <result property="usedNum" column="usedNum"/>
+        <result property="receivedNum" column="receivedNum"/>
+        <result property="limitAmount" column="limit_amount"/>
+        <result property="faceValue" column="face_value"/>
+        <result property="getStartDate" column="get_start_date"/>
+        <result property="getEndDate" column="get_end_date"/>
+        <result property="validityType" column="validity_type"/>
+        <result property="useStartDate" column="use_start_date"/>
+        <result property="useEndDate" column="use_end_date"/>
+        <result property="validityDays" column="validity_days"/>
+        <result property="activityGoodsScope" column="activity_goods_scope"/>
+        <result property="activityState" column="activity_state"/>
+        <collection property="couponsGoodsDTOList" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.coupons.CouponsGoodsDTO">
+            <id property="id" column="couponsGoodsId"/>
+            <result property="activityId" column="activity_id"/>
+            <result property="activityGoodsScope" column="activity_goods_scope"/>
+            <result property="relationId" column="relation_id"/>
+            <result property="relationName" column="relation_name"/>
+        </collection>
+    </resultMap>
+
+    <!--后台优惠券活动分页查询-->
+    <select id="adminPage" resultType="com.leimingtech.modules.dto.coupons.AdminCouponsActivityPageDTO">
+        select
+        id, activity_name, coupons_type, limit_amount, face_value, get_start_date, get_end_date, validity_type,
+        validity_days,
+        use_start_date, use_end_date, activity_state, total_num,
+        (
+        SELECT
+        COUNT(1)
+        FROM
+        lmshop_member_coupons lmc
+        WHERE
+        lmc.activity_id = lca.id
+        ) AS receivedNum,
+        (
+        SELECT
+        COUNT(1)
+        FROM
+        lmshop_member_coupons lmc
+        WHERE
+        lmc.activity_id = lca.id AND lmc.coupons_state = 2
+        ) AS usedNum
+        from lmshop_coupons_activity lca
+        <where>
+            lca.del_flag = 0
+            <if test="params.activityName != null and params.activityName != ''">
+                and lca.activity_name like concat('%',#{params.activityName},'%')
+            </if>
+            <if test="params.couponsType != null and params.couponsType != ''">
+                and lca.coupons_type = #{params.couponsType}
+            </if>
+            <if test="params.activityState != null and params.activityState != ''">
+                and lca.activity_state = #{params.activityState}
+            </if>
+            <if test="params.storeId != null and params.storeId != ''">
+                and lca.store_id = #{params.storeId}
+            </if>
+        </where>
+        order by create_date desc
+    </select>
+
+    <!--后台优惠券详情查询-->
+    <select id="adminDetail" resultMap="adminCouponsActivityDetailMap">
+        select
+        lca.id, lca.activity_name, lca.coupons_type, lca.person_limit, lca.limit_amount, lca.face_value,
+        lca.get_start_date, lca.get_end_date, lca.validity_type,
+        lca.validity_days, lca.use_start_date, lca.use_end_date, lca.activity_state, lca.total_num,
+        lca.activity_goods_scope,
+        (
+        SELECT
+        COUNT(1)
+        FROM
+        lmshop_member_coupons lmc
+        WHERE
+        lmc.activity_id = lca.id
+        ) AS receivedNum,
+        (
+        SELECT
+        COUNT(1)
+        FROM
+        lmshop_member_coupons lmc
+        WHERE
+        lmc.activity_id = lca.id AND lmc.coupons_state = 2
+        ) AS usedNum,
+        lcg.id as couponsGoodsId, lcg.activity_id, lcg.activity_goods_scope, lcg.relation_id, lcg.relation_name
+        from lmshop_coupons_activity lca
+        left join lmshop_coupons_goods lcg
+        on lca.id = lcg.activity_id
+        <where>
+            lca.del_flag = 0 and (lcg.del_flag = 0 or lcg.del_flag is null) and lca.id = #{id}
+            <if test="storeId != null and storeId != ''">
+                and lca.store_id = #{storeId}
+            </if>
+        </where>
+    </select>
+
+    <!--更新优惠券剩余数量-->
+    <update id="updateCouponsActivotySurplusNum" parameterType="com.leimingtech.modules.dto.coupons.CouponsActivityDTO">
+        update lmshop_coupons_activity
+        <set>
+            surplus_num = #{surplusNum},
+            version = #{version} + 1
+        </set>
+        <where>
+            del_flag = 0
+            and id = #{id}
+            and version = #{version}
+        </where>
+    </update>
+
+    <!--查询所有优惠券商品-->
+    <select id="selectAllCouponsGoods" resultType="com.leimingtech.modules.dto.coupons.CouponsGoodsDTO">
+        SELECT
+        lcg.relation_id,
+        lcg.activity_goods_scope,
+        lcg.activity_id
+        FROM
+        lmshop_coupons_activity lca
+        INNER JOIN lmshop_coupons_goods lcg ON lca.id = lcg.activity_id
+        <where>
+            lca.del_flag = 0
+            AND lcg.del_flag = 0
+            AND lca.store_id = #{storeId}
+            AND (lca.activity_state = 0 OR lca.activity_state = 1)
+            AND ( 1= 2
+            <if test="goodsId != null">
+                OR(lcg.relation_id = #{goodsId} AND lca.activity_goods_scope = 2 AND lcg.activity_goods_scope = 2 )
+            </if>
+            <if test="brandId != null">
+                OR ( lcg.relation_id = #{brandId} AND lca.activity_goods_scope = 3 AND lcg.activity_goods_scope = 3
+                )
+            </if>
+            <if test="brandId != null or goodsId != null">
+                OR ( lcg.relation_id = #{storeId} AND lca.activity_goods_scope = 0 AND lcg.activity_goods_scope = 0
+                )
+            </if>
+            )
+        </where>
+        GROUP BY
+        lcg.relation_id,
+        lcg.activity_goods_scope
+    </select>
+
+    <!--查询所有优惠券商品判空-->
+    <select id="selectAllCouponsGoodsByStoreId" resultType="com.leimingtech.modules.dto.coupons.CouponsGoodsDTO">
+        SELECT
+        lcg.relation_id,
+        lcg.activity_goods_scope,
+        lcg.activity_id
+        FROM
+        lmshop_coupons_activity lca
+        INNER JOIN lmshop_coupons_goods lcg ON lca.id = lcg.activity_id
+        <where>
+            lca.del_flag = 0
+            AND lcg.del_flag = 0
+            AND lca.store_id = #{storeId}
+            AND (lca.activity_state = 0 OR lca.activity_state = 1)
+        </where>
+        GROUP BY
+        lcg.relation_id,
+        lcg.activity_goods_scope
+    </select>
+    <select id="getDisableActivity" resultType="com.leimingtech.modules.dto.coupons.MemberCouponsDTO">
+        select lmc.*
+        from lmshop_member_coupons lmc
+        left join lmshop_coupons_activity lca on lmc.activity_id=lca.id
+        where lmc.member_id=#{memberId} and lca.activity_state=1 and lmc.coupons_state in(2,3)
+    </select>
+
+</mapper>

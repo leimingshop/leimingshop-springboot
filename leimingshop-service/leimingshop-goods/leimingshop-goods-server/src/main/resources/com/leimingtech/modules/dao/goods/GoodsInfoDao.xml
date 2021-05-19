@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goods.GoodsInfoDao">
+
+    <resultMap type="com.leimingtech.modules.entity.goods.GoodsInfoEntity" id="goodsInfoMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsBoby" column="goods_boby"/>
+        <result property="mobileBody" column="mobile_body"/>
+        <result property="goodsTransfeeCharge" column="goods_transfee_charge"/>
+        <result property="afterSale" column="after_sale"/>
+        <result property="cityId" column="city_id"/>
+        <result property="cityName" column="city_name"/>
+        <result property="provinceId" column="province_id"/>
+        <result property="provinceName" column="province_name"/>
+        <result property="commentNum" column="comment_num"/>
+        <result property="saleNum" column="sale_num"/>
+        <result property="goodsCollectNum" column="goods_collect_num"/>
+        <result property="goodsBrowseNum" column="goods_browse_num"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--批量修改销量-->
+    <update id="updateSaleList">
+        UPDATE lmshop_goods_info
+        SET
+        sale_num =
+        <foreach collection="goodsInfoDTOList" item="goodsInfo" index="index"
+                 separator=" " open="case id" close="end">
+            when #{goodsInfo.id} then
+            #{goodsInfo.saleNum}
+        </foreach>
+        ,version =
+        <foreach collection="goodsInfoDTOList" item="goodsInfo" index="index"
+                 separator=" " open="case id" close="end">
+            when #{goodsInfo.id} then
+            #{goodsInfo.version} + 1
+        </foreach>
+        where id in
+        <foreach collection="goodsInfoDTOList" item="goodsInfo" index="index"
+                 separator="," open="(" close=")">
+            #{goodsInfo.id}
+        </foreach>
+        and version =
+        <foreach collection="goodsInfoDTOList" item="goodsInfo" index="index"
+                 separator=" " open="case id" close="end">
+            when #{goodsInfo.id} then
+            #{goodsInfo.version}
+        </foreach>
+        and sale_num >= 0
+    </update>
+    <!--更新库存销量-->
+    <update id="updateEvalusteNum">
+         UPDATE lmshop_goods_info
+         set comment_num=#{commentNum}, version = #{version} + 1
+         where id=#{id} and version = #{version}
+
+    </update>
+    <insert id="insertBatch" useGeneratedKeys="false">
+        insert into lmshop_goods_info (
+        id,
+        goods_id,
+        goods_boby,
+        mobile_body,
+        goods_transfee_charge,
+        after_sale,
+        city_id,
+        city_name,
+        province_id,
+        province_name,
+        comment_num,
+        sale_num,
+        goods_collect_num,
+        goods_browse_num
+        )
+        values
+        <foreach collection="goodsInfoEntities" item="goodsInfoEntity" separator=",">( #{ goodsInfoEntity.id},
+            #{goodsInfoEntity.goodsId},
+            #{goodsInfoEntity.goodsBoby},
+            #{goodsInfoEntity.mobileBody},
+            #{goodsInfoEntity.goodsTransfeeCharge},
+            #{goodsInfoEntity.afterSale},
+            #{goodsInfoEntity.cityId},
+            #{goodsInfoEntity.cityName},
+            #{goodsInfoEntity.provinceId},
+            #{goodsInfoEntity.provinceName},
+            #{goodsInfoEntity.commentNum},
+            #{goodsInfoEntity.saleNum},
+            #{goodsInfoEntity.goodsCollectNum},
+            #{goodsInfoEntity.goodsBrowseNum}
+            )
+        </foreach>
+    </insert>
+
+
+</mapper>

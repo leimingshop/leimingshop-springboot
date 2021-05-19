@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.reduce.ReduceActivityDao">
+
+    <resultMap type="com.leimingtech.modules.entity.reduce.ReduceActivityEntity" id="reduceActivityMap">
+        <result property="id" column="id"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="activityRuleName" column="activity_rule_name"/>
+        <result property="activityScope" column="activity_scope"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="ruleType" column="rule_type"/>
+        <result property="memberGraderId" column="member_grader_id"/>
+        <result property="memberGraderName" column="member_grader_name"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="pointFlag" column="point_flag"/>
+        <result property="balanceFlag" column="balance_flag"/>
+        <result property="couponsFlag" column="coupons_flag"/>
+        <result property="seckillFlag" column="seckill_flag"/>
+        <result property="activityGoodsScope" column="activity_goods_scope"/>
+        <result property="auditState" column="audit_state"/>
+        <result property="activityState" column="activity_state"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.reduce.ReduceActivityIndexDTO" id="reduceActivityIndexDTO">
+        <result property="id" column="id"/>
+        <result property="activityScope" column="activity_scope"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="ruleType" column="rule_type"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="pointFlag" column="point_flag"/>
+        <result property="balanceFlag" column="balance_flag"/>
+        <result property="couponsFlag" column="coupons_flag"/>
+        <result property="seckillFlag" column="seckill_flag"/>
+        <result property="activityGoodsScope" column="activity_goods_scope"/>
+        <collection property="ruleList" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.reduce.ReduceRuleDTO">
+            <id property="id" column="reduceRuleId" />
+            <result property="activityId" column="raid" />
+            <result property="ruleType" column="rrtype" />
+            <result property="limitAmount" column="limit_amount" />
+            <result property="reduceAmount" column="reduce_amount" />
+        </collection>
+    </resultMap>
+
+    <!--分页查询满减列表-->
+    <select id="reduceActivityPage" resultType="com.leimingtech.modules.dto.reduce.ReduceActivityPageDTO">
+        SELECT
+            COUNT(ra.id),
+            ra.id,
+            ra.activity_name,
+            ra.activity_rule_name,
+            ra.rule_type,
+            ra.store_id,
+            ra.store_name,
+            ra.start_date,
+            ra.end_date,
+            ra.activity_state,
+            rr.limit_amount,
+            rr.reduce_amount
+        FROM
+            lmshop_reduce_activity ra
+        LEFT JOIN lmshop_reduce_rule rr
+        on ra.id=rr.activity_id
+        where ra.del_flag=0 and rr.del_flag=0
+            <if test="params.activityName != null and params.activityName != ''">
+                and ra.activity_name like concat('%',#{params.activityName},'%')
+            </if>
+            <if test="params.ruleType != null">
+                and ra.rule_type = #{params.ruleType}
+            </if>
+            <if test="params.activityState != null">
+                and	ra.activity_state = #{params.activityState}
+            </if>
+
+            <if test="params.storeId != null">
+                and ra.store_id = #{params.storeId}
+            </if>
+            <if test="params.startDate != null">
+                AND ra.start_date >=  #{params.startDate}
+            </if>
+            <if test="params.endDate != null">
+                AND ra.end_date &lt;= #{params.endDate}
+            </if>
+        GROUP BY ra.id
+        ORDER BY ra.create_date DESC
+    </select>
+
+
+    <resultMap type="com.leimingtech.modules.dto.reduce.ReduceActivityDeatilDTO" id="reduceGoodsDeatilMap">
+        <result property="id" column="id"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="activityRuleName" column="activity_rule_name"/>
+        <result property="ruleType" column="rule_type"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="activityGoodsScope" column="activity_goods_scope"/>
+        <result property="activityState" column="activity_state"/>
+        <collection property="reduceGoodsDTOList" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.reduce.ReduceGoodsDTO">
+            <id property="reduceGoodsId" column="reduceGoodsId" />
+            <result property="activityId" column="activity_id" />
+            <result property="activityGoodsScope" column="activity_goods_scope" />
+            <result property="relationId" column="relation_id" />
+            <result property="relationName" column="relation_name" />
+        </collection>
+        <collection property="reduceRuleSaveDTOList" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.reduce.ReduceRuleSaveDTO">
+            <id property="ruleId" column="ruleId" />
+            <result property="activityId" column="activity_id"/>
+            <result property="ruleType" column="rule_type"/>
+            <result property="limitAmount" column="limit_amount"/>
+            <result property="reduceAmount" column="reduce_amount"/>
+        </collection>
+    </resultMap>
+
+    <!--满减详情-->
+    <select id="reduceActivityDeatil" resultMap="reduceGoodsDeatilMap">
+        SELECT
+            ra.id,
+            ra.activity_name,
+            ra.activity_rule_name,
+            ra.start_date,
+            ra.end_date,
+            ra.rule_type,
+            ra.activity_goods_scope,
+            ra.audit_state,
+            ra.activity_state,
+            rr.id as ruleId,
+            rr.activity_id,
+            rr.limit_amount,
+            rr.reduce_amount,
+            rg.id as reduceGoodsId,
+            rg.relation_id,
+            rg.relation_name,
+            rg.activity_id,
+            rg.activity_goods_scope
+        FROM
+            lmshop_reduce_activity ra
+        LEFT JOIN lmshop_reduce_rule rr ON ra.id = rr.activity_id
+        LEFT JOIN lmshop_reduce_goods rg on ra.id=rg.activity_id
+        WHERE
+            ra.del_flag = 0 and rr.del_flag=0 and rg.del_flag = 0
+            <if test="id != null">
+                and ra.id = #{id}
+            </if>
+            <if test="storeId != null">
+                and ra.store_id = #{storeId}
+            </if>
+    </select>
+
+    <!--获得某关联id指定的活动类型-->
+    <select id="selectStartByRelationId" resultMap="reduceActivityMap">
+        SELECT
+            DISTINCT
+            ra.id,
+            ra.activity_name,
+            ra.activity_scope,
+            ra.store_id,
+            ra.store_name,
+            ra.rule_type,
+            ra.member_grader_id,
+            ra.member_grader_name,
+            ra.start_date,
+            ra.end_date,
+            ra.point_flag,
+            ra.balance_flag,
+            ra.coupons_flag,
+            ra.seckill_flag,
+            ra.activity_goods_scope,
+            ra.audit_state,
+            ra.activity_state
+        FROM
+            lmshop_reduce_activity ra
+        LEFT JOIN lmshop_reduce_goods rg ON ra.id = rg.activity_id
+        LEFT JOIN lmshop_reduce_rule rr ON ra.id = rr.activity_id
+        WHERE
+            ra.del_flag = 0
+        AND rg.del_flag = 0
+        AND rr.del_flag = 0
+        AND ra.activity_state = 1
+        AND ra.audit_state = 1
+        AND rg.relation_id = #{relationId}
+        AND ra.activity_goods_scope = #{activityGoodsScope}
+        AND rg.activity_goods_scope = #{activityGoodsScope}
+        ORDER BY
+            rr.reduce_amount
+        DESC
+    </select>
+
+
+    <!--获得某关联id指定的活动类型-->
+    <select id="getGoodsBestActivity" resultMap="reduceActivityMap">
+        SELECT
+            ra.id,
+            ra.activity_name,
+            ra.activity_scope,
+            ra.store_id,
+            ra.store_name,
+            ra.rule_type,
+            ra.member_grader_id,
+            ra.member_grader_name,
+            ra.start_date,
+            ra.end_date,
+            ra.point_flag,
+            ra.balance_flag,
+            ra.coupons_flag,
+            ra.seckill_flag,
+            ra.activity_goods_scope,
+            ra.audit_state,
+            ra.activity_state
+        FROM
+            lmshop_reduce_activity ra
+        LEFT JOIN lmshop_reduce_goods rg ON ra.id = rg.activity_id
+        LEFT JOIN lmshop_reduce_rule rr ON ra.id = rr.activity_id
+        WHERE
+            ra.del_flag = 0
+        AND rg.del_flag = 0
+        AND rr.del_flag = 0
+        AND ra.activity_state = 1
+        AND ra.audit_state = 1
+        AND ra.store_id = #{storeId}
+        AND (
+            1 = 2
+            <if test="storeId != null">
+                OR
+                (
+                rg.relation_id = #{storeId}
+                AND ra.activity_goods_scope = 0
+                AND rg.activity_goods_scope = 0
+                )
+            </if>
+            <if test="secondStoreClassId != null">
+                OR
+                (
+                rg.relation_id = #{secondStoreClassId}
+                AND ra.activity_goods_scope = 1
+                AND rg.activity_goods_scope = 1
+                )
+            </if>
+            <if test="goodsId != null">
+                OR
+                (
+                rg.relation_id = #{goodsId}
+                AND ra.activity_goods_scope = 2
+                AND rg.activity_goods_scope = 2
+                )
+            </if>
+            <if test="brandId != null">
+                OR
+                (
+                rg.relation_id = #{brandId}
+                AND ra.activity_goods_scope = 3
+                AND rg.activity_goods_scope = 3
+                )
+            </if>
+        )
+        ORDER BY
+            rr.reduce_amount
+        DESC
+        limit 1
+    </select>
+
+    <!--查询指定商品id，店铺id，品牌id商品的全部满减活动及活动规则-->
+    <select id="getGoodsAllActivity" resultMap="reduceActivityIndexDTO">
+        select
+            lra.id, lra.activity_scope, lra.store_id, lra.rule_type, lra.store_name, lra.start_date, lra.end_date,
+            lra.point_flag, lra.balance_flag, lra.coupons_flag, lra.seckill_flag, lra.activity_goods_scope,
+            lrr.id as reduceRuleId, lrr.limit_amount, lrr.reduce_amount, lrr.activity_id as raid, lrr.rule_type as rrtype
+        from lmshop_reduce_activity lra
+        left join lmshop_reduce_rule lrr
+        on lra.id = lrr.activity_id and lra.rule_type = lrr.rule_type
+        left join lmshop_reduce_goods lrg
+        on lra.id = lrg.activity_id
+        <where>
+            lra.del_flag = 0
+            and (lrr.del_flag = 0 or lrr.del_flag is null)
+            and (lrr.del_flag = 0 or lrg.del_flag is null)
+            AND lra.activity_state = 1
+            AND lra.audit_state = 1
+            AND lra.store_id = #{storeId}
+            AND  (
+                1 = 2
+                <if test="storeId != null">
+                OR
+                (
+                lrg.relation_id = #{storeId}
+                AND lra.activity_goods_scope = 0
+                AND lrg.activity_goods_scope = 0
+                )
+                </if>
+                <if test="goodsId != null">
+                    OR
+                    (
+                    lrg.relation_id = #{goodsId}
+                    AND lra.activity_goods_scope = 2
+                    AND lrg.activity_goods_scope = 2
+                    )
+                </if>
+                <if test="brandId != null">
+                    OR
+                    (
+                    lrg.relation_id = #{brandId}
+                    AND lra.activity_goods_scope = 3
+                    AND lrg.activity_goods_scope = 3
+                    )
+                </if>
+                <if test="secondStoreClassId != null">
+                    OR
+                    (
+                    lrg.relation_id = #{secondStoreClassId}
+                    AND lra.activity_goods_scope = 1
+                    AND lrg.activity_goods_scope = 1
+                    )
+                </if>
+            )
+        </where>
+    </select>
+
+    <!--查询所有满减商品-->
+    <select id="selectAllReduceGoods" resultType="com.leimingtech.modules.dto.reduce.ReduceGoodsDTO">
+        SELECT
+            lrg.relation_id,
+            lrg.activity_goods_scope,
+            lrg.activity_id
+        FROM
+            lmshop_reduce_activity lra
+        INNER JOIN lmshop_reduce_goods lrg ON lra.id = lrg.activity_id
+        WHERE
+            lra.del_flag = 0
+        AND lrg.del_flag = 0
+        AND lra.store_id = #{storeId}
+        AND (
+            lra.activity_state = 0
+            OR lra.activity_state = 1
+        )
+        <if test="brandId != null or goodsId != null">
+            AND  (
+                (
+                lrg.relation_id = #{storeId}
+                AND lra.activity_goods_scope = 0
+                AND lrg.activity_goods_scope = 0
+                )
+                <if test="goodsId != null">
+                    OR
+                    (
+                    lrg.relation_id = #{goodsId}
+                    AND lra.activity_goods_scope = 2
+                    AND lrg.activity_goods_scope = 2
+                    )
+                </if>
+                <if test="brandId != null">
+                    OR
+                    (
+                    lrg.relation_id = #{brandId}
+                    AND lra.activity_goods_scope = 3
+                    AND lrg.activity_goods_scope = 3
+                    )
+                </if>
+            )
+        </if>
+        GROUP BY
+            lrg.relation_id,
+            lrg.activity_goods_scope
+    </select>    <!--查询所有满减商品-->
+    <select id="selectAllReduceGoodsByStoreId" resultType="com.leimingtech.modules.dto.reduce.ReduceGoodsDTO">
+        SELECT
+            lrg.relation_id,
+            lrg.activity_goods_scope,
+            lrg.activity_id
+        FROM
+            lmshop_reduce_activity lra
+        INNER JOIN lmshop_reduce_goods lrg ON lra.id = lrg.activity_id
+        WHERE
+            lra.del_flag = 0
+        AND lrg.del_flag = 0
+        AND lra.store_id = #{storeId}
+        AND (
+            lra.activity_state = 0
+            OR lra.activity_state = 1
+        )
+        GROUP BY
+            lrg.relation_id,
+            lrg.activity_goods_scope
+    </select>
+</mapper>

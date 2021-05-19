@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.circle.CmsCircleDao">
+
+    <resultMap type="com.leimingtech.modules.entity.circle.CmsCircleEntity" id="cmsCircleMap">
+        <result property="id" column="id"/>
+        <result property="topicName" column="topic_name"/>
+        <result property="acId" column="ac_id"/>
+        <result property="createrId" column="creater_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createrDate" column="creater_date"/>
+        <result property="updateId" column="update_id"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="topicAbstract" column="topic_abstract"/>
+        <result property="topicLogo" column="topic_logo"/>
+        <result property="topicPicture" column="topic_picture"/>
+        <result property="textNum" column="text_num"/>
+        <result property="pictureNum" column="picture_num"/>
+        <result property="videoNum" column="video_num"/>
+        <result property="articleNum" column="article_num"/>
+        <result property="sort" column="sort"/>
+        <result property="superTopicFlag" column="super_topic_flag"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="status" column="status"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!-- 圈子话题查询 -->
+    <select id="selectCmsCircleTopicList" resultType="com.leimingtech.modules.dto.circle.CmsCircleTopicPageDTO" parameterType="java.util.Map">
+        select lcc.*,IFNULL(sum(lca.pv_num),0) pvNum
+        from
+        (
+            select
+            lct.id,
+            lct.topic_name,
+            IFNULL(lcc.ac_name,'无') ac_name,
+            lct.creator,
+            lct.sort,
+            lct.update_date,
+            lct.topic_logo,
+            lct.status,
+            lct.super_topic_flag,
+            count(lct.topic_name) articleNum
+            from lmshop_cms_circle lct
+            left join lmshop_cms_class lcc
+            on lct.ac_id = lcc.id
+            and lcc.ac_code = 1
+            and lcc.del_flag = 0
+            left join lmshop_cms_article lca
+            on instr(lca.topic_name,lct.topic_name) > 0
+            where lct.del_flag = 0
+            <if test="params.topicName != null and params.topicName != ''">
+                and instr(lct.topic_name,#{params.topicName}) > 0
+            </if>
+            <if test="params.acId != null">
+                and lct.ac_id = #{params.acId}
+            </if>
+            <if test="params.status != null">
+                and lct.status = #{params.status}
+            </if>
+            <if test="params.superTopicFlag != null">
+                and lct.super_topic_flag = #{params.superTopicFlag}
+            </if>
+            group by lct.topic_name
+        ) lcc
+        left join lmshop_cms_article lca
+        on lcc.id = lca.topic_id
+        and lca.del_flag = 0
+        and lca.ac_code = 1
+        group by lcc.id
+        order by lcc.update_date desc
+    </select>
+
+    <!-- 根据分类id查询话题名称-->
+    <select id="findCountByClassId" parameterType="java.lang.Long" resultType="java.lang.String">
+        select distinct topic_name
+        from lmshop_cms_circle
+        WHERE
+        del_flag=0 and ac_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 发布话题搜索页（前台） -->
+    <select id="topicSelectFront" resultType="com.leimingtech.modules.dto.circle.CmsTopicSelectFrontDTO" parameterType="java.util.Map">
+        select
+        id,
+        topic_name,
+        topic_logo,
+        super_topic_flag
+        from lmshop_cms_circle
+        where del_flag = 0
+        and status = 1
+        <if test="params.topicName != null and params.topicName != ''">
+            and instr(topic_name,#{params.topicName}) > 0
+        </if>
+        <if test="params.acId != null and params.acId != ''">
+            and ac_id = #{params.acId}
+        </if>
+        order by super_topic_flag desc,sort asc,update_date desc
+    </select>
+
+    <!-- H5话题主页 -->
+    <select id="selectTopicIndex" resultType="com.leimingtech.modules.dto.circle.CmsTopicIndexFrontDTO" parameterType="java.util.Map">
+        select
+        lcc.id,
+        lcc.topic_name,
+        lcc.topic_logo,
+        lcc.topic_abstract,
+        lcc.topic_picture,
+        lcc.super_topic_flag,
+        sum(lca.pv_num) pvNum
+        from lmshop_cms_circle lcc
+        left join lmshop_cms_article lca
+        on instr(lca.topic_name,lcc.topic_name) > 0
+        where lcc.del_flag = 0
+        and lcc.topic_name = #{params.topicName}
+        and lcc.status = 1
+    </select>
+
+</mapper>

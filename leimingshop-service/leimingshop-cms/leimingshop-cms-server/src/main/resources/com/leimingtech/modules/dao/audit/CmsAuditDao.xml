@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.audit.CmsAuditDao">
+
+    <resultMap type="com.leimingtech.modules.entity.audit.CmsAuditEntity" id="cmsAuditMap">
+        <result property="id" column="id"/>
+        <result property="articleId" column="article_id"/>
+        <result property="auditResult" column="audit_result"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!-- 审核结果详情 -->
+    <select id="selectAuditInfo" resultType="com.leimingtech.modules.dto.audit.CmsAuditDTO" parameterType="java.lang.Long">
+        select
+        id,
+        audit_result
+        from
+        lmshop_cms_audit
+        where
+        article_id = #{id}
+        order by create_date desc
+        LIMIT 1
+    </select>
+
+</mapper>

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goodsclass.GoodsClassDao">
+
+    <resultMap type="com.leimingtech.modules.entity.goodsclass.GoodsClassEntity" id="goodsClassMap">
+        <result property="id" column="id"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="gcParentId" column="gc_parent_id"/>
+        <result property="gcSort" column="gc_sort"/>
+        <result property="gcIdpath" column="gc_idpath"/>
+        <result property="classType" column="class_type"/>
+        <result property="storeId" column="store_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMap1" type="java.lang.String">
+    </resultMap>
+
+    <select id="findByParentId" resultType="java.lang.String" parameterType="java.lang.Long">
+        select gc_name from lmshop_goods_class where gc_parent_id=#{s} and del_flag = 0
+    </select>
+
+    <resultMap type="com.leimingtech.modules.dto.goodsclass.GoodsClassDetailDTO" id="goodsClassDetailMap">
+        <result property="id" column="id"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="gcParentId" column="gc_parent_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="gcIdpath" column="gc_idpath"/>
+        <result property="classType" column="class_type"/>
+        <result property="gcSort" column="gc_sort"/>
+        <collection property="goodsClassBrandUpdateDTO"
+                    ofType="com.leimingtech.modules.dto.goodsclass.GoodsClassBrandUpdateDTO"
+                    javaType="java.util.ArrayList">
+            <result property="brandId" column="brand_id"/>
+            <result property="brandName" column="brand_name"/>
+        </collection>
+        <collection property="goodsClassSpecDTO" ofType="com.leimingtech.modules.dto.goodsclass.GoodsClassSpecDTO"
+                    javaType="java.util.ArrayList">
+            <result property="specId" column="spec_id"/>
+            <result property="specName" column="spec_name"/>
+            <result property="specValue" column="spec_value"/>
+        </collection>
+        <collection property="goodsClassAttrDTO" ofType="com.leimingtech.modules.dto.goodsclass.GoodsClassAttrDTO"
+                    javaType="java.util.ArrayList">
+            <result property="attrId" column="attr_id"/>
+            <result property="attrName" column="attr_name"/>
+            <result property="attrValue" column="attr_value"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectDetailByGcId" parameterType="java.lang.Long" resultMap="goodsClassDetailMap">
+        SELECT
+            lgc.id,
+            lgc.gc_name,
+            lgc.gc_parent_id,
+            lgc.store_id,
+            lgc.gc_idpath,
+            lgc.gc_sort,
+            lgc.class_type,
+            gca.attr_id,
+            gca.attr_name,
+            la.attr_value,
+            gcs.spec_id,
+            gcs.spec_name,
+            ls.spec_value,
+            gcb.brand_id,
+            gcb.brand_name
+        FROM
+            lmshop_goods_class lgc
+            LEFT JOIN lmshop_goods_class_attr gca ON lgc.id = gca.gc_class_id
+            AND gca.del_flag = 0
+            LEFT JOIN lmshop_attribute la ON gca.attr_id = la.id
+            AND la.del_flag = 0
+            LEFT JOIN lmshop_goods_class_spec gcs ON lgc.id = gcs.gc_class_id
+            AND gcs.del_flag = 0
+            LEFT JOIN lmshop_spec ls ON gcs.spec_id = ls.id
+            AND ls.del_flag = 0
+            LEFT JOIN lmshop_goods_class_brand gcb ON lgc.id = gcb.gc_class_id
+            AND gcb.del_flag = 0
+        WHERE
+            lgc.id = #{id} and lgc.del_flag = 0
+    </select>
+
+    <select id="selectListByParentId" parameterType="java.lang.Long"
+            resultType="com.leimingtech.modules.dto.goodsclass.GoodsClassDTO">
+        SELECT
+            id,
+            gc_name,
+            gc_parent_id,
+            gc_sort,
+            gc_idpath,
+            store_id
+        FROM
+            lmshop_goods_class
+        WHERE
+            gc_parent_id = #{id} and del_flag = 0
+        ORDER BY gc_sort ASC,
+        create_date DESC
+    </select>
+    <select id="selectListByClassIds"
+            resultType="com.leimingtech.modules.dto.goodsclass.GoodsClassQueryNameDTO" parameterType="java.util.List">
+        SELECT
+        id,
+        gc_name
+        FROM
+        lmshop_goods_class
+        WHERE
+        del_flag=0 and id in
+        <if test="list == null">
+            (null)
+        </if>
+        <if test="list != null">
+            <foreach collection="list" open="(" close=")" separator="," item="list">
+                #{list}
+            </foreach>
+        </if>
+        ORDER BY gc_sort ASC,
+        create_date DESC
+    </select>
+    <select id="selectAllGoodClass" resultType="com.leimingtech.modules.dto.goodsclass.GoodsClassListDTO">
+        SELECT
+            id,
+            gc_parent_id ,
+            gc_idpath ,
+            gc_parent_id as pid ,
+            class_type as classType,
+            gc_name,
+            gc_sort as sort
+        FROM
+            lmshop_goods_class
+        where del_flag = 0
+        ORDER BY gc_sort ASC,
+        create_date ASC
+    </select>
+
+    <select id="queryIdPathById" resultType="java.lang.String">
+       SELECT
+           gc_idpath
+        FROM
+            lmshop_goods_class
+        where del_flag = 0 and id = #{goodsClassId}
+    </select>
+
+    <!--查询分类名称数量(修改时)-->
+    <select id="gcNameConutCheck" parameterType="com.leimingtech.modules.dto.goodsclass.GoodsClassUpdateDTO"
+            resultType="java.lang.Integer">
+         select count(1)
+         from lmshop_goods_class
+        where id != #{id} and gc_name =#{gcName} and del_flag =0 and gc_parent_id=#{gcParentId}
+    </select>
+
+    <!--查询分类名称数量(保存时)-->
+    <select id="findByGcName"
+            resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_goods_class where gc_name = #{gcName} and del_flag = 0 and gc_parent_id=#{gcParentId}
+    </select>
+
+    <!--根据分类id查询品牌信息,并模糊查询品牌名称-->
+    <select id="brandByGcId" resultType="com.leimingtech.modules.dto.goodsclass.GoodsClassBrandDTO">
+        select DISTINCT brand_id,brand_name
+        from lmshop_goods_class_brand
+        where del_flag = 0
+        <if test="ids != null and ids.length > 0">
+            and gc_class_id in
+            <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="brandName != null and brandName != ''">
+            and brand_name like concat('%',#{brandName},'%')
+        </if>
+    </select>
+    <!--根据店铺分类查询出分类信息-->
+    <select id="selectListByStoreClass" resultType="com.leimingtech.modules.dto.goodsclass.GoodsClassListDTO">
+        select * ,gc_parent_id as pid
+        from lmshop_goods_class
+        where del_flag=0 and id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        order by gc_sort ASC,
+        create_date DESC
+    </select>
+    <!--校验子分组名称不能和父分组名称一样-->
+    <select id="findParentName" resultType="java.lang.Integer">
+    select count(*)
+    from lmshop_goods_class
+    where del_flag=0 and id=#{parentId} and gc_name=#{gcName}
+    </select>
+
+
+
+    <select id="selectNameByCustomIds" resultType="java.util.Map">
+        SELECT
+            id,
+            gc_name as gcName
+        FROM
+            lmshop_goods_class
+        WHERE
+        del_flag = 0 and
+            id IN
+        <foreach collection="classLists" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectThreeByOneIds" resultType="com.leimingtech.modules.dto.goodsclass.GoodsClassDTO">
+        SELECT
+        id,
+        gc_name
+        FROM
+        lmshop_goods_class
+        WHERE
+        del_flag = 0 and
+        gc_parent_id IN
+        (
+            SELECT id FROM lmshop_goods_class WHERE del_flag = 0 and gc_parent_id IN
+            <foreach collection="classIds" open="(" close=")" separator="," item="item">
+                #{item}
+            </foreach>
+        )
+    </select>
+    <select id="findByGcNameAndParentId" resultType="long" >
+        select id
+        from
+        lmshop_goods_class
+        where del_flag = 0 and gc_name = #{gcName} and gc_parent_id =#{parentId}
+    </select>
+
+</mapper>

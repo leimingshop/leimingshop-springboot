@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goods.check.GoodsCheckDao">
+
+    <resultMap type="com.leimingtech.modules.entity.goods.check.GoodsCheckEntity" id="goodsCheckMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodState" column="good_state"/>
+        <result property="remarks" column="remarks"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+<insert id="insertBatch" >
+    insert  into lmshop_goods_check (
+    id,
+    goods_id,
+    goods_name,
+    good_state,
+    remarks,
+    operation_type,
+    creator,
+    create_date,
+    updater,
+    update_date
+    ) values <foreach collection="goodsCheckDTOList" item="goodsCheckDTO" separator=",">
+    (
+    #{goodsCheckDTO.id},
+    #{goodsCheckDTO.goodsId},
+    #{goodsCheckDTO.goodsName},
+    #{goodsCheckDTO.goodState},
+    #{goodsCheckDTO.remarks},
+    #{goodsCheckDTO.operationType},
+    #{goodsCheckDTO.creator},
+    #{goodsCheckDTO.createDate},
+    #{goodsCheckDTO.updater},
+    #{goodsCheckDTO.updateDate}
+    )
+</foreach>
+</insert>
+
+</mapper>

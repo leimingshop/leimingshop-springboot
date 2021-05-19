@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.aftersale.dao.AftersaleBarterDao">
+
+    <resultMap type="com.leimingtech.modules.aftersale.entity.AftersaleBarterEntity" id="aftersaleBarterMap">
+        <result property="id" column="id"/>
+        <result property="aftersaleSn" column="aftersale_sn"/>
+        <result property="serviceSn" column="service_sn"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="memberId" column="member_id"/>
+        <result property="logisticsStatus" column="logistics_status"/>
+        <result property="aftersaleStatus" column="aftersale_status"/>
+        <result property="payType" column="pay_type"/>
+        <result property="contacts" column="contacts"/>
+        <result property="contactsPhone" column="contacts_phone"/>
+        <result property="receiver" column="receiver"/>
+        <result property="receiverPhone" column="receiver_phone"/>
+        <result property="receiverAddress" column="receiver_address"/>
+        <result property="buyerDeliveryTime" column="buyer_delivery_time"/>
+        <result property="buyerLogisticsCompany" column="buyer_logistics_company"/>
+        <result property="buyerLogisticsNumber" column="buyer_logistics_number"/>
+        <result property="sellerDeliveryNo" column="seller_delivery_no"/>
+        <result property="sellerDeliveryTime" column="seller_delivery_time"/>
+        <result property="sellerLogisticsCompany" column="seller_logistics_company"/>
+        <result property="sellerLogisticsNumber" column="seller_logistics_number"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="whereStatement">
+        <where>
+            lar.del_flag = 0
+            <if test="params.aftersaleSn != null and params.aftersaleSn!=''">
+                AND lar.aftersale_sn = #{params.aftersaleSn}
+            </if>
+            <if test="params.aftersaleStatus != null and params.aftersaleStatus!=''">
+                AND lar.aftersale_status = #{params.aftersaleStatus}
+            </if>
+            <if test="params.specSerial != null and params.specSerial!=''">
+                AND lag.spec_serial = #{params.specSerial}
+            </if>
+            <if test="params.goodsName != null and params.goodsName!=''">
+                AND lag.goods_name LIKE concat('%', #{params.goodsName}, '%')
+            </if>
+            <if test="params.memberName != null and params.memberName!=''">
+                AND lar.member_name LIKE concat('%', #{params.memberName}, '%')
+            </if>
+            <if test="params.storeName != null and params.storeName!=''">
+                AND lar.store_name LIKE concat('%', #{params.storeName}, '%')
+            </if>
+            <if test="params.startTime != null and params.startTime!=''">
+                AND lar.create_date &gt;= #{params.startTime}
+            </if>
+            <if test="params.endTime != null and params.endTime!=''">
+                AND lar.create_date &lt;= #{params.endTime}
+            </if>
+            <if test="params.storeId != null and params.storeId != ''">
+                AND lar.store_id = #{params.storeId}
+            </if>
+        </where>
+    </sql>
+
+    <!--换货 换货列表-->
+    <select id="findPage" resultType="com.leimingtech.modules.aftersale.dto.AftersaleReturnPageDTO">
+        select
+        lar.aftersale_sn,lar.member_name,lar.store_name,lar.create_date,lar.logistics_status,
+        lar.aftersale_status,lag.spec_serial,lag.goods_name ,lag.spec_id,lag.spec_main_picture
+        from lmshop_aftersale_barter lar
+        LEFT JOIN lmshop_aftersale_goods lag on lar.aftersale_sn = lag.aftersale_sn
+        <include refid="whereStatement"/>
+        order By lar.create_date DESC
+    </select>
+
+
+    <!--换货 商家确认收货-->
+    <update id="confirmGoods" parameterType="java.lang.Long">
+        update lmshop_aftersale_barter
+        <set>
+            aftersale_status = #{aftersaleStatus},
+            logistics_status = #{logisticsStatus}
+        </set>
+        where aftersale_sn = #{aftersaleSn}
+    </update>
+
+    <!--换货 商家上传物流信息-->
+    <update id="uploadExpress" parameterType="java.lang.String">
+        update lmshop_aftersale_barter
+        <set>
+            logistics_status = 4,
+            seller_delivery_type = #{params.sellerDeliveryType},
+            seller_delivery_no = #{params.sellerDeliveryNo},
+            seller_delivery_time = #{params.sellerDeliveryTime},
+            seller_logistics_company = #{params.sellerLogisticsCompany},
+            seller_logistics_number = #{params.sellerLogisticsNumber}
+        </set>
+          where aftersale_sn=#{params.aftersaleSn}
+    </update>
+
+    <select id="findSellerInOutTimeList" resultType="java.lang.String">
+        SELECT aftersale_sn FROM lmshop_aftersale_barter where timestampdiff(SECOND,create_date,now())>#{days}*86400 and logistics_status = #{logisticsStatus}
+    </select>
+
+    <update id="batchCancel">
+        <foreach collection="aftersaleBarterList" item="afterSaleSn" separator=";">
+            update lmshop_aftersale_barter
+            SET aftersale_status = 1,logistics_status = 5
+            where aftersale_sn = #{afterSaleSn}
+        </foreach>
+    </update>
+
+
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.order.OrderLogDao">
+
+    <resultMap type="com.leimingtech.modules.entity.order.OrderLogEntity" id="orderLogMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="changeStatus" column="change_status"/>
+        <result property="statusInfo" column="status_info"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+</mapper>

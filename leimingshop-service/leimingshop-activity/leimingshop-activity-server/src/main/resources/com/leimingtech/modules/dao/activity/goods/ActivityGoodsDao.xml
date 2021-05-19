@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.activity.goods.ActivityGoodsDao">
+
+    <resultMap type="com.leimingtech.modules.entity.activity.goods.ActivityGoodsEntity" id="activityGoodsMap">
+        <result property="id" column="id"/>
+        <result property="sessionId" column="session_id"/>
+        <result property="activityId" column="activity_id"/>
+        <result property="activityType" column="activity_type"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="specId" column="spec_id"/>
+        <result property="activityStorage" column="activity_storage"/>
+        <result property="activitySurplusStorage" column="activity_surplus_storage"/>
+        <result property="activityPrice" column="activity_price"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="spuOrderNum" column="spu_order_num"/>
+        <result property="onceBuyLimit" column="once_buy_limit"/>
+        <result property="joinLimit" column="join_limit"/>
+        <result property="regimentNum" column="regiment_num"/>
+        <result property="sort" column="sort"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <select id="adminSeckillGoodsList" resultType="com.leimingtech.modules.dto.activity.goods.AdminSeckillGoodsDTO">
+        SELECT
+            id,
+            goods_id,
+            MIN(activity_price) as minActivityPrice,
+            MAX(activity_price) as maxActivityPrice,
+            MAX(spu_order_num) as spuOrderNum,
+            SUM(activity_storage) as activityStorage,
+            SUM(activity_surplus_storage)  as activitySurplusStorage
+        FROM
+            lmshop_activity_goods
+        WHERE
+            del_flag = 0
+        AND activity_id = #{activityId}
+        AND activity_type = 3
+        GROUP BY goods_id
+        ORDER BY create_date DESC
+    </select>
+
+    <select id="alreadyAddActivityGoodsPage" resultType="com.leimingtech.modules.dto.activity.goods.AdminSeckillGoodsDTO">
+        SELECT
+            id,
+            goods_id,
+            spec_id,
+            MIN(activity_price) as minActivityPrice,
+            MAX(activity_price) as maxActivityPrice,
+            MAX(spu_order_num) as spuOrderNum,
+            SUM(activity_storage) as activityStorage,
+            SUM(activity_surplus_storage)  as activitySurplusStorage
+        FROM
+            lmshop_activity_goods
+        WHERE
+            del_flag = 0
+        <if test="params.activityId != null and params.activityId != ''">
+            AND activity_id = #{params.activityId}
+        </if>
+        AND activity_type = #{params.activityType}
+        GROUP BY goods_id
+        ORDER BY create_date DESC
+    </select>
+
+    <!--查询所有秒杀商品-->
+    <select id="selectAllSeckillGoods" resultType="com.leimingtech.modules.dto.activity.goods.ActivityGoodsDTO">
+        SELECT
+            lag.goods_id,
+            lag.activity_id,
+            lag.activity_type,
+            MAX(spu_order_num) as spuOrderNum
+        FROM
+            lmshop_seckill_activity lsa
+        INNER JOIN lmshop_activity_goods lag ON lsa.id = lag.activity_id
+        WHERE
+            lag.del_flag = 0
+        AND lsa.del_flag = 0
+        <if test="storeId != null">
+            AND lsa.store_id = #{storeId}
+        </if>
+        <if test="goodsId != null">
+            AND lag.goods_id = #{goodsId}
+        </if>
+        AND lag.activity_type = 3
+        AND (
+            lsa.activity_state = 0
+            OR lsa.activity_state = 1
+        )
+        GROUP BY
+            lag.goods_id,
+            lag.activity_id
+    </select>
+
+    <!--查询所有拼团商品-->
+    <select id="selectAllGroupGoods" resultType="com.leimingtech.modules.dto.activity.goods.ActivityGoodsDTO">
+        SELECT
+            lag.goods_id,
+            lag.activity_id,
+            lag.activity_type,
+            MAX(spu_order_num) as spuOrderNum
+        FROM
+            lmshop_group lg
+        INNER JOIN lmshop_activity_goods lag ON lg.id = lag.activity_id
+        WHERE
+            lag.del_flag = 0
+        AND lg.del_flag = 0
+        AND lg.store_id = #{storeId}
+        <if test="goodsId != null">
+            AND lag.goods_id = #{goodsId}
+        </if>
+        AND lag.activity_type = 4
+        AND (
+            lg.activity_status = 0
+            OR lg.activity_status = 1
+        )
+        GROUP BY
+            lag.goods_id,
+            lag.activity_id
+    </select>
+
+    <!--物理删除指定商品id活动数据-->
+    <delete id="noLogicDeleteByActivityAndGoodsId">
+        DELETE
+        FROM
+            lmshop_activity_goods
+        WHERE
+            del_flag = 0
+        AND activity_id = #{activityId}
+        AND activity_type = #{activityType}
+        AND goods_id = #{goodsId}
+    </delete>
+
+    <!-- 查询已经参加拼团活动的商品-->
+    <select id="groupGoodsList" resultType="com.leimingtech.modules.dto.group.GroupGoodsDTO">
+        SELECT
+            id,
+            goods_id,
+            spec_id,
+            MIN(activity_price) as minActivityPrice,
+            MAX(activity_price) as maxActivityPrice,
+            SUM(order_num) as orderNum,
+            SUM(activity_storage) as activityStorage,
+            SUM(activity_surplus_storage)  as activitySurplusStorage,
+            sort,
+            once_buy_limit,
+            join_limit,
+            regiment_num
+        FROM
+            lmshop_activity_goods
+        WHERE
+            del_flag = 0
+        AND activity_id = #{activityId}
+        AND activity_type = 4
+        GROUP BY goods_id
+        ORDER BY sort ASC
+    </select>
+
+    <!-- 查询已经参加拼团活动的商品 分页-->
+    <select id="groupGoodsPage" resultType="com.leimingtech.modules.dto.group.GroupGoodsDTO">
+        SELECT
+            id,
+            goods_id,
+            spec_id,
+            MIN(activity_price) as minActivityPrice,
+            MAX(activity_price) as maxActivityPrice,
+            SUM(order_num) as orderNum,
+            SUM(activity_storage) as activityStorage,
+            SUM(activity_surplus_storage)  as activitySurplusStorage,
+            sort,
+            once_buy_limit,
+            join_limit,
+            regiment_num
+        FROM
+            lmshop_activity_goods
+        WHERE
+            del_flag = 0
+        <if test="params.activityId != null and params.activityId != ''">
+            AND activity_id = #{params.activityId}
+        </if>
+        AND activity_type = 4
+        GROUP BY goods_id
+        ORDER BY sort ASC
+    </select>
+
+    <!--更新秒杀剩余库存-->
+    <update id="updateActivitySurplusStorage">
+        UPDATE lmshop_activity_goods
+        SET
+        activity_surplus_storage = #{activitySurplusStorage},
+        update_date = NOW()
+        WHERE
+        del_flag = 0 AND spec_id = #{specId}
+        AND activity_id = #{activityId}
+        AND activity_type = #{activityType}
+    </update>
+
+    <!--查询所有秒杀活动商品-->
+    <select id="selectAllSeckillSpecActivity" resultType="com.leimingtech.modules.dto.activity.goods.SpecActivityEsDTO">
+        SELECT
+            lag.id, lag.spec_id, lag.session_id, lag.activity_id, lag.activity_type, lag.activity_storage, lag.activity_surplus_storage,
+            lag.activity_price, lsa.activity_state, lsa.activity_start_date, lsa.activity_end_date, lsa.member_grade_limit,
+            lsa.member_grade_id, lsa.member_grade_name, lsa.restriction_quantity
+        FROM
+            lmshop_activity_goods lag
+        INNER JOIN lmshop_seckill_activity lsa ON lag.activity_id = lsa.id
+        WHERE
+            lag.del_flag = 0
+        AND lsa.del_flag = 0
+        AND lsa.activity_state IN (0, 1)
+    </select>
+    <!--查询所有限时购活动商品-->
+    <select id="selectAllFlashSaleSpecActivity" resultType="com.leimingtech.modules.dto.activity.goods.SpecActivityEsDTO">
+        SELECT
+            lag.id, lag.spec_id, lag.activity_id, lag.activity_type, lag.activity_storage, lag.activity_surplus_storage,
+            lag.activity_price, fsa.activity_state, fsa.activity_start_date, fsa.activity_end_date, fsa.member_grade_limit,
+            fsa.member_grade_id, fsa.member_grade_name, fsa.restriction_quantity
+        FROM
+            lmshop_activity_goods lag
+        INNER JOIN lmshop_flash_sale_activity fsa ON lag.activity_id = fsa.id
+        WHERE
+            lag.del_flag = 0
+        AND fsa.del_flag = 0
+        AND fsa.activity_state IN (0, 1)
+    </select>
+
+    <!--根据商品id查询秒杀活动-->
+    <select id="selectSeckillActivityByGoodsIds" resultType="com.leimingtech.modules.dto.activity.goods.SpecActivityEsDTO">
+        SELECT
+            lag.goods_id, lag.activity_id, lag.activity_type, lsa.activity_state, lsa.activity_start_date, lsa.activity_end_date
+        FROM
+            lmshop_activity_goods lag
+        INNER JOIN lmshop_seckill_activity lsa ON lag.activity_id = lsa.id
+        WHERE
+            lag.del_flag = 0
+        AND lsa.del_flag = 0
+        AND lsa.activity_state IN (0, 1)
+        AND lag.goods_id IN
+        <foreach collection="goodsIds" open="(" close=")" separator="," item="goodsId">
+            #{goodsId}
+        </foreach>
+        GROUP BY lag.goods_id, lag.activity_id
+    </select>
+
+    <!--根据商品id查询秒杀活动-->
+    <select id="selectSeckillActivityGoodsByGoodsIds" resultType="com.leimingtech.modules.dto.activity.goods.SpecActivityEsDTO">
+        SELECT
+        lag.id, lag.goods_id, lag.spec_id, lag.activity_id, lag.activity_type, lsa.activity_state, lag.activity_surplus_storage
+        FROM
+        lmshop_activity_goods lag
+        INNER JOIN lmshop_seckill_activity lsa ON lag.activity_id = lsa.id
+        WHERE
+        lag.del_flag = 0
+        AND lsa.del_flag = 0
+        AND lsa.activity_state IN (0, 1)
+        AND lag.goods_id IN
+        <foreach collection="goodsIds" open="(" close=")" separator="," item="goodsId">
+            #{goodsId}
+        </foreach>
+    </select>
+
+    <!--根据商品id查询拼团活动-->
+    <select id="selectGroupActivityByGoodsIds" resultType="com.leimingtech.modules.dto.activity.goods.SpecActivityEsDTO">
+        SELECT
+        lag.goods_id, lag.activity_id, lag.activity_type, lg.activity_status AS activityState
+        FROM
+        lmshop_activity_goods lag
+        INNER JOIN lmshop_group lg ON lag.activity_id = lg.id
+        WHERE
+        lag.del_flag = 0
+        AND lg.del_flag = 0
+        AND lg.activity_status IN (0, 1)
+        AND lag.goods_id IN
+        <foreach collection="goodsIds" open="(" close=")" separator="," item="goodsId">
+            #{goodsId}
+        </foreach>
+        GROUP BY lag.goods_id, lag.activity_id
+    </select>
+
+    <!--根据商品id查询拼团活动商品-->
+    <select id="selectGroupActivityGoodsByGoodsIds" resultType="com.leimingtech.modules.dto.activity.goods.SpecActivityEsDTO">
+        SELECT
+        lag.id, lag.goods_id, lag.spec_id, lag.activity_id, lag.activity_type, lg.activity_status AS activityState, lag.activity_surplus_storage
+        FROM
+        lmshop_activity_goods lag
+        INNER JOIN lmshop_group lg ON lag.activity_id = lg.id
+        WHERE
+        lag.del_flag = 0
+        AND lg.del_flag = 0
+        AND lg.activity_status IN (0, 1)
+        AND lag.goods_id IN
+        <foreach collection="goodsIds" open="(" close=")" separator="," item="goodsId">
+            #{goodsId}
+        </foreach>
+    </select>
+  <!--根据商品id查询拼团活动商品-->
+    <select id="selectFlashSaleActivityGoodsByGoodsIds" resultType="com.leimingtech.modules.dto.activity.goods.SpecActivityEsDTO">
+        SELECT
+        lag.id, lag.goods_id, lag.spec_id, lag.activity_id, lag.activity_type, fsa.activity_state AS activityState, lag.activity_surplus_storage
+        FROM
+        lmshop_activity_goods lag
+        INNER JOIN lmshop_flash_sale_activity fsa ON lag.activity_id = fsa.id
+        WHERE
+        lag.del_flag = 0
+        AND fsa.del_flag = 0
+        AND fsa.activity_state IN (0, 1)
+        AND lag.goods_id IN
+        <foreach collection="goodsIds" open="(" close=")" separator="," item="goodsId">
+            #{goodsId}
+        </foreach>
+    </select>
+
+    <!--查询所有拼团活动商品-->
+    <select id="selectAllGroupSpecActivity" resultType="com.leimingtech.modules.dto.activity.goods.SpecActivityEsDTO">
+        SELECT
+            lag.id, lag.spec_id, lag.session_id, lag.activity_id, lag.activity_type, lag.activity_storage, lag.activity_surplus_storage,
+            lag.activity_price, lg.activity_status as activity_state , lg.start_time as activity_start_date, lg.end_time as activity_end_date,
+            lag.regiment_num, lg.recommend_flag, lg.group_preheat, lag.once_buy_limit, lag.join_limit
+        FROM
+            lmshop_activity_goods lag
+        INNER JOIN lmshop_group lg ON lag.activity_id = lg.id
+        WHERE
+            lag.del_flag = 0
+        AND lg.del_flag = 0
+        AND lg.activity_status IN (0, 1)
+    </select>
+    <select id="selectFlashSaleAllGoods"
+            resultType="com.leimingtech.modules.dto.activity.goods.ActivityGoodsDTO">
+        SELECT
+        lag.goods_id,
+        lag.activity_id,
+        lag.activity_type,
+        MAX(spu_order_num) as spuOrderNum
+        FROM
+        lmshop_flash_sale_activity fsa
+        INNER JOIN lmshop_activity_goods lag ON fsa.id = lag.activity_id
+        WHERE
+        lag.del_flag = 0
+        AND fsa.del_flag = 0
+        <if test="storeId != null">
+            AND fsa.store_id = #{storeId}
+        </if>
+        <if test="goodsId != null">
+            AND lag.goods_id = #{goodsId}
+        </if>
+        AND lag.activity_type = 5
+        AND (
+        fsa.activity_state = 0
+        OR fsa.activity_state = 1
+        )
+        GROUP BY
+        lag.goods_id,
+        lag.activity_id
+    </select>
+
+    <!--秒杀订单+1-->
+    <update id="increaseOrderNum">
+        UPDATE
+        lmshop_activity_goods
+        SET
+        order_num = order_num + 1
+        WHERE
+        <foreach collection="dtoList" open="(" close=")" separator=") OR (" item="dto">
+            del_flag = 0 and activity_id = #{dto.activityId} and activity_type = #{dto.activityType} and spec_id = #{dto.specId}
+        </foreach>
+    </update>
+
+    <!--秒杀订单+1-->
+    <update id="increaseSpuOrderNum">
+        UPDATE
+        lmshop_activity_goods
+        SET
+        spu_order_num = spu_order_num + 1
+        WHERE
+        <foreach collection="dtoList" open="(" close=")" separator=") OR (" item="dto">
+            del_flag = 0 and activity_id = #{dto.activityId} and activity_type = #{dto.activityType} and goods_id = #{dto.goodsId}
+        </foreach>
+    </update>
+</mapper>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.articleclass.CmsClassDao">
+
+    <resultMap type="com.leimingtech.modules.entity.articleclass.CmsClassEntity" id="cmsClassMap">
+        <result property="id" column="id"/>
+        <result property="acName" column="ac_name"/>
+        <result property="sort" column="sort"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="acParentId" column="ac_parent_id"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="acLevel" column="ac_level"/>
+        <result property="acIdpaths" column="ac_idpaths"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="acIcon" column="ac_icon"/>
+        <result property="attentionNum" column="attention_num"/>
+        <result property="textNum" column="text_num"/>
+        <result property="pictureNum" column="picture_num"/>
+        <result property="videoNum" column="video_num"/>
+        <result property="articleNum" column="article_num"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="status" column="status"/>
+        <result property="acCode" column="ac_code"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+    <!-- 圈子分类查询 -->
+    <select id="selectCmsCircleClassList" resultType="com.leimingtech.modules.dto.articleclass.CmsClassPageDTO" parameterType="java.util.Map">
+        select lcc.*,IFNULL(sum(lca.pv_num),0) pvNum
+        from
+        (
+            select
+            lcc.id,
+            lcc.ac_name,
+            lcc.sort,
+            lcc.update_date,
+            lcc.image_url,
+            lcc.ac_icon,
+            lcc.status,
+            lcc.attention_num,
+            COUNT(lca.article_flag) articleNum
+            from lmshop_cms_class lcc
+            left join lmshop_cms_article lca
+            on lcc.id = lca.ac_id
+            where lcc.del_flag = 0
+            and lcc.ac_code = 1
+            <if test="params.acName != null and params.acName != ''">
+                and instr(lcc.ac_name,#{params.acName}) > 0
+            </if>
+            <if test="params.status != null">
+                and lcc.status = #{params.status}
+            </if>
+            group by lcc.id
+        ) lcc
+        left join lmshop_cms_article lca
+        on lcc.id = lca.ac_id
+        and lca.del_flag = 0
+        and lca.ac_code = 1
+        group by lcc.id
+        order by lcc.update_date desc
+    </select>
+
+    <!--同标识分类重名查询-->
+    <select id="selectByAcName" resultType="com.leimingtech.modules.entity.articleclass.CmsClassEntity">
+        select * from lmshop_cms_class
+        where ac_name = #{params.acName} and ac_code = #{params.acCode} and del_flag = 0
+    </select>
+
+
+    <select id="selectArticleFirstList" resultType="com.leimingtech.modules.entity.articleclass.CmsClassEntity">
+        select
+            id,
+            ac_name,
+            ac_parent_id
+        from lmshop_cms_class
+        where
+                ac_code = 2
+            and del_flag = 0
+            and ac_level = 1
+    </select>
+
+    <select id="selectClassListByParentId" resultType="com.leimingtech.modules.entity.articleclass.CmsClassEntity">
+        select
+            id,
+            ac_name,
+            ac_parent_id
+        from
+            lmshop_cms_class
+        where
+            id = #{id} and del_flag = 0
+    </select>
+
+
+    <select id="selectZxClassList" resultType="com.leimingtech.modules.dto.articleclass.CmsZxClassListDto">
+        select
+        id id,
+        ac_name acName,
+        ac_parent_id pid,
+        ac_level acLevel,
+        ac_idpaths acIdpaths,
+        sort sort,
+        status
+        from
+        lmshop_cms_class
+        where ac_code = 2
+        and del_flag = 0
+    </select>
+
+    <select id="selectZxClassSecondLevel" resultType="com.leimingtech.modules.dto.articleclass.CmsZxClassListDto">
+        select
+        id id,
+        ac_name acName,
+        ac_parent_id pid,
+        ac_level acLevel,
+        ac_idpaths acIdpaths,
+        sort sort,
+        status
+        from lmshop_cms_class
+        where ac_code = 2
+        and del_flag = 0
+        and ac_level &lt; 3
+    </select>
+
+    <select id="selectClassList" resultType="com.leimingtech.modules.entity.articleclass.CmsClassEntity">
+        select
+            id,
+            ac_name,
+            ac_parent_id,
+            status,
+            ac_idpaths,
+            ac_level,
+            sort
+        from lmshop_cms_class
+        where 1=1
+        and del_flag = 0
+        and ac_code = #{params.acCode}
+    </select>
+
+    <select id="selectClassListDto" resultType="com.leimingtech.modules.dto.articleclass.CmsClassTreeListDTO">
+        select
+            id,
+            ac_name acName,
+            ac_parent_id pid,
+            status,
+            ac_idpaths acIdpaths,
+            ac_level acLevel,
+            sort
+        from lmshop_cms_class
+        where del_flag = 0
+        and ac_code = #{params.acCode}
+        order by sort asc ,update_date desc
+    </select>
+
+    <select id="selectChildClassList" resultType="com.leimingtech.modules.dto.articleclass.CmsClassTreeListDTO">
+        select
+            id,
+            ac_name acName,
+            ac_parent_id pid,
+            status,
+            ac_idpaths acIdpaths,
+            ac_level acLevel,
+            sort
+        from lmshop_cms_class
+        where del_flag = 0
+        and status = 1
+        and ac_code = #{params.acCode}
+        and instr(ac_idpaths,#{params.parentId}) > 0
+        and ac_level &lt;&gt; 1
+        order by sort asc ,update_date desc
+    </select>
+
+    <select id="selectFrontCircleClassList" resultType="com.leimingtech.modules.dto.articleclass.CmsFrontClassDTO">
+        select
+            id,
+            ac_name acName,
+            image_url,
+            ac_icon
+        from
+            lmshop_cms_class
+        where del_flag = 0
+        and status = 1
+        and ac_code = 1
+        order by sort asc,update_date desc
+    </select>
+
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.aftersale.dao.AftersaleAuditLogDao">
+
+    <resultMap type="com.leimingtech.modules.aftersale.entity.AftersaleAuditLogEntity" id="aftersaleAuditLogMap">
+        <result property="id" column="id"/>
+        <result property="aftersaleSn" column="aftersale_sn"/>
+        <result property="reason" column="reason"/>
+        <result property="result" column="result"/>
+        <result property="process" column="process"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <update id="updateCancel">
+        update lmshop_aftersale_audit_log set result=4 where result = 3 and aftersale_sn=#{aftersaleSn} limit 1
+    </update>
+
+    <!--查询对应后台的售后日志-->
+    <select id="findLog" resultType="com.leimingtech.modules.aftersale.dto.AftersaleLogListDTO">
+        select reason as message,creator,create_date
+        from lmshop_aftersale_audit_log
+        where aftersale_sn=#{aftersaleSn} and reason != ''
+        order by update_date desc
+    </select>
+
+    <select id="findPage" resultType="com.leimingtech.modules.aftersale.dto.AftersaleAuditLogPageDTO">
+        select laal.id,laal.aftersale_sn,lag.spec_serial,lag.goods_name,lag.spec_id ,lar.store_name,lar.member_name,lar.create_date,laal.update_date audit_date,
+               laal.result,laal.process,lar.aftersale_type,lar.refund_amount,lar.audit_status,lag.spec_main_picture
+        from lmshop_aftersale_audit_log laal
+        left join lmshop_aftersale_apply lar on lar.aftersale_sn = laal.aftersale_sn
+        LEFT JOIN lmshop_aftersale_goods lag on lag.aftersale_sn = laal.aftersale_sn
+        <where>
+            laal.del_flag = 0
+            <if test="params.id != null and params.id!=''">
+                AND laal.id = #{params.id}
+            </if>
+            <if test="params.aftersaleSn != null and params.aftersaleSn!=''">
+                AND laal.aftersale_sn = #{params.aftersaleSn}
+            </if>
+            <if test="params.specSerial != null and params.specSerial!=''">
+                AND lag.spec_serial = #{params.specSerial}
+            </if>
+            <if test="params.goodsName != null and params.goodsName!=''">
+                AND lag.goods_name LIKE concat('%', #{params.goodsName}, '%')
+            </if>
+            <if test="params.memberName != null and params.memberName!=''">
+                AND lar.member_name LIKE concat('%', #{params.memberName}, '%')
+            </if>
+            <if test="params.storeName != null and params.storeName!=''">
+                AND lar.store_name LIKE concat('%', #{params.storeName}, '%')
+            </if>
+            <if test="params.aftersaleType != null and params.aftersaleType!=''">
+                AND lar.aftersale_type = #{params.aftersaleType}
+            </if>
+            <if test="params.process != null and params.process!=''">
+                AND laal.process = #{params.process}
+            </if>
+            <if test="params.result != null and params.result!=''">
+                AND laal.result = #{params.result}
+            </if>
+            <if test="params.startTime != null and params.startTime!=''">
+                AND lar.create_date &gt;= #{params.startTime}
+            </if>
+            <if test="params.endTime != null and params.endTime!=''">
+                AND lar.create_date &lt;= #{params.endTime}
+            </if>
+            <if test="params.auditStartTime != null and params.auditStartTime!=''">
+                AND laal.update_date &gt;= #{params.auditStartTime}
+            </if>
+            <if test="params.auditEndTime != null and params.auditEndTime!=''">
+                AND laal.update_date &lt;= #{params.auditEndTime}
+            </if>
+            <if test="params.storeId != null and params.storeId != ''">
+                AND lar.store_id = #{params.storeId}
+            </if>
+        </where>
+        order by lar.create_date desc
+    </select>
+
+</mapper>

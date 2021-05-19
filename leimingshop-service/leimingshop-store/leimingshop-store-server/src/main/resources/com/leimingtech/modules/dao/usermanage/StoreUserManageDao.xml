@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.usermanage.StoreUserManageDao">
+
+    <resultMap type="com.leimingtech.modules.entity.usermanage.StoreUserManageEntity" id="storeUserManageMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeUserId" column="store_user_id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="isEnable" column="is_enable"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <resultMap type="com.leimingtech.commons.tools.security.bo.StoreMenuDTOs" id="StoreMenuDTOsMap">
+        <result property="id" column="id"/>
+        <result property="name" column="menu_name"/>
+        <result property="url" column="menu_url"/>
+        <result property="pid" column="parent_id"/>
+        <result property="sort" column="sort"/>
+        <result property="permission" column="menu_permission"/>
+        <result property="icon" column="menu_icon"/>
+        <result property="type" column="menu_type"/>
+    </resultMap>
+    <sql id="base_column">
+        id,store_id,store_user_id,role_id,is_enable
+
+    </sql>
+    <!--根据用户ID 去更新店铺用户表-->
+    <update id="updateByUserId">
+        update lmshop_store_user_manage set is_enable=#{isEnable},role_id=#{roleId}
+        where del_flag=0 and store_user_id=#{storeUserId}
+
+    </update>
+    <!--删除用户和店铺关联信息-->
+    <update id="deleteByUserId">
+        update lmshop_store_user_manage set del_flag=1
+        where store_user_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+    <update id="updateStoreByRoleId">
+         update lmshop_store_user_manage set store_id=#{storeId} where role_id=#{roleId}
+    </update>
+    <update id="updateUserIdAndRoleId">
+          update lmshop_store_user_manage set store_user_id =null,role_id=#{roleId}where store_id=#{storeId} and role_id=0
+    </update>
+    <update id="updateAllById">
+        update lmshop_store_user_manage
+        set
+        store_id=#{storeId},
+        store_user_id=#{storeUserId},
+        role_id=#{roleId},
+        is_enable=#{isEnable}
+        where del_flag=0 and id=#{id}
+
+    </update>
+    <update id="updateByStoreId">
+        update lmshop_store_user_manage set del_flag=1 where store_id=#{storeId}
+    </update>
+
+    <select id="findByStoreId" resultType="com.leimingtech.modules.dto.usermanage.StoreUserManageDTO">
+        select
+        lsum.*
+        from lmshop_store_user_manage lsum
+        left join lmshop_store_role lsr on lsum.role_id=lsr.id
+        where lsum.store_id=#{storeId}
+        and lsum.del_flag=0
+        and lsr.role_mark=1
+        and lsum.store_user_id is not null
+    </select>
+
+    <!--根据用户角色ID 查询菜单信息-->
+    <select id="getUserMenuList" parameterType="java.lang.String" resultMap="StoreMenuDTOsMap">
+        SELECT lsm.*
+        FROM lmshop_store_menu lsm
+        left join lmshop_store_role_menu lsrm on lsrm.menu_id = lsm.id
+        WHERE
+        lsm.del_flag = 0
+        <if test="roleId!=0 and roleId!=null">
+            and lsrm.role_id=#{roleId}
+        </if>
+        <if test="type!=null">
+            and lsm.menu_type=#{type}
+        </if>
+        ORDER BY
+        lsm.sort ASC
+    </select>
+    <!--根据用户ID 获取用户和店铺管理信息-->
+    <select id="findUserManage" resultType="com.leimingtech.modules.dto.usermanage.StoreUserManageDTO">
+        select
+        <include refid="base_column"/>
+        from lmshop_store_user_manage
+        where del_flag=0 and store_user_id=#{userId}
+    </select>
+    <!--根据店铺ID 查询出用户ID -->
+    <select id="findUserIdByUserId" resultType="java.lang.Long">
+        SELECT
+        lsum.store_user_id
+        FROM
+        lmshop_store_user_manage lsum
+        LEFT JOIN lmshop_store_role lsr ON lsum.role_id = lsr.id
+        WHERE
+        lsum.del_flag = 0
+        AND lsr.role_mark = 0
+        and lsum.store_user_id is not null
+        AND lsum.store_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+
+    </select>
+    <!--查询所有菜单-->
+    <select id="findAllMenu" resultMap="StoreMenuDTOsMap">
+        SELECT *
+        FROM lmshop_store_menu
+        WHERE
+        del_flag = 0
+        <if test="menuType!=null">
+            and menu_type=#{menuType}
+        </if>
+        ORDER BY
+        sort ASC
+    </select>
+    <select id="getUserIdByStoreId" resultType="java.lang.Long">
+        select store_user_id
+        from lmshop_store_user_manage
+        where del_flag=0 and store_id=#{storeId} and store_user_id is not null
+    </select>
+
+</mapper>

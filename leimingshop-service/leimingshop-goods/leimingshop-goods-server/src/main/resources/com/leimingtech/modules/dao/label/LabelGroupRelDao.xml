@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.label.LabelGroupRelDao">
+
+    <resultMap type="com.leimingtech.modules.entity.label.LabelGroupRelEntity" id="labelGroupRelMap">
+        <result property="id" column="id"/>
+        <result property="groupId" column="group_id"/>
+        <result property="labelId" column="label_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--根据分组ID查询标签数量-->
+    <select id="findLabelNum" resultType="com.leimingtech.modules.dto.goodslable.LabelNumDTO">
+        SELECT
+            COUNT( DISTINCT gl.label_id ) AS labelNum
+        FROM
+            lmshop_goods_label_group_rel gl
+        LEFT JOIN lmshop_goods_label_group lg ON gl.group_id = lg.id
+        WHERE
+            gl.del_flag = 0
+            AND lg.group_status = 1
+            <if test="groupId !=null">
+                AND gl.group_id = #{groupId}
+            </if>
+    </select>
+
+    <!--根据分组ID删除数据-->
+    <delete id="deleteByGroupId">
+        delete from lmshop_goods_label_group_rel
+        where del_flag = 0 and group_id = #{groupId}
+    </delete>
+
+    <!--根据标签ID删除数据-->
+    <delete id="deleteByLabelId">
+        delete from lmshop_goods_label_group_rel
+        where del_flag = 0 and label_id = #{labelId}
+    </delete>
+
+
+</mapper>

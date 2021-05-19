@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>com.leimingtech</groupId>
+        <artifactId>leimingshop-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>leimingshop-web-api</artifactId>
+    <packaging>jar</packaging>
+    <version>${env.project.version}</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-third-party-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-activity-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-logistics-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-cart-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-sys-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-operation-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-order-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-payment-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-cms-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-message-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-member-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-store-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-wechat-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-upload-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.leimingtech.front</groupId>
+            <artifactId>leimingshop-auth-server</artifactId>
+            <version>${env.project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                    <artifactId>tomcat-embed-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+        </dependency>
+
+
+   <!--     <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-oauth2</artifactId>
+        </dependency>-->
+
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-after-sale-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.whvcse</groupId>
+            <artifactId>easy-captcha</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-goods-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.leimingtech</groupId>
+            <artifactId>leimingshop-mq-server</artifactId>
+            <version>${env.project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <imageName>harbor.shop7.leimingtech.com/leimingshop/${project.artifactId}:${Tag}</imageName>
+                    <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
+                    <!--<dockerHost>http://harbor.shop7.leimingtech.com:2375</dockerHost>-->
+                    <dockerHost>http://localhost:2375</dockerHost>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}-${project.version}.zip</include>
+                        </resource>
+                    </resources>
+                    <buildArgs>
+                        <VERSION>${project.version}</VERSION>
+                        <PROJECT_NAME>${project.artifactId}</PROJECT_NAME>
+                    </buildArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.build.finalName}-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/assembly/assembly-descriptor.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

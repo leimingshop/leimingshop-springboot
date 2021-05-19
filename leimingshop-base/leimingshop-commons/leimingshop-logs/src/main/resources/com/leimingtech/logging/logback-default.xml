@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="com/leimingtech/logging/logback-file-appender.xml"/>
+    <include resource="com/leimingtech/logging/console-appender.xml"/>
+</included>

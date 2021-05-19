@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.favorites.StoreFavoritesDao">
+
+    <resultMap type="com.leimingtech.modules.entity.favorites.StoreFavoritesEntity" id="storeFavoritesMap">
+        <result property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--查询用户收藏店铺列表-->
+    <select id="favPage" resultType="com.leimingtech.modules.dto.favorites.StoreFavoritesPageDTO">
+        select
+        ssq.id as id,
+        ssq.store_id as store_id,
+        ls.store_name as store_name,
+        ls.store_logo as store_logo,
+        ssq.create_date as create_date,
+        ls.store_type as storeType,
+        ( select count(*) from lmshop_store_favorites where store_id=ssq.store_id and del_flag = 0 ) as store_collection
+        FROM (SELECT * FROM lmshop_store_favorites lgf where lgf.member_id=#{memberId} and lgf.del_flag=0
+        ORDER BY lgf.create_date desc) ssq
+        left join lmshop_store ls on ssq.store_id = ls.id
+        where ls.del_flag = 0
+        <if test="storeName != null and storeName !=''">
+            and ls.store_name like concat('%', #{storeName}, '%')
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.SettingDao">
+
+    <resultMap type="com.leimingtech.entity.setting.SettingEntity" id="settingMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="value" column="value"/>
+        <result property="storeId" column="store_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="base_sql_list">
+        id,name,value,store_id,creator,create_date,updater,update_date,del_flag,version
+    </sql>
+
+    <!-- 根据设置名称查询网址设置的系统设置内容 -->
+    <select id="queryByName" resultMap="settingMap" parameterType="java.lang.String">
+        select
+        <include refid="base_sql_list"/>
+        from lmshop_setting where name = #{value} and del_flag != 1
+    </select>
+    <select id="queryRedisByName" resultType="java.lang.String">
+        select value
+        from lmshop_setting where name = #{value} and del_flag != 1
+    </select>
+
+    <!-- 指定更新系统设置的系统内容 -->
+    <update id="updateSite" parameterType="java.lang.String">
+        update lmshop_setting set value=#{siteInfo}, update_date = NOW() where name=#{settingName}
+    </update>
+
+</mapper>

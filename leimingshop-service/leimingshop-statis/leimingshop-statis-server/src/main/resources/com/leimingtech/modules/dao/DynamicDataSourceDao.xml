@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.DynamicDataSourceDao">
+
+    <!-- lixiang 2019/12/5 21:02 测试多数据源-->
+    <select id="findStore" resultType="java.util.Map">
+        select * from lmshop_store;
+    </select>
+
+    <select id="findAdmin" resultType="java.util.Map">
+        select * from lmshop_setting;
+    </select>
+
+    <select id="findMember" resultType="java.util.Map">
+        select * from lmshop_member;
+    </select>
+</mapper>

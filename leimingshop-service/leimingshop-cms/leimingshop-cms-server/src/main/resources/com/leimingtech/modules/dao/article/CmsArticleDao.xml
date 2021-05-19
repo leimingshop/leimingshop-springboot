@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.article.CmsArticleDao">
+
+    <resultMap type="com.leimingtech.modules.entity.article.CmsArticleEntity" id="cmsArticleMap">
+        <result property="id" column="id"/>
+        <result property="acId" column="ac_id"/>
+        <result property="topicId" column="topic_id"/>
+        <result property="articleTitle" column="article_title"/>
+        <result property="articleShortTitle" column="article_short_title"/>
+        <result property="articleCreaterId" column="article_creater_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="articleUpdateId" column="article_update_id"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="videoUrl" column="video_url"/>
+        <result property="articleFlag" column="article_flag"/>
+        <result property="articleBelong" column="article_belong"/>
+        <result property="author" column="author"/>
+        <result property="articleSource" column="article_source"/>
+        <result property="articleUrl" column="article_url"/>
+        <result property="indexImage" column="index_image"/>
+        <result property="articlePicture" column="article_picture"/>
+        <result property="articleContent" column="article_content"/>
+        <result property="articleAbstract" column="article_abstract"/>
+        <result property="sort" column="sort"/>
+        <result property="articlePraiseNum" column="article_praise_num"/>
+        <result property="articleCommentNum" column="article_comment_num"/>
+        <result property="location" column="location"/>
+        <result property="pvNum" column="pv_num"/>
+        <result property="shareNum" column="share_num"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="topFlag" column="top_flag"/>
+        <result property="headFlag" column="head_flag"/>
+        <result property="essenceFlag" column="essence_flag"/>
+        <result property="status" column="status"/>
+        <result property="commentFlag" column="comment_flag"/>
+        <result property="audit" column="audit"/>
+        <result property="auditDate" column="audit_date"/>
+        <result property="acCode" column="ac_code"/>
+        <result property="version" column="version"/>
+        <result property="topicName" column="topic_name"/>
+        <result property="remind" column="remind"/>
+    </resultMap>
+
+    <!-- 圈子后台文章分页条件查询 -->
+    <select id="selectCmsArticleQzList" resultType="com.leimingtech.modules.dto.article.CmsArticleQzListDTO" parameterType="java.util.Map">
+        select
+        lca.id,
+        IFNULL(lca.article_title,lca.article_content) article_title,
+        lca.creator,
+        lca.update_date,
+        lca.article_flag,
+        IFNULL(lcc.ac_name,'无') acName,
+        lca.topic_name topicName,
+        lca.pv_num,
+        lca.article_praise_num,
+        lca.article_comment_num,
+        lca.share_num,
+        lca.status,
+        lca.essence_flag,
+        lca.audit
+        from
+        lmshop_cms_article lca
+        left join lmshop_cms_class lcc
+        on lca.ac_id = lcc.id
+        where lca.ac_code = 1
+        and lca.del_flag = 0
+        <if test="params.articleTitle != null and params.articleTitle != ''">
+            and (instr(lca.article_title,#{params.articleTitle}) > 0 or instr(lca.article_content,#{params.articleTitle}) > 0)
+        </if>
+        <if test="params.creator != null and params.creator != ''">
+            and instr(lca.creator,#{params.creator}) > 0
+        </if>
+        <if test="params.articleFlag != null">
+            and lca.article_flag = #{params.articleFlag}
+        </if>
+        <if test="params.acId != null and params.acId != ''">
+            and lca.ac_id = #{params.acId}
+        </if>
+        <if test="params.topicName != null and params.topicName != ''">
+            and instr(lca.topic_name,#{params.topicName}) > 0
+        </if>
+        <if test="params.status != null">
+            and lca.status = #{params.status}
+        </if>
+        <if test="params.essenceFlag != null">
+            and lca.essence_flag = #{params.essenceFlag}
+        </if>
+        <if test="params.audit != null">
+            and lca.audit = #{params.audit}
+        </if>
+        order by lca.update_date desc
+    </select>
+
+    <!-- 资讯文章分页条件查询 -->
+    <select id="selectCmsArticleZxList" resultType="com.leimingtech.modules.dto.article.CmsArticleZxListDTO" parameterType="java.util.Map">
+        select
+        lca.id,
+        lca.article_title,
+        lca.article_belong,
+        lca.author,
+        lca.article_source,
+        lca.ac_id,
+        lca.create_date,
+        lca.update_date,
+        lca.top_flag,
+        lca.head_flag,
+        lca.status,
+        lca.comment_flag,
+        lca.audit,
+        lca.ac_code,
+        lca.sort,
+        lca.article_url,
+        lcc.ac_name acName
+        from
+        lmshop_cms_article lca,lmshop_cms_class lcc
+        where lca.ac_id = lcc.id
+        and lca.ac_code = 2
+        and lca.del_flag = 0
+        <if test="params.audit != null">
+            and lca.audit = #{params.audit}
+        </if>
+        <if test="params.articleTitle != null and params.articleTitle != ''">
+            and instr(lca.article_title,#{params.articleTitle}) > 0
+        </if>
+        <if test="params.articleBelong != null and params.articleBelong != ''">
+            and instr(lca.article_belong,#{params.articleBelong}) > 0
+        </if>
+        <if test="params.author != null and params.author != ''">
+            and instr(lca.author,#{params.author}) > 0
+        </if>
+        <if test="params.articleSource != null and params.articleSource != ''">
+            and instr(lca.article_source,#{params.articleSource}) > 0
+        </if>
+        <if test="params.acId != null">
+            and lca.ac_id = #{params.acId}
+        </if>
+        <if test="params.topFlag != null">
+            and lca.top_flag = #{params.topFlag}
+        </if>
+        <if test="params.headFlag != null">
+            and lca.head_flag = #{params.headFlag}
+        </if>
+        <if test="params.status != null">
+            and lca.status = #{params.status}
+        </if>
+        <if test="params.commentFlag != null">
+            and lca.comment_flag = #{params.commentFlag}
+        </if>
+        order by
+            <if test="params.front != null">
+                lca.top_flag desc,
+                lca.head_flag desc,
+                lca.sort asc,
+            </if>
+            lca.update_date desc
+    </select>
+
+    <!-- 服务指南文章分页条件查询 -->
+    <select id="selectCmsArticleFwznList" resultType="com.leimingtech.modules.dto.article.CmsArticleFwznListDTO" parameterType="java.util.Map">
+        select
+        lca.id,
+        lca.article_title,
+        lca.ac_id,
+        lcc.ac_name acName,
+        lca.create_date,
+        lca.update_date,
+        lca.article_url,
+        lca.sort,
+        lca.status,
+        lca.ac_code,
+        lca.article_content
+        from lmshop_cms_article lca,lmshop_cms_class lcc
+        where lca.ac_id = lcc.id
+        and lca.ac_code = 3
+        and lca.del_flag = 0
+        <if test="params.articleTitle != null and params.articleTitle != ''">
+            and instr(article_title,#{params.articleTitle}) > 0
+        </if>
+        <if test="params.acId != null and params.acId != ''">
+            AND (lcc.id = #{params.acId} OR INSTR(lcc.ac_idpaths,#{params.acId})>0)
+        </if>
+        <if test="params.status != null">
+            AND lca.status = #{params.status}
+        </if>
+        order by
+        <if test="params.front != null">
+            lca.sort asc,
+        </if>
+        lca.update_date desc
+    </select>
+
+    <!-- 圈子后台文章详情 -->
+    <select id="selectCmsArticleQzInfo" resultType="com.leimingtech.modules.dto.article.CmsArticleQzAdminInfoDTO" parameterType="java.lang.Long">
+        select
+        lca.id,
+        lca.article_title,
+        lca.article_content,
+        lca.creator,
+        lca.article_flag,
+        IFNULL(lcc.ac_name,'无') acName,
+        lca.topic_name topicName,
+        lca.video_url,
+        lca.article_picture,
+        lca.index_image
+        from
+        lmshop_cms_article lca
+        left join lmshop_cms_class lcc
+        on lca.ac_id = lcc.id
+        where lca.ac_code = 1
+        and lca.del_flag = 0
+        and lca.id = #{id}
+    </select>
+
+    <!-- 圈子文章热门列表 -->
+    <select id="selectFrontHotArticleList" resultType="com.leimingtech.modules.dto.article.CmsFrontCircleArticleListDTO" parameterType="java.util.Map">
+        SELECT DISTINCT
+                lca.id,
+                lca.article_title,
+                lca.topic_name,
+                lca.article_flag,
+                lca.article_creater_id,
+                lca.article_praise_num,
+                lca.article_comment_num,
+                lca.create_date,
+                lca.essence_flag,
+                lca.ac_code,
+                lca.article_content,
+                lca.pv_num,
+                lca.location,
+                lca.video_url,
+                lca.index_image,
+                lca.article_url,
+                lca.article_picture,
+                lca.remind,
+                IF(lct.id,1,0) praiseFlag,
+                IF(lcat.id,1,0) concernedFlag,
+                IF(lcr.id,1,0) reportFlag
+        from lmshop_cms_article lca
+        left join lmshop_cms_attention lct
+            on lca.id = lct.focused_id
+            and lct.attention_creater_id =  #{params.memberId}
+            and lct.attention_flag = 3
+        left join lmshop_cms_attention lcat
+            on lca.article_creater_id = lcat.focused_id
+            and lcat.attention_creater_id =  #{params.memberId}
+            and lcat.attention_flag = 1
+        left join lmshop_cms_report lcr
+            on lca.id = lcr.report_flag_id
+            and lcr.report_creater_id = #{params.memberId}
+            and lcr.report_flag = 1
+        where lca.ac_code = 1
+            and lca.del_flag = 0
+            and lca.audit = 1
+            and lca.status = 1
+        <if test="params.acId != null and params.acId != ''">
+            and lca.ac_id = #{params.acId}
+        </if>
+        order by lca.update_date desc
+
+    </select>
+
+    <!-- 我的关注帖子列表-->
+    <select id="selectFrontConcernArticleList" resultType="com.leimingtech.modules.dto.article.CmsFrontCircleArticleListDTO" parameterType="java.util.Map">
+        SELECT DISTINCT
+            lca.id,
+            lca.article_title,
+            lca.topic_name,
+            lca.article_flag,
+            lca.article_creater_id,
+            lca.article_praise_num,
+            lca.article_comment_num,
+            lca.create_date,
+            lca.essence_flag,
+            lca.ac_code,
+            lca.article_content,
+            lca.pv_num,
+            lca.location,
+            lca.video_url,
+            lca.index_image,
+            lca.article_url,
+            lca.article_picture,
+            lca.remind,
+            IF(lct.id,1,0) praiseFlag,
+            IF(lcat.id,1,0) concernedFlag,
+            IF(lcr.id,1,0) reportFlag
+        from lmshop_cms_article lca
+        left join lmshop_cms_attention lct
+            on lca.id = lct.focused_id
+            and lct.attention_creater_id =  #{params.memberId}
+            and lct.attention_flag = 3
+        left join lmshop_cms_attention lcat
+            on lca.article_creater_id = lcat.focused_id
+            and lcat.attention_creater_id =  #{params.memberId}
+            and lcat.attention_flag = 1
+        left join lmshop_cms_report lcr
+            on lca.id = lcr.report_flag_id
+            and lcr.report_creater_id = #{params.memberId}
+            and lcr.report_flag = 1
+        where lca.ac_code = 1
+            and lca.del_flag = 0
+            and lca.audit = 1
+            and lca.status = 1
+            and lca.article_creater_id IN (
+        SELECT
+            focused_id
+        FROM
+            lmshop_cms_attention
+        WHERE
+            attention_creater_id = #{params.memberId}
+            AND attention_flag = 1)
+        order by
+        lca.update_date desc
+    </select>
+
+    <!--圈子文章详情页-->
+    <select id="selectArticleById" resultType="com.leimingtech.modules.dto.article.CmsFrontArticleDetailDTO">
+		SELECT
+            lca.id,
+            lca.topic_name,
+            lca.article_title,
+            lca.article_flag,
+            lca.article_creater_id,
+            lca.article_praise_num,
+            lca.article_comment_num,
+            lca.create_date,
+            lca.audit_date,
+            lca.essence_flag,
+            lca.ac_code,
+            lca.article_content,
+            lca.pv_num,
+            lca.location,
+            lca.video_url,
+            lca.index_image,
+            lca.article_url,
+            lca.article_picture,
+            lca.remind,
+            IF(lct.id,1,0) praiseFlag,
+            IF(lcat.id,1,0) concernedFlag,
+            IF(lcr.id,1,0) reportFlag
+        from lmshop_cms_article lca
+        left join lmshop_cms_attention lct
+            on lca.id = lct.focused_id
+            and lct.attention_creater_id =  #{params.memberId}
+            and lct.attention_flag = 3
+        left join lmshop_cms_attention lcat
+            on lca.article_creater_id = lcat.focused_id
+            and lcat.attention_creater_id =  #{params.memberId}
+            and lcat.attention_flag = 1
+        left join lmshop_cms_report lcr
+            on lca.id = lcr.report_flag_id
+            and lcr.report_creater_id = #{params.memberId}
+            and lcr.report_flag = 1
+		where lca.ac_code = 1
+					and lca.del_flag = 0
+					and lca.id = #{params.articleId}
+    </select>
+
+    <!-- 根据分类id查询文章名称-->
+    <select id="findCountByClassId" parameterType="java.lang.Long" resultType="java.lang.String">
+        select distinct article_title
+        from lmshop_cms_article
+        WHERE
+        del_flag=0 and ac_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 话题下的帖子分页列表（前台） -->
+    <select id="selectArticleListByTopicId" resultType="com.leimingtech.modules.dto.article.CmsFrontCircleArticleListDTO" parameterType="java.util.Map">
+        SELECT
+            lca.id,
+            lca.article_title,
+            lca.topic_name,
+            lca.article_flag,
+            lca.article_creater_id,
+            lca.article_praise_num,
+            lca.article_comment_num,
+            lca.create_date,
+            lca.essence_flag,
+            lca.ac_code,
+            lca.article_content,
+            lca.pv_num,
+            lca.location,
+            lca.video_url,
+            lca.index_image,
+            lca.article_url,
+            lca.article_picture,
+            lca.remind,
+            IF(lct.id,1,0) praiseFlag,
+            IF(lcat.id,1,0) concernedFlag,
+            IF(lcr.id,1,0) reportFlag
+        from lmshop_cms_article lca
+        left join lmshop_cms_attention lct
+        on lca.id = lct.focused_id
+        and lct.attention_creater_id = #{params.memberId}
+        and lct.attention_flag = 3
+        left join lmshop_cms_attention lcat
+        on lca.article_creater_id = lcat.focused_id
+        and lcat.attention_creater_id = #{params.memberId}
+        and lcat.attention_flag = 1
+        left join lmshop_cms_report lcr
+        on lca.id = lcr.report_flag_id
+        and lcr.report_creater_id = #{params.memberId}
+        and lcr.report_flag = 1
+        where lca.ac_code = 1
+        and lca.del_flag = 0
+        and lca.status = 1
+        <if test="params.topicName != null and params.topicName != ''">
+            and instr(topic_name,#{params.topicName}) > 0
+        </if>
+        <if test="params.articleTitle != null and params.articleTitle != ''">
+            and (instr(lca.article_title,#{params.articleTitle}) > 0 or instr(lca.article_content,#{params.articleTitle}) > 0)
+        </if>
+        <if test="params.articleFlag != null">
+            and lca.article_flag = #{params.articleFlag}
+        </if>
+        and lca.audit = 1
+        order by lca.update_date desc
+    </select>
+
+    <!--用户主页帖子列表-->
+    <select id="selectArticleListByMemberId" resultType="com.leimingtech.modules.dto.article.CmsFrontCircleArticleListDTO" parameterType="java.util.Map">
+        SELECT DISTINCT
+            lca.id,
+            lca.article_title,
+            lca.topic_name,
+            lca.article_creater_id,
+            lca.article_flag,
+            lca.article_praise_num,
+            lca.article_comment_num,
+            lca.create_date,
+            lca.essence_flag,
+            lca.ac_code,
+            lca.article_content,
+            lca.pv_num,
+            lca.location,
+            lca.video_url,
+            lca.index_image,
+            lca.article_url,
+            lca.article_picture,
+            lca.remind,
+            IF(lct.id,1,0) praiseFlag,
+        IF(lcr.id,1,0) reportFlag
+        from lmshop_cms_article lca
+        left join lmshop_cms_attention lct
+            on lca.id = lct.focused_id
+            and lct.attention_creater_id = #{params.loginMemberId}
+            and lct.attention_flag = 3
+        left join lmshop_cms_report lcr
+        on lca.id = lcr.report_flag_id
+        and lcr.report_creater_id = #{params.memberId}
+        and lcr.report_flag = 1
+            where lca.ac_code = 1
+            and lca.del_flag = 0
+            and lca.status = 1
+            and lca.article_creater_id = #{params.memberId}
+            <choose>
+                <when test="params.audit != null">
+                    and lca.audit = #{params.audit}
+                </when>
+                <otherwise>
+                    and lca.audit = 1
+                </otherwise>
+            </choose>
+            <if test="params.articleFlag != null">
+                and lca.article_flag = #{params.articleFlag}
+            </if>
+        order by lca.update_date desc
+
+    </select>
+
+    <!--用户搜索页使用查询用户相关信息-->
+    <select id="selectNumByMemberId" resultType="com.leimingtech.modules.dto.article.MemberIndexDTO">
+        SELECT DISTINCT * FROM
+        (SELECT IF(count(1),count(1),0) attentionNum FROM lmshop_cms_attention WHERE attention_creater_id = #{params.id} AND attention_flag = 1) a ,
+        (SELECT count(1) fansNum FROM lmshop_cms_attention WHERE focused_id = #{params.id} AND attention_flag = 1) b ,
+        (SELECT count(1) articleNum FROM lmshop_cms_article WHERE article_creater_id = #{params.id}) c ,
+        (SELECT IF(count(lct.id),1,0) concernedFlag FROM lmshop_cms_attention lca left join lmshop_cms_attention lct on
+        lca.id = lct.id
+        and lct.attention_creater_id = #{params.memberId} AND lct.focused_id = #{params.id} AND lct.attention_flag = 1) d
+    </select>
+
+    <!--查询用户最新发布的一条稿件信息-->
+    <select id="selectFirstArticle" resultType="com.leimingtech.modules.dto.article.MemberIndexDTO">
+        SELECT IFNULL(article_title,article_content) articleContent,article_flag articleFlag
+        from lmshop_cms_article WHERE article_creater_id = #{params.id} order by update_date desc limit 1
+    </select>
+
+
+    <!--用户发布的文章数量-->
+    <select id="selectCountByMemberId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            lmshop_cms_article
+        WHERE
+            article_creater_id = #{memberId}
+            AND ac_code = 1
+            AND del_flag = 0
+            and article_flag = 4
+    </select>
+
+    <!--  用户发表的所有帖子数量  -->
+    <select id="selectArticleCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            lmshop_cms_article
+        WHERE
+            article_creater_id = #{memberId}
+            AND ac_code = 1
+            AND del_flag = 0
+    </select>
+
+    <!-- 圈子前台修改文章时的文章详情 -->
+    <select id="selectQzInfoById" resultType="com.leimingtech.modules.dto.article.CmsFrontArticleUpdateDetailDTO" parameterType="java.lang.Long">
+        select
+        lca.id,
+        lca.ac_id,
+        lcc.ac_name acName,
+        lca.topic_name,
+        lca.article_title,
+        lca.article_content,
+        lca.index_image,
+        lca.location,
+        lca.remind
+        from lmshop_cms_article lca
+        left join lmshop_cms_class lcc
+        on lca.ac_id = lcc.id
+        where lca.ac_code = 1
+        and lca.del_flag = 0
+        and lca.id = #{id}
+    </select>
+
+
+    <update id="updateArticlePraise" parameterType="java.lang.Long">
+        update lmshop_cms_article set article_praise_num = article_praise_num + 1 where id = #{id};
+    </update>
+
+    <update id="cancelArticlePraise" parameterType="java.lang.Long">
+        update lmshop_cms_article set article_praise_num = article_praise_num - 1 where id = #{id};
+    </update>
+
+    <update id="updateArticlePvNum" parameterType="java.lang.Long">
+        update lmshop_cms_article set pv_num = pv_num + 1 where id = #{id};
+    </update>
+
+
+    <update id="updateArticleCommentNum" parameterType="java.lang.Long">
+        update lmshop_cms_article set article_comment_num = article_comment_num + 1 where id = #{id};
+    </update>
+
+    <!--评论删除更新文章评论数量-->
+    <update id="deleteArticleCommentNum" parameterType="java.lang.Long">
+            update lmshop_cms_article set article_comment_num = article_comment_num - (SELECT COUNT(1)
+            FROM lmshop_cms_comment lcc
+            WHERE ( lcc.comment_parent_id = #{commentId}
+            OR lcc.comment_first_id = #{commentId}
+            OR lcc.ID = #{commentId} )
+            AND del_flag = 0)
+            where id = #{id}
+    </update>
+
+    <update id="cancelArticleCommentNum" parameterType="java.lang.Long">
+        update lmshop_cms_article set article_comment_num = article_comment_num - 1 where id = #{id};
+    </update>
+
+    <update id="updateArticleShareNum" parameterType="java.lang.Long">
+        update lmshop_cms_article set share_num = share_num + 1 where id = #{id};
+    </update>
+
+    <select id="selectArticleCommentIds" resultType="java.lang.Long">
+            SELECT id
+            FROM lmshop_cms_comment
+            WHERE ( comment_parent_id = #{id}
+            OR comment_first_id = #{id}
+            OR ID = #{id} )
+            AND del_flag = 0
+    </select>
+
+</mapper>

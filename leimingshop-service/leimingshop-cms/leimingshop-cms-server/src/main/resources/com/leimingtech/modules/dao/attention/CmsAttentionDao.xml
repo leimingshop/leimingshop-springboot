@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.attention.CmsAttentionDao">
+
+    <resultMap type="com.leimingtech.modules.entity.attention.CmsAttentionEntity" id="cmsAttentionMap">
+        <result property="id" column="id"/>
+        <result property="attentionCreaterId" column="attention_creater_id"/>
+        <result property="focusedId" column="focused_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="focusedId" column="focused_id"/>
+        <result property="attentionFlag" column="attention_flag"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <select id="getFocusList" resultType="com.leimingtech.modules.dto.attention.CmsMemberFocusDTO">
+        select focused_id focusedId from lmshop_cms_attention where attention_creater_id = #{id}
+    </select>
+
+    <select id="getFocusMemberList" resultType="com.leimingtech.modules.dto.attention.CmsFocusMemberDTO">
+        select  attention_creater_id memberId from lmshop_cms_attention where focused_id = #{id}
+    </select>
+
+
+    <!--推荐关注的用户列表-->
+    <select id="getRecommendUser" resultType="com.leimingtech.modules.dto.attention.CmsRecommendAttentionDTO">
+            select
+            a.*
+            from
+            (
+                select
+                a.*,
+                IFNULL(lca.article_title,lca.article_content) articleContent,
+                lca.article_flag articleFlag
+                from
+                (
+                    SELECT
+                    lca.focused_id,
+                    IF(lct.id,1,0) concernedFlag
+                    FROM lmshop_cms_attention lca
+                    LEFT join lmshop_cms_attention lct
+                    on lca.id = lct.id
+                    and lct.attention_creater_id = #{memberId}
+                    and lct.attention_flag = 1
+                    WHERE lca.attention_flag = 1
+                    and lca.focused_id != #{memberId}
+                    GROUP BY lca.focused_id
+                    ORDER BY count(1) DESC
+                    limit 10
+                ) a
+                left join lmshop_cms_article lca
+                on a.focused_id = lca.article_creater_id
+                order by lca.update_date desc
+                limit 9999
+            ) a
+            GROUP BY a.focused_id
+
+	</select>
+
+    <!--查询用户的关注数-->
+    <select id="selectAttentionNum" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT
+            count( 1 )
+        FROM
+            lmshop_cms_attention
+        WHERE
+            attention_flag = 1
+            AND del_flag = 0
+            AND attention_creater_id = #{memberId};
+	</select>
+
+    <!--查询用户粉丝数-->
+    <select id="selectFansNum"  parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            lmshop_cms_attention
+        WHERE
+            attention_flag = 1
+            AND del_flag = 0
+            AND focused_id = #{memberId};
+    </select>
+
+    <!--查询用户是否被关注-->
+    <select id="concernedFlag" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            lmshop_cms_attention
+        WHERE
+            attention_flag = 1
+            AND del_flag = 0
+            AND attention_creater_id = #{loginMemberId}
+            AND focused_id = #{memberId};
+    </select>
+
+    <!--粉丝列表-->
+    <select id="selectFansList"  parameterType="java.lang.Long" resultType="com.leimingtech.modules.dto.attention.CmsRecommendAttentionDTO">
+        select a.*
+        from
+        (
+            select
+            a.*,
+            IFNULL(lca.article_title,lca.article_content) articleContent,
+            lca.article_flag articleFlag
+            from
+            (
+                SELECT
+                DISTINCT
+                a.attention_creater_id,
+                IF(b.focused_id, 1, 0) concernedFlag
+                FROM
+                (
+                    SELECT attention_creater_id
+                    FROM lmshop_cms_attention
+                    WHERE focused_id = #{memberId}
+                    AND attention_flag = 1
+                    AND del_flag = 0
+                ) a
+                LEFT JOIN
+                (
+                    SELECT focused_id
+                    FROM lmshop_cms_attention
+                    WHERE attention_creater_id = #{memberId}
+                    AND attention_flag = 1
+                    AND del_flag = 0
+                ) b
+                ON a.attention_creater_id = b.focused_id
+            ) a
+            left join lmshop_cms_article lca
+            on a.attention_creater_id = lca.article_creater_id
+            order by lca.update_date desc
+            limit 9999
+        ) a
+        GROUP BY a.attention_creater_id
+
+    </select>
+
+
+    <!--我的关注用户列表-->
+    <select id="selectAttentionUserList" resultType="com.leimingtech.modules.dto.attention.CmsAttentionListDTO">
+        select a.*
+        from
+        (
+            select
+                a.*,
+                IFNULL(lca.article_title,lca.article_content) articleContent,
+                lca.article_flag articleFlag
+            from
+            (
+                SELECT
+                    foc.focused_id,
+                    foc.fansNum,
+                    fot.articleNum,
+                    fot.concernedFlag
+                FROM
+                    (
+                        SELECT
+                        b.focused_id focused_id,
+                        count(a.id) fansNum
+                        FROM lmshop_cms_attention a
+                        left join
+                        (
+                            SELECT focused_id from lmshop_cms_attention where attention_flag = 1
+                            AND del_flag = 0
+                            AND attention_creater_id = #{userId}
+                        ) b
+                        on a.focused_id = b.focused_id
+                        WHERE attention_flag = 1
+                        AND del_flag = 0
+                        and b.focused_id is not null
+                        GROUP BY b.focused_id
+                    ) foc,
+                    (
+                        SELECT
+                        lct.focused_id,
+                        count( lca.article_creater_id ) articleNum,
+                        IF(lct.id,1,0) concernedFlag
+                        FROM lmshop_cms_attention lct
+                        LEFT JOIN lmshop_cms_article lca
+                        ON lct.focused_id = lca.article_creater_id
+                        AND lca.ac_code = 1
+                        WHERE lct.attention_creater_id = #{userId}
+                        AND lct.attention_flag = 1
+                        GROUP BY lct.focused_id
+                    ) fot
+                WHERE foc.focused_id = fot.focused_id
+            ) a
+            left join lmshop_cms_article lca
+            on a.focused_id = lca.article_creater_id
+            order by lca.update_date desc
+            limit 9999
+        ) a
+        GROUP BY a.focused_id
+
+    </select>
+
+    <!--我关注的分类列表-->
+    <select id="selectAttentionClassList" resultType="com.leimingtech.modules.dto.attention.CmsAttentionClassListDTO">
+        select
+        lca.id,
+        lca.focused_id,
+        lcc.ac_name
+        from lmshop_cms_attention lca
+        left join lmshop_cms_class lcc
+        on lca.focused_id = lcc.id
+        where attention_flag = 2
+        and attention_creater_id = #{userId}
+    </select>
+
+    <delete id="deleteAttention">
+        delete
+        from
+        lmshop_cms_attention
+        where
+        id = #{id}
+    </delete>
+
+
+</mapper>

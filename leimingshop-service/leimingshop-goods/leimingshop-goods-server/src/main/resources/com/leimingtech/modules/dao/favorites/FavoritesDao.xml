@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.favorites.FavoritesDao">
+
+    <resultMap type="com.leimingtech.modules.entity.favorites.FavoritesEntity" id="goodsFavoritesMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="favPrice" column="fav_price"/>
+        <result property="memberId" column="member_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeType" column="store_type"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--查询用户收藏列表-->
+    <select id="favPage" resultType="com.leimingtech.modules.dto.favorites.FavoritesPageDTO">
+        SELECT
+        ssq.id AS id,
+        lgs.goods_id AS goods_id,
+        ssq.fav_price AS fav_price,
+        ssq.member_id AS member_id,
+        lgs.spec_name AS goods_name,
+        lgs.spec_sell_price AS spec_sell_price,
+        lgs.spec_show AS goods_show,
+        lgs.spec_storage AS spec_storage,
+        lgs.id AS spec_id,
+        lgs.spec_main_picture AS picture_url,
+        ssq.store_type AS storeType,
+        ssq.create_date AS create_date,
+        lg.goods_sub_title AS goods_sub_title,
+        glr.label_name AS label_name
+        FROM
+        ( SELECT * FROM lmshop_goods_favorites lgf WHERE lgf.member_id = #{memberId} AND lgf.del_flag = 0 ORDER BY lgf.create_date DESC ) ssq
+        LEFT JOIN lmshop_goods_spec lgs ON ssq.spec_id = lgs.id
+        LEFT JOIN lmshop_goods lg ON lg.id = lgs.goods_id
+        LEFT JOIN lmshop_goods_label_rel glr ON lg.id = glr.goods_id
+        WHERE
+        lgs.del_flag = 0
+        <if test="goodsName != null and goodsName !=''">
+            and lgs.spec_name like concat('%', #{goodsName}, '%')
+        </if>
+    </select>
+    <!--查询商品是否收藏-->
+    <select id="findIsFavorites" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_goods_favorites
+        where del_flag=0 and spec_id=#{specId} and member_id=#{memberId}
+
+    </select>
+
+    <!-- lixiang 2019/8/16 10:46  根据用户查询收藏数量 -->
+    <select id="countByMemberId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        SELECT
+            count( 1 )
+        FROM
+            lmshop_goods_favorites lgf
+            LEFT JOIN lmshop_goods_spec lgs ON lgf.spec_id = lgs.id
+        WHERE
+            lgf.member_id = #{id}
+            AND lgf.del_flag = 0
+            AND lgs.del_flag = 0
+
+    </select>
+
+    <!--用户收藏商品ID-->
+    <select id="getFavoriteGoodIds" resultType="java.lang.Long">
+        SELECT lg.goods_id
+        FROM lmshop_goods_favorites lgf
+        left join lmshop_goods_spec lg on lgf.spec_id = lg.id
+        where lgf.member_id=#{memberId}
+        and lgf.del_flag=0
+        ORDER BY lgf.create_date desc
+    </select>
+
+    <select id="goodsTotalFav" resultType="java.lang.Integer">
+        select count(1)
+         FROM lmshop_goods_favorites
+         where del_flag=0 and goods_id=#{goodsId}
+
+    </select>
+
+
+</mapper>

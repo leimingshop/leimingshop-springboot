@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.mobile.indexmenu.MobileIndexMenuDao">
+
+    <resultMap type="com.leimingtech.modules.entity.mobile.indexmenu.MobileIndexMenuEntity" id="mobileIndexMenuMap">
+        <result property="id" column="id"/>
+        <result property="menuName" column="menu_name"/>
+        <result property="linkType" column="link_type"/>
+        <result property="url" column="url"/>
+        <result property="menuIcon" column="menu_icon"/>
+        <result property="showFlag" column="show_flag"/>
+        <result property="sort" column="sort"/>
+        <result property="classId" column="class_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--编辑移动首页菜单-->
+    <update id="editMobileIndexMenu">
+        update lmshop_mobile_index_menu
+        <set>
+            menu_name = #{menuName},
+            link_type = #{linkType},
+            url = #{url},
+            class_id = #{classId},
+            menu_icon = #{menuIcon},
+            show_flag = #{showFlag},
+            sort = #{sort},
+            updater = #{updater},
+            update_date = #{updateDate},
+        </set>
+        where id = #{id}
+    </update>
+    <select id="getClassIdByCustomId" resultType="java.lang.Long">
+         select class_id
+        from lmshop_goods_class_custom
+        where id = #{url}
+    </select>
+
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="SYSTEM_ID" value="LMP01"/>
+    <springProperty scope="context" name="LOG_FORMAT" source="leimingtech.log.format"/>
+    <springProperty scope="context" name="LOG_PATH" source="leimingtech.log.file-path"/>
+    <include resource="com/leimingtech/logging/logback-default.xml"/>
+
+    <root level="INFO">
+        <appender-ref ref="FILE"/>
+
+        <!-- 取消日志打印到控制台 -->
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

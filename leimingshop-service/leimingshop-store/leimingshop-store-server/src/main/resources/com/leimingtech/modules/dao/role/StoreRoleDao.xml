@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.role.StoreRoleDao">
+
+    <resultMap type="com.leimingtech.modules.entity.role.StoreRoleEntity" id="storeRoleMap">
+        <result property="id" column="id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleRemark" column="role_remark"/>
+        <result property="roleMark" column="role_mark"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <select id="checkRoleName" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_store_role lsr
+        left join lmshop_store_user_manage lsum on lsr.id=lsum.role_id
+        where lsr.role_name=#{roleName} and lsr.del_flag=0 and lsum.store_id=#{storeId}
+        <if test="roleId!=null">
+            and lsr.id!=#{roleId}
+        </if>
+
+    </select>
+    <select id="findPage" resultType="com.leimingtech.modules.dto.role.StoreRoleDTO">
+        select lsr.*
+        from lmshop_store_role lsr
+        left join lmshop_store_user_manage lsum on lsr.id=lsum.role_id
+        where lsr.del_flag=0 and lsum.store_id=#{storeId} and lsum.store_user_id is null
+        <if test="roleName!=null and roleName!=''">
+            and lsr.role_name=#{roleName}
+        </if>
+        <if test="roleMark!=null and roleMark!=''">
+            and lsr.role_mark=#{roleMark}
+        </if>
+    </select>
+    <!--查询店铺角色数量及信息,并实现角色名称模糊查询-->
+    <select id="selectCountInfo" resultType="com.leimingtech.modules.dto.role.StoreRoleDTO">
+        SELECT lsr.*,
+        ( SELECT count( 1 ) FROM lmshop_store_user WHERE role_id = lsr.id ) number
+        FROM
+        lmshop_store_role lsr
+        WHERE
+        del_flag =0
+        <if test="roleName !=null and roleName !=''">
+            and role_name like concat('%',#{roleName},'%')
+        </if>
+    </select>
+    <select id="getRoleByStoreId" resultType="com.leimingtech.modules.dto.role.UpdateStoreRoleDTO">
+
+                SELECT
+                *
+               FROM
+                lmshop_store_role
+               WHERE
+                del_flag = 0
+                AND id = (
+                SELECT
+                    role_id
+                FROM
+                    lmshop_store_user_manage
+                WHERE
+                del_flag = 0
+                AND store_id =#{storeId} and store_user_id is null)
+
+    </select>
+    <select id="getByUserId" resultType="com.leimingtech.modules.dto.usermanage.StoreUserManageDTO">
+        select lsum.*
+        from lmshop_store_user_manage lsum
+        left join lmshop_store_role lsr on  lsr.id=lsum.role_id
+        where lsum.del_flag=0 and lsr.role_mark=2 and lsum.store_user_id=#{userId}
+    </select>
+    <select id="getIndexMenu" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_store_role_menu lsrm
+        left join  lmshop_store_menu lsm on lsrm.menu_id=lsm.id
+        where lsrm.del_flag=0 and lsm.del_flag=0 and lsrm.role_id=#{roleId} and lsm.menu_url= 'storehome'
+    </select>
+
+</mapper>

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.store.StoreDao">
+
+    <resultMap type="com.leimingtech.modules.entity.store.StoreEntity" id="storeMap">
+        <result property="id" column="id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="storeAuth" column="store_auth"/>
+        <result property="gradeId" column="grade_id"/>
+        <result property="areaId" column="area_id"/>
+        <result property="provinceId" column="province_id"/>
+        <result property="cityId" column="city_id"/>
+        <result property="areaInfo" column="area_info"/>
+        <result property="isEnable" column="is_enable"/>
+        <result property="storeAddress" column="store_address"/>
+        <result property="storeLogo" column="store_logo"/>
+        <result property="storeType" column="store_type"/>
+        <result property="storeIntro" column="store_intro"/>
+        <result property="storeLinkman" column="store_linkman"/>
+        <result property="qrCode" column="qr_code"/>
+        <result property="linkmanPhone" column="linkman_phone"/>
+        <result property="registerAuditStatus" column="register_audit_status"/>
+        <result property="registerAuditCause" column="register_audit_cause"/>
+        <result property="logisticsEvaluate" column="logistics_evaluate"/>
+        <result property="goodsEvaluate" column="goods_evaluate"/>
+        <result property="afterSaleEvaluate" column="after_sale_evaluate"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="whereStatement">
+        <where>
+            ls.del_flag = 0 and lsum.del_flag=0 and lsr.role_mark=1 and lsum.store_user_id is not null
+            <if test="storeId != null and storeId!=''">
+                AND ls.id = #{storeId}
+            </if>
+            <if test="storeName != null and storeName != ''">
+                AND ls.store_name LIKE concat('%', #{storeName}, '%')
+            </if>
+            <if test="gradeId != null and gradeId!=''">
+                AND ls.grade_id = #{gradeId}
+            </if>
+            <if test="storeType != null and storeType!=''">
+                AND ls.store_type = #{storeType}
+            </if>
+            <if test="startTime != null and startTime!=''">
+                AND ls.create_date &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime!=''">
+                AND ls.create_date &lt;= #{endTime}
+            </if>
+
+            <if test="userName != null and userName!=''">
+                AND lsu.account= #{userName}
+            </if>
+
+            <if test="audit != null and audit!=''">
+                AND ls.register_audit_status= #{audit}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="whereStatementAuth">
+        <where>
+            ls.del_flag = 0 and lsum.del_flag=0 and lsr.role_mark in(1,2) and ls.register_audit_status!=40 and lsum.store_user_id is not null
+            <if test="storeId != null and storeId!=''">
+                AND ls.id = #{storeId}
+            </if>
+            <if test="storeName != null and storeName != ''">
+                AND ls.store_name LIKE concat('%', #{storeName}, '%')
+            </if>
+            <if test="gradeId != null and gradeId!=''">
+                AND ls.grade_id = #{gradeId}
+            </if>
+            <if test="storeType != null and storeType!=''">
+                AND ls.store_type = #{storeType}
+            </if>
+            <if test="startTime != null and startTime!=''">
+                AND ls.create_date &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime!=''">
+                AND ls.create_date &lt;= #{endTime}
+            </if>
+
+            <if test="userName != null and userName!=''">
+                AND lsu.account= #{userName}
+            </if>
+
+            <if test="audit != null and audit!=''">
+                AND ls.register_audit_status= #{audit}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findPage" resultType="com.leimingtech.modules.dto.store.PageStoreDTO">
+        select
+        ls.id,ls.store_name,ls.store_logo,ls.grade_id,ls.grade_id,ls.store_logo,ls.store_type,ls.create_date,lsu.account
+        as account,lsg.sg_name as gradeName,ls.is_enable as isEnable
+        from lmshop_store ls
+        LEFT JOIN lmshop_store_user_manage lsum on ls.id=lsum.store_id
+        LEFT JOIN lmshop_store_user lsu on lsum.store_user_id = lsu.id
+        LEFT JOIN lmshop_store_grade lsg on ls.grade_id=lsg.id
+        left join lmshop_store_role lsr on lsr.id=lsum.role_id
+        <include refid="whereStatement"/>
+
+    </select>
+    <select id="findByUserId" resultType="com.leimingtech.modules.dto.store.UserAllStoreDTO">
+      select ls.id,ls.store_name
+      from lmshop_store ls
+      left join lmshop_store_user_manage lsum on lsum.store_id=ls.id
+      where ls.del_flag=0 and  lsum.store_user_id=#{userId}
+
+    </select>
+    <!--验证店铺名称是否重复-->
+    <select id="findStoreName" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_store
+        where del_flag=0 and store_name=#{storeName}
+        <if test="storeId!=null">
+            and id!=#{storeId}
+
+        </if>
+    </select>
+    <!--查询店铺等级关联的店铺数量-->
+    <select id="findGradeCount" resultType="java.lang.Integer">
+      select count(*)
+      from lmshop_store
+      where del_flag=0 and grade_id=#{gradeId}
+
+
+    </select>
+    <select id="exportList" resultType="com.leimingtech.modules.dto.store.ExportStoreDTO">
+        select
+        ls.id,ls.store_name,ls.grade_id,ls.store_logo,ls.store_type,DATE_FORMAT(ls.create_date,'%Y-%m-%d %H:%m:%s') as
+        create_date,lsu.account
+        as account,lsg.sg_name as gradeName,lsum.is_enable as isEnable
+        from lmshop_store ls
+        LEFT JOIN lmshop_store_user_manage lsum on ls.id=lsum.store_id
+        LEFT JOIN lmshop_store_user lsu on lsum.store_user_id = lsu.id
+        LEFT JOIN lmshop_store_grade lsg on ls.grade_id=lsg.id
+        left join lmshop_store_role lsr on lsr.id=lsum.role_id
+        <include refid="whereStatement"/>
+    </select>
+    <!--查询店铺状态-->
+    <select id="findStoreStatus" resultType="java.lang.Integer">
+        SELECT
+        is_enable
+        FROM
+        lmshop_store
+        WHERE
+        del_flag = 0 AND id = #{storeId}
+    </select>
+    <select id="storeInfoByUserId" resultType="com.leimingtech.modules.dto.store.RegisterStoreInfoDTO">
+         SELECT
+        la.*,
+        la.id as authId,
+        ls.id as storeId,
+        lsg.sg_name as gradeName,
+        ls.*
+        FROM
+            lmshop_store_user_manage lsum
+        LEFT JOIN lmshop_store ls ON ls.id = lsum.store_id
+        LEFT JOIN lmshop_store_auth la ON la.store_id = lsum.store_id
+        LEFT JOIN lmshop_store_role lsr ON lsr.id = lsum.role_id
+        LEFT JOIN lmshop_store_grade lsg on lsg .id =  ls.grade_id
+        WHERE
+        lsr.role_mark in (1,2) and lsum.del_flag=0
+        <if test="storeId!=null">
+           and  lsum.store_id = #{storeId} and lsum.store_user_id is not null
+        </if>
+        <if test="userId!=null">
+           and lsum.store_user_id= #{userId} and lsum.store_id is not null
+        </if>
+
+    </select>
+    <select id="findAuditPage" resultType="com.leimingtech.modules.dto.store.PageStoreDTO">
+        select
+        ls.id,ls.store_name,ls.store_logo,ls.grade_id,ls.grade_id,ls.store_logo,ls.store_type,ls.create_date,lsu.account
+        as account,lsg.sg_name as gradeName,ls.is_enable as isEnable, ls.store_linkman,ls.register_audit_status
+        from lmshop_store ls
+        LEFT JOIN lmshop_store_user_manage lsum on ls.id=lsum.store_id
+        LEFT JOIN lmshop_store_user lsu on lsum.store_user_id = lsu.id
+        LEFT JOIN lmshop_store_grade lsg on ls.grade_id=lsg.id
+        left join lmshop_store_role lsr on lsr.id=lsum.role_id
+        <include refid="whereStatementAuth"/>
+        order by ls.register_audit_status asc,ls.create_date desc
+
+    </select>
+    <select id="adminInfo" resultType="com.leimingtech.modules.dto.store.RegisterStoreInfoDTO">
+    SELECT
+	la.*,
+	la.id AS authId,
+	ls.id AS storeId,
+	ls.*
+    FROM
+	lmshop_store ls
+	LEFT JOIN lmshop_store_auth la ON la.store_id = ls.id
+    WHERE
+	ls.id = #{storeId}
+    </select>
+    <select id="getAuditStoreClass" resultType="com.leimingtech.modules.dto.storeclass.StoreClassDTO">
+        select store_id,class_id
+        from lmshop_store_class_audit
+        where del_flag=0 and id=#{id}
+    </select>
+    <select id="storeList" resultType="com.leimingtech.modules.dto.store.StoreDTO">
+        select ls.*
+        from lmshop_store ls
+        LEFT JOIN lmshop_store_user_manage lsum on lsum.store_id=ls.id
+        where ls.del_flag=0 and lsum.store_user_id=#{userId} and lsum.del_flag=0
+    </select>
+    <select id="findStoreAll" resultType="java.lang.Long">
+        select id
+        from lmshop_store
+        where del_flag=0 and register_audit_status=20 and is_enable=0
+    </select>
+    <select id="storeInfo" resultType="com.leimingtech.modules.dto.store.PageStoreDTO">
+
+        select
+        ls.id,ls.store_name,ls.store_logo,ls.grade_id,ls.grade_id,ls.store_logo,ls.store_type,ls.create_date,lsu.account
+        as account,lsg.sg_name as gradeName,ls.is_enable as isEnable, ls.store_linkman,ls.register_audit_status,lsr.role_name as roleName,
+        lsr.role_mark as roleMark
+        from lmshop_store ls
+        LEFT JOIN lmshop_store_user_manage lsum on ls.id=lsum.store_id
+        LEFT JOIN lmshop_store_user lsu on lsum.store_user_id = lsu.id
+        LEFT JOIN lmshop_store_grade lsg on ls.grade_id=lsg.id
+        left join lmshop_store_role lsr on lsr.id=lsum.role_id
+        where ls.id=#{storeId} and ls.del_flag=0 and lsu.id=#{userId} and lsum.del_flag=0
+    </select>
+    <select id="selectIndexStoreData" resultType="com.leimingtech.modules.dto.store.IndexStoreDataDTO">
+        SELECT count( id ) AS newStoreCount,( SELECT count( id ) FROM lmshop_store WHERE del_flag = 0 and register_audit_status = 20 ) AS storeCount
+        FROM
+        lmshop_store
+        WHERE
+        del_flag = 0 and register_audit_status = 20
+        AND create_date &gt;= #{startDate}
+        AND create_date &lt;= #{endDate}
+    </select>
+    <select id="findStoreInfoById" resultType="com.leimingtech.modules.dto.store.PageStoreDTO">
+        select
+        lsu.account as account,lsg.sg_name as gradeName,ls.is_enable as isEnable
+        from lmshop_store ls
+        LEFT JOIN lmshop_store_user_manage lsum on ls.id=lsum.store_id
+        LEFT JOIN lmshop_store_user lsu on lsum.store_user_id = lsu.id
+        LEFT JOIN lmshop_store_grade lsg on ls.grade_id=lsg.id
+        left join lmshop_store_role lsr on lsr.id=lsum.role_id
+        where ls.id=#{storeId} and ls.del_flag=0  and lsum.del_flag=0 and lsr.del_flag=0 and lsr.role_mark=1 and lsu.del_flag=0
+    </select>
+
+</mapper>

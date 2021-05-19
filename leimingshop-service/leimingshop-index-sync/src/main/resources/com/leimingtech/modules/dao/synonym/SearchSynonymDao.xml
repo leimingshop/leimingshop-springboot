@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.synonym.SearchSynonymDao">
+
+    <!-- lixiang 2019/12/13 17:51 获取所有展示类目名称集合 -->
+    <select id="findGoodsClassNameList" resultType="java.lang.String">
+        select gc_name from lmshop_goods_class_custom where del_flag = 0
+    </select>
+
+    <!-- lixiang 2019/12/13 17:55 获取所有品牌名称 -->
+    <select id="findBrandNameList" resultType="java.lang.String">
+        select brand_name from lmshop_brand where del_flag = 0
+    </select>
+
+    <!-- lixiang 2019/12/16 9:36 查询店铺名称集合信息 -->
+    <select id="findStoreNameList" resultType="java.lang.String">
+        select store_name from lmshop_store where del_flag = 0
+    </select>
+</mapper>

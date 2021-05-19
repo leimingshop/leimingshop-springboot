@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goods.spec.SpecAttributePictureDao">
+
+    <resultMap type="com.leimingtech.modules.entity.goods.spec.GoodsSpecAttrPicEntity" id="specAttributePictureMap">
+        <result property="id" column="id"/>
+        <result property="specAttrValueId" column="spec_attr_value_id"/>
+        <result property="specAttrId" column="spec_attr_id"/>
+        <result property="pictureUrl" column="picture_url"/>
+        <result property="isMainPicture" column="is_main_picture"/>
+        <result property="sort" column="sort"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+        <result property="goodsId" column="goods_id"/>
+    </resultMap>
+    <select id="getDefaultPic" resultType="com.leimingtech.modules.dto.goods.spec.DefaultSpecPictureDTO"
+            parameterType="java.lang.Long">
+        SELECT
+            goods_id,
+            picture_url,
+            is_main_picture,
+            sort
+        FROM
+            lmshop_goods_spec_attr_pic
+        WHERE
+            goods_id = #{goodsId}
+            AND spec_attr_value_id = 0
+            AND spec_attr_id = 0
+            AND del_flag = 0
+            order by sort asc
+    </select>
+    <insert id="saveBatch">
+        insert into lmshop_goods_spec_attr_pic (
+        id,
+        spec_attr_value_id,
+        spec_attr_id,
+        goods_id,
+        picture_url,
+        is_main_picture,
+        sort
+        )values
+        <foreach collection="goodsSpecAttrPicEntities" item="goodsSpecAttrPicEntity" separator="," >(
+            #{goodsSpecAttrPicEntity.id},
+            #{goodsSpecAttrPicEntity.specAttrValueId},
+            #{goodsSpecAttrPicEntity.specAttrId},
+            #{goodsSpecAttrPicEntity.goodsId},
+            #{goodsSpecAttrPicEntity.pictureUrl},
+            #{goodsSpecAttrPicEntity.isMainPicture},
+            #{goodsSpecAttrPicEntity.sort}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

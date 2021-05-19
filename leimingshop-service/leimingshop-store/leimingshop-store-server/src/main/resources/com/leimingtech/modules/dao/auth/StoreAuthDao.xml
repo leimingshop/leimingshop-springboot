@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.auth.StoreAuthDao">
+
+    <resultMap type="com.leimingtech.modules.entity.auth.StoreAuthEntity" id="storeAuthMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="legalPersonName" column="legal_person_name"/>
+        <result property="electronicBusinessLicense" column="electronic_business_license"/>
+        <result property="companyAddress" column="company_address"/>
+        <result property="companyAddressDetail" column="company_address_detail"/>
+        <result property="companyProvinceId" column="company_province_id"/>
+        <result property="companyCityId" column="company_city_id"/>
+        <result property="companyAreaId" column="company_area_id"/>
+        <result property="companyPhone" column="company_phone"/>
+        <result property="companyRegisteredCapital" column="company_registered_capital"/>
+        <result property="taxpayerId" column="taxpayer_id"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="bankAccountName" column="bank_account_name"/>
+        <result property="bankAccountNumber" column="bank_account_number"/>
+        <result property="taxpayerPicture" column="taxpayer_picture"/>
+        <result property="bankAccountPicture" column="bank_account_picture"/>
+        <result property="idCardPeoPicture" column="id_card_peo_picture"/>
+        <result property="idCardNatPicture" column="id_card_nat_picture"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="base_column">
+        id,store_id,company_name,legal_person_name,electronic_business_license,company_address,company_address_detail,
+        company_province_id,company_city_id,company_area_id,company_phone,company_registered_capital,taxpayer_id,bank_name,
+        bank_account_name,bank_account_number,alipay_name,alipay_account_number,wechat_name,wechat_account_number
+    </sql>
+    <!--根据店铺ID 删除店铺认证信息-->
+    <update id="deleteByStoreId">
+        update lmshop_store_auth set del_flag=1
+        where store_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="findByStoreId" resultType="com.leimingtech.modules.dto.auth.StoreAuthDTO">
+        select *
+        from lmshop_store_auth
+        where store_id=#{storeId} and del_flag=0
+    </select>
+    <select id="findAuthIdByStoreId" resultType="java.lang.Long">
+        select id
+        from lmshop_store_auth
+        where store_id=#{storeId} and del_flag=0
+    </select>
+
+
+</mapper>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.aftersale.dao.AftersaleRefundRecordsDao">
+
+
+    <select id="findPayFail" resultType="com.leimingtech.modules.aftersale.dto.AftersaleRefundRecordsDTO">
+        SELECT * from lmshop_aftersale_refund_records where refund_status in (2,3) and create_date between (SELECT DATE_ADD(now(),INTERVAL -3 DAY)) and now()
+    </select>
+</mapper>

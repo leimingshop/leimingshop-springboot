@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.order.OrderGoodsDao">
+
+    <resultMap type="com.leimingtech.modules.entity.order.OrderGoodsEntity" id="orderGoodsMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="spuSerial" column="spu_serial"/>
+        <result property="spuName" column="spu_name"/>
+        <result property="specId" column="spec_id"/>
+        <result property="specSerial" column="spec_serial"/>
+        <result property="specInfo" column="spec_info"/>
+        <result property="specAttrValueName" column="spec_attr_value_name"/>
+        <result property="specCostPrice" column="spec_cost_price"/>
+        <result property="specPrice" column="spec_price"/>
+        <result property="specPayPrice" column="spec_pay_price"/>
+        <result property="goodsNum" column="goods_num"/>
+        <result property="goodsImage" column="goods_image"/>
+        <result property="reduceActivityId" column="reduce_activity_id"/>
+        <result property="activityId" column="activity_id"/>
+        <result property="activityType" column="activity_type"/>
+        <result property="avgPreferentialAmount" column="avg_preferential_amount"/>
+        <result property="discountActivityAmount" column="discount_activity_amount"/>
+        <result property="couponAmount" column="coupon_amount"/>
+        <result property="reduceAmount" column="reduce_amount"/>
+        <result property="returnPreferential" column="return_preferential"/>
+        <result property="aftersaleQuantity" column="aftersale_quantity"/>
+        <result property="evaluationStatus" column="evaluation_status"/>
+        <result property="evaluationTime" column="evaluation_time"/>
+        <result property="firstGcId" column="first_gc_id"/>
+        <result property="secondGcId" column="second_gc_id"/>
+        <result property="gcId" column="gc_id"/>
+        <result property="isGift" column="is_gift"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.order.AvailableAfterSaleOrderGoodsDTO" id="orderGoodsAvailAfterMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="specId" column="spec_id"/>
+        <result property="specInfo" column="spec_info"/>
+        <result property="specAttrValueName" column="spec_attr_value_name"/>
+        <result property="specPrice" column="spec_price"/>
+        <result property="specPayPrice" column="spec_pay_price"/>
+        <result property="goodsNum" column="goods_num"/>
+        <result property="goodsImage" column="goods_image"/>
+        <result property="aftersaleQuantity" column="aftersale_quantity"/>
+        <result property="isGift" column="is_gift"/>
+    </resultMap>
+    <sql id="base_column">
+        id,order_id,order_sn,buyer_id,store_id,store_name,goods_id,goods_name,
+        spec_id,spec_serial,spec_info,spec_cost_price,spec_price,spec_pay_price,
+        avg_preferential_amount,discount_activity_amount,coupon_amount,reduce_amount,return_preferential,spec_attr_value_name,
+        goods_num,goods_image,reduce_activity_id,activity_id,activity_type,aftersale_quantity,evaluation_status,evaluation_time,gc_id,is_gift,create_date
+    </sql>
+
+    <!--根据 goodsId 查询订单商品数量-->
+    <select id="countByGoodsId" resultType="int">
+        select sum(goods_num - aftersale_quantity) from lmshop_order_goods
+        where buyer_id = #{buyerId} and goods_id = #{goodsId} and del_flag=0
+    </select>
+
+    <select id="findOrderGoodsByOrderId" resultMap="orderGoodsAvailAfterMap">
+        select
+        id,order_id,buyer_id,store_id,goods_id,goods_name,spec_id,spec_serial,spec_info,spec_attr_value_name,spec_price,spec_pay_price,goods_num,goods_image,aftersale_quantity,is_gift
+        from lmshop_order_goods
+        where order_id = #{id} and del_flag=0
+    </select>
+
+    <select id="findByOrderId" resultType="com.leimingtech.modules.dto.order.OrderGoodsDTO">
+        select
+        <include refid="base_column"/>
+        from lmshop_order_goods
+        where order_id = #{orderId} and del_flag=0
+    </select>
+
+    <!--根据订单sn查询子订单商品-->
+    <select id="findByOrderSn" resultType="com.leimingtech.modules.dto.order.OrderGoodsDTO">
+        select log.id, log.order_id,log.order_sn,log.store_name,log.goods_id,log.goods_name,log.spec_id,log.spec_serial,
+        log.spec_info,log.spec_attr_value_name,log.spec_cost_price,log.spec_price,log.spec_pay_price,log.goods_num,log.goods_image,log.reduce_activity_id,log.activity_id,log.activity_type,log.aftersale_quantity,
+        log.avg_preferential_amount,log.discount_activity_amount,log.coupon_amount,log.reduce_amount,log.return_preferential,
+        log.evaluation_status,log.evaluation_time,log.gc_id,log.is_gift,log.spec_attr_value_name,
+        (SELECT t.member_invoice_type FROM (
+        select * FROM lmshop_order_invoice WHERE order_sn = #{orderSn} and del_flag = 0 ORDER BY create_date DESC) AS t GROUP BY t.order_sn) as invoiceType
+        from lmshop_order lo
+        left join lmshop_order_goods log
+        on lo.order_sn = log.order_sn
+        where lo.del_flag = 0 and log.del_flag = 0
+        and (lo.order_sn = #{orderSn} or lo.parent_order_sn = #{orderSn})
+    </select>
+
+    <!--根据用户ID 查询未评价的商品-->
+    <select id="findPage" resultType="com.leimingtech.modules.dto.order.EvaluateOrderGoodsDTO">
+        select los.*
+        from lmshop_order_goods los
+        left join lmshop_order lo on los.order_id=lo.id
+        where los.del_flag=0 and los.buyer_id=#{memberId} and lo.order_status=40
+        <choose>
+            <when test="orderId!=null and orderId!=''">
+                and los.order_id=#{orderId}
+            </when>
+            <otherwise>
+                and los.evaluation_status=0
+            </otherwise>
+        </choose>
+    </select>
+
+    <!--根据用户ID 查询未评价的商品数量-->
+    <select id="countNotEvaluate" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_order_goods los
+        left join lmshop_order lo on los.order_id=lo.id
+        where los.del_flag=0 and los.buyer_id=#{memberId} and lo.order_status=40
+        and los.evaluation_status=0
+    </select>
+
+    <!--根据订单id查询订单商品表中未评价的商品-->
+    <select id="findOrderGoodsList" resultType="com.leimingtech.modules.dto.order.EvaluateOrderGoodsDTO">
+        select
+        <include refid="base_column"/>
+        from lmshop_order_goods
+        where del_flag=0 and order_id=#{orderId} and evaluation_status=0
+        order by create_date desc
+
+
+    </select>
+    <!--查询超时未评价的订单商品-->
+    <select id="findOverTimeOrder" resultType="com.leimingtech.modules.dto.order.OrderGoodsDTO">
+        select log.*
+        from lmshop_order_goods log
+        left join lmshop_order lo on log.order_id=lo.id
+        where
+          log.del_flag=0 and lo.order_status=40
+         and log.evaluation_status=0 and log.create_date &lt;= #{createTime}
+
+    </select>
+    <!--查询订单中得商品是否全部评价-->
+    <select id="findEvaluateNum" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_order_goods
+        where del_flag=0 and order_id=#{orderId} and evaluation_status=0
+    </select>
+
+    <!-- lixiang 2019/11/6 18:24 根据父订单号查询订单商品信息-->
+    <select id="findOrderGoodsByParentOrderSn" resultType="com.leimingtech.modules.dto.order.OrderGoodsDTO">
+        SELECT
+        <include refid="base_column"/>
+        FROM
+        lmshop_order_goods
+        WHERE
+        order_id IN (
+        SELECT
+        id
+        FROM
+        lmshop_order
+        WHERE
+        parent_order_sn = #{parentOrderSn})
+    </select>
+
+    <update id="updateAftersaleQuantityById">
+        UPDATE lmshop_order_goods SET aftersale_quantity = aftersale_quantity-#{applyNum} WHERE id=#{id} and aftersale_quantity>=#{applyNum}
+    </update>
+
+    <update id="updateAftersaleQuantityByIdAdd">
+        UPDATE lmshop_order_goods SET aftersale_quantity = aftersale_quantity+#{applyNum} WHERE id=#{id}
+    </update>
+
+    <!--根据paySn查询订单商品-->
+    <select id="findByPaySn" resultMap="orderGoodsMap">
+        SELECT
+            DISTINCT
+            log.*
+        FROM
+            lmshop_order lo
+        LEFT JOIN lmshop_order_goods log ON lo.id = log.order_id
+        WHERE
+            lo.del_flag = 0 and lo.pay_sn = #{paySn} and lo.is_split = 0
+    </select>
+    <select id="selectGoodsSellRanking" resultType="com.leimingtech.modules.dto.order.IndexGoodsSellRakingDTO">
+        SELECT
+        log.spu_name as goodsName,
+        SUM( log.spec_pay_price*log.goods_num+log.avg_preferential_amount ) AS sellGoodsAmount,
+        COUNT( goods_num ) AS sellGoodsCount
+        FROM
+        lmshop_order_goods log
+        LEFT JOIN lmshop_order lo ON lo.id = log.order_id
+        WHERE
+        lo.payment_status = 1
+        AND lo.del_flag =0
+        AND log.create_date &gt;= #{startDate}
+        AND log.create_date &lt;= #{endDate}
+        GROUP BY
+        log.goods_id
+        <if test="null !=orderBy and orderBy ==1">
+            ORDER BY sellGoodsAmount DESC
+        </if>
+        <if test="null !=orderBy and orderBy ==2">
+            ORDER BY sellGoodsCount DESC
+        </if>
+        LIMIT 0,
+        10
+
+    </select>
+    <select id="fingNotOrderGoods" resultType="com.leimingtech.modules.dto.order.OrderGoodsDTO">
+        select
+        <include refid="base_column"/>
+        from lmshop_order_goods
+        where del_flag=0 and evaluation_status=0 and order_sn=#{orderSn}
+
+
+    </select>
+    <select id="findOrderGoodsInfo" resultType="com.leimingtech.modules.vo.order.PcOrderGoodsInfoVO">
+        select
+        <include refid="base_column"/>
+        from lmshop_order_goods
+        where del_flag=0 and order_id=#{orderId} and evaluation_status=0
+        <if test="orderGoodsId!=null">
+            and id=#{orderGoodsId}
+        </if>
+
+    </select>
+    <select id="fingYesOrderGoods" resultType="com.leimingtech.modules.dto.order.OrderGoodsDTO">
+        select
+        <include refid="base_column"/>
+        from lmshop_order_goods
+        where del_flag=0 and evaluation_status=1 and order_sn=#{orderSn}
+    </select>
+
+
+</mapper>

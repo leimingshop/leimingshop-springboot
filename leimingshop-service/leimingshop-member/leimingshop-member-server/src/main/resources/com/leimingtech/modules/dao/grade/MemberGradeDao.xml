@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.grade.MemberGradeDao">
+
+    <resultMap type="com.leimingtech.modules.entity.grade.MemberGradeEntity" id="memberGradeMap">
+        <result property="id" column="id"/>
+        <result property="gradeName" column="grade_name"/>
+        <result property="integration" column="integration"/>
+        <result property="gradeImg" column="grade_img"/>
+        <result property="deadline" column="deadline"/>
+        <result property="preferential" column="preferential"/>
+        <result property="defaultFlag" column="default_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <resultMap id="memberGradeMap1" type="com.leimingtech.modules.dto.grade.MemberGradeDTO">
+        <result property="id" column="id"/>
+        <result property="gradeName" column="grade_name"/>
+        <result property="integration" column="integration"/>
+        <result property="gradeImg" column="grade_img"/>
+        <result property="deadline" column="deadline"/>
+        <result property="preferential" column="preferential"/>
+        <result property="defaultFlag" column="default_flag"/>
+        <result property="memeberNum" column="memeberNum"/>
+    </resultMap>
+    <!--查询用户对应等级-->
+    <select id="selectByMemberId" resultMap="memberGradeMap">
+        SELECT
+        *
+        FROM
+        lmshop_member_grade
+        WHERE
+        del_flag = 0
+
+        AND integration = (
+            SELECT
+            MAX(integration)
+            FROM
+            lmshop_member_grade
+            WHERE
+            integration &lt;= #{integration}
+            AND del_flag = 0
+        )
+
+    </select>
+
+    <!--查询会员等级列表-->
+    <select id="selectMemberGrade" resultMap="memberGradeMap1">
+        select *
+        from lmshop_member_grade where del_flag = 0
+        <if test="params.gradeName != null and params.gradeName.trim() != ''">
+            and grade_name like concat('%', #{params.gradeName}, '%')
+        </if>
+    </select>
+
+    <!--获取当前等级的范围-->
+    <select id="selectMinNum" resultType="java.lang.Integer">
+               SELECT
+            MIN(integration)
+        FROM
+            lmshop_member_grade
+        WHERE del_flag = 0 and
+            integration > (
+                SELECT
+                    integration
+                FROM
+                    lmshop_member_grade
+                WHERE
+                    id = #{id}
+            )
+    </select>
+    <!--校验等级名称是否重复-->
+    <select id="findNameCount" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_member_grade
+        where del_flag=0
+        <if test="gradeName!=''and gradeName!=null">
+            and grade_name=#{gradeName}
+        </if>
+        <if test="integration!=null">
+            and integration=#{integration}
+        </if>
+        <if test="gradeId!=null">
+            and id!=#{gradeId}
+        </if>
+
+
+    </select>
+</mapper>

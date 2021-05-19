@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.label.GoodsLabelDao">
+
+    <resultMap type="com.leimingtech.modules.dto.goodslable.GoodsLabelDTO" id="goodsLabelMap">
+        <result property="id" column="id"/>
+        <result property="labelName" column="label_name"/>
+    </resultMap>
+
+    <!--标签列表分页查询-->
+    <select id="findListPage" resultType="com.leimingtech.modules.dto.goodslable.GoodsLabelDTO">
+        SELECT
+        COUNT(gl.id) num,
+        gl.id,
+        gl.label_name,
+        lg.group_name
+        FROM
+        lmshop_goods_label gl
+        LEFT JOIN lmshop_goods_label_group_rel lgr ON gl.id = lgr.label_id
+        LEFT JOIN lmshop_goods_label_group lg ON lgr.group_id = lg.id
+        WHERE
+            gl.del_flag = 0
+            <if test="groupStatus != null">
+                and lgr.del_flag = 0 and lg.del_flag = 0
+                AND lg.group_status=#{groupStatus}
+            </if>
+            <if test="labelName != null and labelName!=''">
+                AND gl.label_name like concat('%', #{labelName}, '%')
+            </if>
+            GROUP BY  gl.id
+    </select>
+
+    <!--修改时校验标签名称是否重复-->
+    <select id="checkLabelNameUpate" resultType="java.lang.Integer" parameterType="com.leimingtech.modules.dto.goodslable.GoodsLabelUpdateDTO">
+        SELECT
+            count( 1 )
+        FROM
+            ( SELECT * FROM lmshop_goods_label WHERE id !=#{id} ) temp
+        WHERE
+            del_flag = 0
+            <if test="labelName !=null and labelName !=''">
+                AND label_name =#{labelName}
+            </if>
+    </select>
+
+    <!--保存时校验标签名称是否重复-->
+    <select id="checkLabelNameSave" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT
+            count( 1 )
+        FROM
+            lmshop_goods_label
+        WHERE
+            del_flag = 0
+            <if test="labelName !=null and labelName !=''">
+                AND label_name =#{labelName}
+            </if>
+    </select>
+    <select id="findByGoodsId" resultType="java.lang.String">
+        select label_name from lmshop_goods_label_rel where goods_id=#{goodsId}
+    </select>
+
+</mapper>

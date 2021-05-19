@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goods.search.GoodsSearchDao">
+
+
+    <resultMap type="com.leimingtech.modules.dto.goods.search.GoodsSearchDTO" id="goodsSearchMap">
+        <result property="id" column="id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsSerial" column="goods_serial"/>
+        <result property="goodsSubTitle" column="goods_sub_title"/>
+        <result property="gcId" column="gc_id"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="firstGcId" column="first_gc_id"/>
+        <result property="firstGcName" column="first_gc_name"/>
+        <result property="secondGcId" column="second_gc_id"/>
+        <result property="secondGcName" column="second_gc_name"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="storeType" column="store_type"/>
+        <result property="specId" column="spec_id"/>
+        <result property="invoiceFlag" column="invoice_flag"/>
+        <result property="invoiceType" column="invoice_type"/>
+        <result property="invoiceContent" column="invoice_content"/>
+        <result property="goodsShow" column="goods_show"/>
+        <result property="goodsStatus" column="goods_status"/>
+        <result property="goodsSaleNum" column="sale_num"/>
+        <result property="evaluateCount" column="comment_num"/>
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="goodsMainPicture" column="goods_main_picture"/>
+        <result property="oneHundredPxPictureUrl" column="one_hundred_px_picture_url"/>
+        <result property="twoHundredPxPictureUrl" column="two_hundred_px_picture_url"/>
+        <result property="fourHundredPxPictureUrl" column="four_hundred_px_picture_url"/>
+        <result property="eightHundredPxPictureUrl" column="eight_hundred_px_picture_url"/>
+        <result property="firstStoreGoodsGcId" column="first_store_goods_gc_id"/>
+        <result property="firstStoreGoodsGcName" column="first_store_goods_gc_name"/>
+        <result property="secondStoreGoodsGcId" column="second_store_goods_gc_id"/>
+        <result property="secondStoreGoodsGcName" column="second_store_goods_gc_name"/>
+        <result property="goodsUpTime" column="goods_up_time"/>
+        <result property="virtualFlag" column="virtualFlag"/>
+        <result property="codeValidDay" column="codeValidDay"/>
+        <result property="expressFlag" column="express_flag"/>
+        <result property="freightTemplateId" column="freight_template_id"/>
+
+        <collection property="attrValues" ofType="com.leimingtech.modules.dto.goods.search.GoodsAttrSearchDTO">
+            <id property="id" column="attr_value_id"/>
+            <result property="attrName" column="attr_name"/>
+            <result property="attrValue" column="attr_value"/>
+            <result property="attributeId" column="attribute_id"/>
+        </collection>
+        <collection property="goodsLabels" ofType="com.leimingtech.modules.dto.goods.search.label.GoodsLabelSearchDTO">
+            <result property="labelId" column="label_id"/>
+            <result property="labelName" column="label_name"/>
+        </collection>
+        <collection property="goodsPicList" ofType="com.leimingtech.modules.dto.goods.search.GoodsPictureDTO">
+            <result property="pictureUrl" column="picture_url"/>
+            <result property="isMainPicture" column="is_main_picture"/>
+            <result property="sort" column="sort"/>
+        </collection>
+<!--        <collection property="goodsPicList" column="goods_id"-->
+<!--                    ofType="com.leimingtech.modules.dto.spec.search.SpecGoodsPic"-->
+<!--                    select="findGoodsPicByGoodsId"-->
+<!--                    javaType="list">-->
+<!--        </collection>-->
+    </resultMap>
+
+
+    <sql id="search_Column_List">
+        g.id,
+        g.goods_serial,
+        g.goods_sub_title,
+        g.goods_name,
+        g.brand_id,
+        g.brand_name,
+        g.gc_id,
+        g.gc_name,
+        g.first_gc_id,
+        g.first_gc_name,
+        g.second_gc_id,
+        g.second_gc_name,
+        g.first_store_goods_gc_id,
+        g.first_store_goods_gc_name,
+        g.second_store_goods_gc_id,
+        g.second_store_goods_gc_name,
+        g.goods_show,
+        g.store_id,
+        g.store_name,
+        g.store_type,
+        g.goods_status,
+        g.invoice_flag,
+        g.invoice_type,
+        g.invoice_content,
+        g.spec_id,
+        g.goods_up_time,
+        g.virtual_flag,
+        g.goods_main_picture,
+        g.one_hundred_px_picture_url,
+        g.two_hundred_px_picture_url,
+        g.four_hundred_px_picture_url,
+        g.eight_hundred_px_picture_url,
+        g.spec_sell_price,
+        g.express_flag,
+        g.freight_template_id,
+        ga.id as attr_value_id,
+        ga.attr_name,
+        ga.attr_value,
+        ga.attribute_id,
+        gi.comment_num,
+        gi.`sale_num`,
+        glr.label_id,
+        glr.label_name,
+        pic.picture_url,
+        pic.is_main_picture,
+        pic.sort
+    </sql>
+
+    <!-- 按照时间段查询商品修改数据 -->
+    <select id="selectGoodsIndexInfoByUpdateTime" resultMap="goodsSearchMap">
+        SELECT
+        <include refid="search_Column_List"/>
+        FROM
+        lmshop_goods g
+        LEFT JOIN lmshop_goods_info gi ON g.`id`=gi.`id` AND gi.`del_flag`=0
+        left join lmshop_goods_attribute ga on ga.goods_id = g.id and ga.del_flag = 0
+        LEFT JOIN lmshop_goods_label_rel glr on g.id = glr.goods_id and glr.del_flag = 0
+        left join lmshop_goods_spec_attr_pic pic on g.id = pic.goods_id and pic.del_flag=0 and pic.spec_attr_value_id=0 and pic.spec_attr_id=0 AND pic.`picture_url` !=''
+        WHERE
+        g.del_flag = 0
+        <if test="startTime != null ">
+            and g.update_date &gt;= #{startTime}
+        </if>
+        <if test="endTime != null ">
+            and g.update_date &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="getGoodsIndexInfoByGoodsId" resultMap="goodsSearchMap">
+        SELECT
+        <include refid="search_Column_List"/>
+        FROM
+        lmshop_goods g
+        LEFT JOIN lmshop_goods_info gi ON g.`id`=gi.`id` AND gi.`del_flag`=0
+        INNER JOIN lmshop_goods_spec gs ON gs.id = g.spec_id
+        left join lmshop_goods_attribute ga on ga.goods_id = g.id and ga.del_flag = 0
+        LEFT JOIN lmshop_goods_label_rel glr on g.id = glr.goods_id and glr.del_flag = 0
+        left join lmshop_goods_spec_attr_pic pic on g.id = pic.goods_id and pic.del_flag=0 and pic.spec_attr_value_id=0 and pic.spec_attr_id=0 AND pic.`picture_url` !=''
+        WHERE g.id = #{goodsId} and
+        g.del_flag = 0
+    </select>
+
+
+    <resultMap type="com.leimingtech.modules.dto.spec.search.SpecVO" id="goodsSpecMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="specName" column="spec_name"/>
+        <result property="specStorage" column="spec_storage"/>
+        <result property="specSerial" column="spec_serial"/>
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="goodsSubTitle" column="goods_sub_title"/>
+        <result property="specAttrName" column="spec_attr_name"/>
+        <result property="specAttrValueName" column="spec_attr_value_name"/>
+        <result property="specMainPicture" column="spec_main_picture"/>
+        <result property="oneHundredPxPictureUrl" column="one_hundred_px_picture_url"/>
+        <result property="twoHundredPxPictureUrl" column="two_hundred_px_picture_url"/>
+        <result property="fourHundredPxPictureUrl" column="four_hundred_px_picture_url"/>
+        <result property="eightHundredPxPictureUrl" column="eight_hundred_px_picture_url"/>
+        <result property="specSaleNum" column="spec_sale_num"/>
+        <result property="mainFlag" column="main_flag"/>
+        <result property="specWeight" column="spec_weight"/>
+        <result property="goodsBoby" column="goods_boby"/>
+        <result property="specShow" column="spec_show"/>
+        <result property="goodsShow" column="goodsShow"/>
+        <result property="expressFlag" column="expressFlag"/>
+        <result property="virtualFlag" column="virtualFlag"/>
+        <result property="codeValidDay" column="codeValidDay"/>
+        <result property="codeRefundFlag" column="codeRefundFlag"/>
+        <result property="mobileBody" column="mobile_body"/>
+        <result property="afterSale" column="after_sale"/>
+        <result property="delFlag" column="del_flag"/>
+        <collection property="goodsLabels" ofType="com.leimingtech.modules.dto.goods.search.label.GoodsLabelSearchDTO">
+            <result property="labelId" column="label_id"/>
+            <result property="labelName" column="label_name"/>
+        </collection>
+        <collection property="goodsVO" column="goods_id"
+                    ofType="com.leimingtech.modules.dto.spec.search.GoodsVO"
+                    select="findGoodsById">
+        </collection>
+
+        <collection property="specAttrValuePicList" column="id"
+                    ofType="com.leimingtech.modules.dto.spec.search.SpecAttrValuePic"
+                    select="findSpecPicBySpecId"
+                    javaType="list">
+        </collection>
+
+        <collection property="goodsPicList" column="goods_id"
+                    ofType="com.leimingtech.modules.dto.spec.search.SpecGoodsPic"
+                    select="findGoodsPicByGoodsId"
+                    javaType="list">
+        </collection>
+    </resultMap>
+
+    <!--根据商品规格id查询规格商品主规格图片集合-->
+    <select id="findSpecPicBySpecId" resultType="com.leimingtech.modules.dto.spec.search.SpecAttrValuePic">
+     SELECT sap.`id` AS id ,sap.`spec_attr_id` AS specAttrId,sap.`spec_attr_value_id` AS specAttrValueId
+        , sap.`picture_url` AS pictureUrl,sap.`is_main_picture` AS isMainPicture ,
+        sap.one_hundred_px_picture_url as oneHundredPxPictureUrl,
+        sap.two_hundred_px_picture_url as twoHundredPxPictureUrl,
+        sap.four_hundred_px_picture_url as fourHundredPxPictureUrl,
+        sap.eight_hundred_px_picture_url as eightHundredPxPictureUrl
+          FROM lmshop_goods_spec_attr_rel  gsar
+         LEFT JOIN lmshop_goods_spec_attr_pic sap ON gsar.`spec_attr_value_id`=sap.`spec_attr_value_id`
+     WHERE
+     gsar.`spec_id`=#{id} AND gsar.`is_main`=1 AND sap.`picture_url` !='' and  sap.del_flag=0
+    </select>
+
+    <!--根据商品id查询商品默认图片集合-->
+    <select id="findGoodsPicByGoodsId" resultType="com.leimingtech.modules.dto.spec.search.SpecGoodsPic">
+        select sap.`picture_url` AS pictureUrl,sap.`is_main_picture` AS isMainPicture ,
+        sap.one_hundred_px_picture_url as oneHundredPxPictureUrl,
+        sap.two_hundred_px_picture_url as twoHundredPxPictureUrl,
+        sap.four_hundred_px_picture_url as fourHundredPxPictureUrl,
+        sap.eight_hundred_px_picture_url as eightHundredPxPictureUrl
+        from lmshop_goods_spec_attr_pic sap
+        WHERE sap.`goods_id`=#{goodsId}
+        and sap.del_flag=0 and sap.spec_attr_value_id=0 and sap.spec_attr_id=0 AND sap.`picture_url` !=''
+    </select>
+
+
+    <select id="findSpecRelBySpecId" resultType="com.leimingtech.modules.dto.spec.search.SpecAttrValueRefVO">
+        SELECT  sar.id AS id,
+                sar.`goods_id` AS goodsId,
+                sar.`spec_id` AS specId ,
+                sar.`spec_attr_id` AS specAttrId,
+                sar.`spec_attr_value_id` AS specAttrValueId,
+                sar.`is_main` AS isMain,
+                sar.del_flag as delFlag,
+                lgs.spec_show AS specShow,
+                lgs.spec_storage AS specStorage
+         FROM lmshop_goods_spec_attr_rel sar
+		 left join (select id,spec_show,spec_storage from lmshop_goods_spec) lgs on lgs.id=sar.`spec_id`
+         WHERE sar.`goods_id`=#{id}
+    </select>
+
+
+    <resultMap id="goodsAttrSpec" type="com.leimingtech.modules.dto.spec.search.GoodsVO">
+        <collection property="goodsAttrVOList" column="id"
+                    ofType="com.leimingtech.modules.dto.spec.search.GoodsAttrVO" select="findGoodsAttrByGoodsId"
+                    javaType="list">
+        </collection>
+
+        <collection property="goodsSpecAttrVOList" column="id"
+                    ofType="com.leimingtech.modules.dto.spec.search.GoodsSpecAttrVO" select="findGoodsSpecAttrByGoodsId"
+                    javaType="list">
+        </collection>
+
+        <collection property="specAttrValueRefVO" column="id"
+                    ofType="com.leimingtech.modules.dto.spec.search.SpecAttrValueRefVO"
+                    select="findSpecRelBySpecId"
+                    javaType="list">
+        </collection>
+        <!--<collection property="goodsInfo" column="id"-->
+        <!--ofType="com.leimingtech.modules.dto.spec.search.GoodsInfo"-->
+        <!--select="findGoodsInfoById">-->
+        <!--</collection>-->
+
+    </resultMap>
+
+    <!--<select id="findGoodsInfoById" resultType="com.leimingtech.modules.dto.spec.search.GoodsInfo">-->
+    <!--SELECT gi.`goods_boby` AS goodsBoby FROM lmshop_goods_info gi WHERE gi.`goods_id`=#{id}-->
+    <!--</select>-->
+
+    <resultMap id="goodsSpecAttrValueVO" type="com.leimingtech.modules.dto.spec.search.GoodsSpecAttrVO">
+        <collection property="goodsSpecAttrValueVOList" column="specAttrValueId"
+                    ofType="com.leimingtech.modules.dto.spec.search.GoodsSpecAttrValueVO"
+                    select="findGoodsAttrValueByAttrValueId"
+                    javaType="list">
+        </collection>
+    </resultMap>
+
+
+    <select id="findGoodsAttrValueByAttrValueId"
+            resultType="com.leimingtech.modules.dto.spec.search.GoodsSpecAttrValueVO">
+            SELECT sav.`id` AS id,
+            sav.`goods_id` AS goodsId,
+            sav.`spec_attr_id` AS specAttrId,
+            sav.`spec_attr_value` AS specAttrValue
+             FROM lmshop_goods_spec_attr_value sav WHERE sav.`id`=#{specAttrValueId}
+    </select>
+
+    <select id="findGoodsSpecAttrByGoodsId" resultMap="goodsSpecAttrValueVO">
+      SELECT gsa.`id` AS id,gsa.`spec_attr_name` AS specAttrName
+        ,gsa.`is_select` AS isSelect,gsa.`is_main` AS isMain,ar.`spec_attr_value_id` AS specAttrValueId,
+        ar.spec_id AS attrSpecId
+         FROM lmshop_goods_spec_attr gsa
+         right JOIN lmshop_goods_spec_attr_rel ar ON gsa.`id`=ar.`spec_attr_id`
+         WHERE gsa.`goods_id` =#{id} AND gsa.is_select = 1
+    </select>
+
+    <resultMap id="goodsAttrValue" type="com.leimingtech.modules.dto.spec.search.GoodsAttrVO">
+        <!--<collection property="goodsAttrValueVO" column="attributeId"-->
+        <!--ofType="com.leimingtech.modules.dto.spec.search.GoodsAttrValueVO" select="goodsAttrValueByAttrValueId"-->
+        <!--&gt;-->
+        <!--</collection>-->
+    </resultMap>
+
+    <select id="goodsAttrValueByAttrValueId" resultType="com.leimingtech.modules.dto.spec.search.GoodsAttrValueVO">
+         SELECT av.`attr_value_name` AS attrValueName FROM lmshop_attribute_value av WHERE av.`attr_id`=#{attributeId}
+    </select>
+
+    <select id="findGoodsAttrByGoodsId" resultMap="goodsAttrValue">
+         SELECT ga.`attr_name` AS attrName,ga.`attr_value` AS attrValueName,ga.`attribute_id` AS attributeId,ga.show_type as showType
+         FROM lmshop_goods_attribute ga WHERE ga.`goods_id`=#{id} and ga.del_flag = 0
+  </select>
+
+
+    <select id="findGoodsById" resultMap="goodsAttrSpec">
+        SELECT g.`id` AS id,g.`brand_id` AS brandId ,g.`gc_id` AS gcId,g.first_gc_id AS firstGcId, g.first_store_goods_gc_id,g.first_store_goods_gc_name,
+        g.first_gc_name AS firstGcName, g.second_gc_id AS secondGcId, g.second_gc_name AS secondGcName,g.`store_id` AS storeId,g.`spec_id` AS specId,g.freight_template_id as freightTemplateId,
+        g.gc_name as gcName,g.brand_name as brandName,g.store_name as storeName,g.store_type as storeType,g.goods_sub_title as goodsSubTitle
+        FROM lmshop_goods g
+        WHERE g.`id`= #{goodsId}
+    </select>
+
+
+    <select id="listSpec" resultMap="goodsSpecMap">
+        SELECT glr.label_name,glr.label_id,gs.*,gif.goods_boby,gif.mobile_body,gif.after_sale,lg.goods_sub_title,gs.spec_sell_price goodsSellPrice ,gs.spec_weight,
+        lg.store_type as goodsType, lg.goods_show as goodsShow ,lg.express_flag as expressFlag
+        ,lg.virtual_flag as virtualFlag,lg.code_valid_day as codeValidDay,lg.code_refund_flag as codeRefundFlag FROM lmshop_goods_spec gs
+        left join (select id,goods_boby,mobile_body,after_sale from lmshop_goods_info) gif on gif.id=gs.goods_id
+        left join (select id,goods_sub_title,spec_sell_price,store_type ,goods_show,express_flag,virtual_flag , code_valid_day, code_refund_flag from
+        lmshop_goods) lg on lg.id=gs.goods_id
+        LEFT JOIN lmshop_goods_label_rel glr ON lg.id = glr.goods_id
+        <where>
+            <if test="startTime != null ">
+                and gs.update_date &gt;= #{startTime}
+            </if>
+            <if test="endTime != null ">
+                and gs.update_date &lt;= #{endTime}
+            </if>
+            <if test="goodsId != null ">
+                and gs.goods_id = #{goodsId}
+            </if>
+            <if test="specIds != null ">
+                and gs.id IN
+                <foreach collection="specIds" index="index" item="specId" open="(" separator="," close=")">
+                    #{specId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="pageListSpec" resultMap="goodsSpecMap">
+        SELECT glr.label_name,glr.label_id,gs.*,gif.goods_boby,gif.mobile_body,gif.after_sale,lg.goods_sub_title,gs.spec_sell_price goodsSellPrice,gs.spec_weight,
+        lg.store_type as goodsType, lg.goods_show as goodsShow ,lg.express_flag as expressFlag,
+        lg.virtual_flag as virtualFlag ,lg.code_valid_day as codeValidDay ,lg.code_refund_flag as codeRefundFlag,
+        gs.one_hundred_px_picture_url ,gs.two_hundred_px_picture_url ,gs.four_hundred_px_picture_url ,gs.eight_hundred_px_picture_url
+        FROM lmshop_goods_spec gs
+        left join (select id,goods_boby,mobile_body,after_sale from lmshop_goods_info) gif on gif.id=gs.goods_id
+        left join (select id,goods_sub_title,spec_sell_price,store_type ,goods_show,express_flag,virtual_flag , code_valid_day, code_refund_flag from
+        lmshop_goods) lg on lg.id=gs.goods_id
+        LEFT JOIN lmshop_goods_label_rel glr ON lg.id = glr.goods_id
+        <where>
+            <if test="startTime != null ">
+                and gs.update_date &gt;= #{startTime}
+            </if>
+            <if test="endTime != null ">
+                and gs.update_date &lt;= #{endTime}
+            </if>
+        </where>
+        limit #{start},#{end}
+    </select>
+
+    <select id="findDeletedSpec" resultType="java.lang.Long">
+        SELECT gs.id FROM lmshop_goods_spec gs
+        WHERE gs.`del_flag`=1
+        <if test="goodsId != null ">
+            and gs.goods_id = #{goodsId}
+        </if>
+    </select>
+
+
+    <select id="goodsIndexSyncByStoreId" resultMap="goodsSearchMap">
+        SELECT
+        <include refid="search_Column_List"/>
+        FROM
+        lmshop_goods g
+        LEFT JOIN lmshop_goods_info gi ON g.`id`=gi.`id` AND gi.`del_flag`=0
+        INNER JOIN lmshop_goods_spec gs ON gs.id = g.spec_id
+        left join lmshop_goods_attribute ga on ga.goods_id = g.id and ga.del_flag = 0
+        LEFT JOIN lmshop_goods_label_rel glr on g.id = glr.goods_id and glr.del_flag = 0
+        left join lmshop_goods_spec_attr_pic pic on g.id = pic.goods_id and pic.del_flag=0 and pic.spec_attr_value_id=0 and pic.spec_attr_id=0 AND pic.`picture_url` !=''
+        WHERE g.store_id = #{storeId} and
+        g.del_flag = 0
+    </select>
+    <select id="listSpecIdsByGoodsIds" resultType="java.lang.Long">
+        SELECT
+        id
+        FROM
+        lmshop_goods_spec
+        WHERE
+        goods_id in
+        <foreach collection="goodsIds" index="index" item="goodsId" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+    </select>
+
+
+    <select id="findByGoodsIds" resultMap="goodsSearchMap">
+        SELECT
+        <include refid="search_Column_List"/>
+        FROM
+        lmshop_goods g
+        LEFT JOIN lmshop_goods_info gi ON g.`id`=gi.`id` AND gi.`del_flag`=0
+        INNER JOIN lmshop_goods_spec gs ON gs.id = g.spec_id
+        left join lmshop_goods_attribute ga on ga.goods_id = g.id and ga.del_flag = 0
+        LEFT JOIN lmshop_goods_label_rel glr on g.id = glr.goods_id and glr.del_flag = 0
+        left join lmshop_goods_spec_attr_pic pic on g.id = pic.goods_id and pic.del_flag=0 and pic.spec_attr_value_id=0 and pic.spec_attr_id=0 AND pic.`picture_url` !=''
+        WHERE g.id in
+        <foreach collection="goodsIds" index="index" item="goodsId" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+        and
+        g.del_flag = 0
+    </select>
+
+    <!--计算出好评率-->
+    <select id="reputably" resultType="java.lang.String">
+        SELECT
+        CONVERT (
+            (SELECT
+             count(evaluate_scores) AS count
+             FROM
+             lmshop_evaluate_goods
+             WHERE
+             del_flag = 0
+             AND goods_id = #{goodsId}
+             AND evaluate_scores IN (4, 5) ) / count(*) * 100,DECIMAL (10, 2)
+            )
+            FROM
+            lmshop_evaluate_goods
+        WHERE
+            del_flag = 0
+        AND goods_id = #{goodsId}
+    </select>
+    <select id="storeReputably" resultType="java.lang.String">
+         SELECT
+        CONVERT (
+            (SELECT
+             sum(evaluate_scores) AS count
+             FROM
+             lmshop_evaluate_goods
+             WHERE
+             del_flag = 0
+             AND store_id = #{storeId}
+             AND evaluate_scores IN (4, 5) ) / count(*),DECIMAL (10, 1)
+            )
+            FROM
+            lmshop_evaluate_goods
+        WHERE
+            del_flag = 0
+        AND store_id = #{storeId}
+
+    </select>
+
+    <select id="getTotalGoodsSpecIndex" resultType="java.lang.Integer">
+        select count(1) FROM lmshop_goods_spec gs
+        left join (select id,goods_boby,mobile_body,after_sale from lmshop_goods_info) gif on gif.id=gs.goods_id
+        left join (select id,goods_sub_title,spec_sell_price,store_type ,goods_show from lmshop_goods) lg on
+        lg.id=gs.goods_id
+        <where>
+            <if test="startTime != null ">
+                and gs.update_date &gt;= #{startTime}
+            </if>
+            <if test="endTime != null ">
+                and gs.update_date &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+    <select id="listSpecPriceOrStorage" resultType="com.leimingtech.modules.dto.spec.search.SpecVO">
+        SELECT
+        <if test="null != flag and flag==0">
+            gs.spec_sell_price as specSellPrice ,
+        </if>
+        <if test="null != flag and flag==1">
+            gs.spec_storage as specStorage ,
+        </if>
+        <if test="null != flag and flag==2">
+            gs.spec_show as specShow ,
+            g.goods_show as goodsShow ,
+            g.id as goodsId,
+        </if>
+        gs.id as id
+        FROM lmshop_goods_spec gs
+        <if test="null != flag and flag==2">
+            left join lmshop_goods g on gs.goods_id = g.id
+        </if>
+        <where>
+            <if test="specIds != null ">
+                gs.id IN
+                <foreach collection="specIds" index="index" item="specId" open="(" separator="," close=")">
+                    #{specId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="selectStoreSale" resultType="java.lang.Integer">
+        select sum(sale_num)
+        from lmshop_goods_info lgi
+        left join lmshop_goods lg on lgi.id=lg.id
+        where lg.store_id=#{storeId}
+
+    </select>
+    <select id="findGoodsEvaluateNum" resultType="com.leimingtech.modules.dto.goods.search.GoodsSearchDTO">
+        select goods_id as id,count(1) as evaluate_count
+        from lmshop_evaluate_goods
+        where del_flag=0 and goods_id=#{goodsId}
+    </select>
+    <select id="getTotalGoodsIndex" resultType="java.lang.Integer">
+        SELECT
+        count( 1 )
+        FROM
+        lmshop_goods g
+        LEFT JOIN lmshop_goods_info gi ON g.`id` = gi.`id`
+        AND gi.`del_flag` = 0
+        WHERE
+        g.del_flag = 0
+        <if test="startTime != null ">
+            and g.update_date &gt;= #{startTime}
+        </if>
+        <if test="endTime != null ">
+            and g.update_date &lt;= #{endTime}
+        </if>
+    </select>
+    <select id="pageListGoods" resultType="com.leimingtech.modules.dto.goods.search.GoodsSearchDTO">
+        SELECT
+        <include refid="search_Column_List"/>
+        FROM
+        lmshop_goods g
+        LEFT JOIN lmshop_goods_info gi ON g.`id`=gi.`id` AND gi.`del_flag`=0
+        INNER JOIN lmshop_goods_spec gs ON gs.id = g.spec_id
+        left join lmshop_goods_attribute ga on ga.goods_id = g.id and ga.del_flag = 0
+        LEFT JOIN lmshop_goods_label_rel glr on g.id = glr.goods_id and glr.del_flag = 0
+        left join lmshop_goods_spec_attr_pic pic on g.id = pic.goods_id and pic.del_flag=0 and pic.spec_attr_value_id=0 and pic.spec_attr_id=0 AND pic.`picture_url` !=''
+        WHERE
+            g.del_flag = 0
+        <if test="startTime != null ">
+            and g.update_date &gt;= #{startTime}
+        </if>
+        <if test="endTime != null ">
+            and g.update_date &lt;= #{endTime}
+        </if>
+            limit #{start},#{end}
+    </select>
+
+    <!--<resultMap id="findAttrNameByAttrId" type="com.leimingtech.modules.dto.goods.search.GoodsSpecAttrValurAttrDTO">-->
+    <!--<collection property="goodsSpecAttrNameDTO" column="specAttrId" ofType="com.leimingtech.modules.dto.goods.search.GoodsSpecAttrNameDTO"-->
+    <!--select="findListGoodsSpecAttrNameBySpecId"-->
+    <!--javaType="java.util.List">-->
+    <!--</collection>-->
+
+    <!--<collection property="goodsSpecAttrValueDTO" column="specAttrValueId" ofType="com.leimingtech.modules.dto.goods.search.GoodsSpecAttrValueDTO"-->
+    <!--select="findListGoodsSpecAttrValueByAttrId"-->
+    <!--javaType="java.util.List">-->
+    <!--</collection>-->
+
+    <!--</resultMap>-->
+
+
+    <!--<select id="findListGoodsSpecAttrNameBySpecId" resultType="com.leimingtech.modules.dto.goods.search.GoodsSpecAttrNameDTO">-->
+    <!--SELECT-->
+    <!--gsa.`id` AS id,-->
+    <!--gsa.`goods_id` AS goodsId,-->
+    <!--gsa.`spec_attr_name` AS specAttrName,-->
+    <!--gsa.`is_select` AS isSelect-->
+    <!--,gsa.`is_main` AS isMain-->
+    <!--FROM lmshop_goods_spec_attr gsa WHERE gsa.`id`=#{specAttrId} AND gsa.`del_flag`=0-->
+
+    <!--</select>-->
+    <!--<select id="findListGoodsSpecAttrValueByAttrId" resultType="com.leimingtech.modules.dto.goods.search.GoodsSpecAttrValueDTO">-->
+    <!--SELECT sav.`id` AS id,sav.`spec_attr_value` AS specAttrValue,sav.`spec_picture` AS specPicture,-->
+    <!--sav.`is_main` AS isMain,sav.`is_select` AS isSelect-->
+    <!--FROM lmshop_goods_spec_attr_value sav-->
+    <!--WHERE sav.`id`=#{specAttrValueId} AND sav.`del_flag`=0-->
+    <!--</select>-->
+
+
+    <!--<select id="findGoodsAttrByGoodsId" resultType="com.leimingtech.modules.dto.goods.search.goodsSpecAttrDTO">-->
+    <!--SELECT ga.`attr_name` AS attrName,-->
+    <!--ga.`attr_value` AS attrValue,-->
+    <!--ga.`id` AS id,-->
+    <!--ga.`attribute_id` AS attributeId,-->
+    <!--ga.`show_type` AS showType,-->
+    <!--ga.`sort` AS showType-->
+    <!--FROM lmshop_goods_attribute ga WHERE  ga.`goods_id`=#{goodsId}  AND ga.`del_flag`=0-->
+    <!--</select>-->
+
+    <!--<select id="findListAttrRel" resultMap="findAttrNameByAttrId">-->
+    <!--SELECT lgsar.`spec_attr_value_id` AS specAttrValueId,-->
+    <!--lgsar.`spec_attr_id` AS specAttrId,-->
+    <!--lgsar.`spec_id` AS  specId,-->
+    <!--lgsar.`is_main` AS isMain,-->
+    <!--lgsar.`goods_id` AS goodsId-->
+    <!--FROM lmshop_goods_spec_attr_rel lgsar-->
+    <!--where  lgsar.spec_id=#{id} and lgsar.`del_flag`=0-->
+    <!--</select>-->
+<select id="selectGoodsId" resultType="java.lang.Long">
+    select id from lmshop_goods where del_flag = 0 order by id desc
+</select>
+    <select id="findGoodsCollectNum" resultType="java.lang.Integer">
+SELECT
+	count( 1 )
+FROM
+	lmshop_goods_spec
+	LEFT JOIN lmshop_goods_favorites ON lmshop_goods_spec.id = lmshop_goods_favorites.spec_id
+WHERE
+	lmshop_goods_spec.goods_id = #{goodsId}
+    </select>
+    <select id="findGoodsEvaluateNumList" resultType="com.leimingtech.modules.dto.goods.search.GoodsSearchDTO">
+        select goods_id as id,count(1) as evaluate_count
+        from lmshop_evaluate_goods
+        where del_flag=0 and goods_id in
+        <foreach collection="goodsIds" index="index" item="goodsId" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+        group by goods_id
+    </select>
+    <select id="findGoodsCollectNumList" resultType="com.leimingtech.modules.dto.goods.search.GoodsSearchDTO">
+       SELECT lmshop_goods_spec.goods_id as id,count(1) as collect_num FROM `lmshop_goods_favorites` LEFT JOIN lmshop_goods_spec ON lmshop_goods_favorites.spec_id=lmshop_goods_spec.id WHERE lmshop_goods_spec.goods_id IN
+        <foreach collection="goodsIds" index="index" item="goodsId" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+        GROUP BY lmshop_goods_spec.goods_id
+    </select>
+
+
+</mapper>

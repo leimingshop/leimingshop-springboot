@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.payment.PaymentTallyDao">
+
+    <resultMap type="com.leimingtech.modules.entity.payment.PaymentTallyEntity" id="paymentTallyMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="strore_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="aftersaleSn" column="aftersale_sn"/>
+        <result property="transactionStatus" column="transaction_status"/>
+        <result property="paymentCode" column="payment_code"/>
+        <result property="paymentName" column="payment_name"/>
+        <result property="paymentStatus" column="payment_status"/>
+        <result property="paymentSn" column="payment_sn"/>
+        <result property="paymentFrom" column="payment_from"/>
+        <result property="paymentAmount" column="payment_amount"/>
+        <result property="tradeType" column="trade_type"/>
+        <result property="tradeSn" column="trade_sn"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+        <result property="paymentRemarks" column="payment_remarks"/>
+        <result property="isSplit" column="is_split"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.settle.OrderBillDao">
+
+    <resultMap type="com.leimingtech.modules.entity.settle.OrderBillEntity" id="orderBillMap">
+        <result property="id" column="id"/>
+        <result property="billTotalId" column="bill_total_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="orderId" column="order_id"/>
+        <result property="payTime" column="pay_time"/>
+        <result property="orderTotals" column="order_totals"/>
+        <result property="commisTotals" column="commis_totals"/>
+        <result property="storeCostTotals" column="store_cost_totals"/>
+        <result property="pointAmount" column="point_amount"/>
+        <result property="paymentName" column="payment_name"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+</mapper>

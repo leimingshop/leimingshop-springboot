@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.group.GroupDao">
+
+    <resultMap type="com.leimingtech.modules.entity.group.GroupEntity" id="groupMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="groupName" column="group_name"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="joinFlag" column="join_flag"/>
+        <result property="groupPreheat" column="group_preheat"/>
+        <result property="recommendFlag" column="recommend_flag"/>
+        <result property="simulateFlag" column="simulate_flag"/>
+        <result property="validTime" column="valid_time"/>
+        <result property="payEndTime" column="pay_end_time"/>
+        <result property="discountFlag" column="discount_flag"/>
+        <result property="deductionFlag" column="deduction_flag"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="activityStatus" column="activity_status"/>
+        <result property="goodsNum" column="goods_num"/>
+        <result property="groupNum" column="group_num"/>
+        <result property="paymentNum" column="payment_num"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+    <!--查询所有拼团预热活动-->
+    <select id="selectPreheatList" resultMap="groupMap">
+        SELECT *
+        FROM lmshop_group
+        WHERE group_preheat > 0
+        AND (timestampdiff(SECOND,now(),start_time)) &lt;= (group_preheat*3600)
+        AND del_flag = 0
+        AND now() &lt; start_time
+        AND activity_status = 0
+    </select>
+
+    <!--商家端拼团活动分页查询-->
+    <select id="sellerPage" resultType="com.leimingtech.modules.dto.group.GroupDTO">
+        SELECT
+        lg.id,
+        lg.group_name,
+        lg.group_num,
+        lg.start_time,
+        lg.end_time,
+        lg.payment_num,
+        lg.activity_status,
+        (
+        SELECT COUNT(DISTINCT lag.goods_id) FROM lmshop_activity_goods lag
+        WHERE lag.del_flag = 0 AND lag.activity_id = lg.id
+        AND lag.activity_type = 4
+        ) as goodsNum
+        FROM
+        lmshop_group lg
+        <where>
+            del_flag = 0
+            <if test="params.storeId != null and params.storeId != ''">
+                AND lg.store_id = #{params.storeId}
+            </if>
+            <if test="params.activityName != null and params.activityName != ''">
+                AND lg.group_name LIKE CONCAT('%', #{params.activityName}, '%')
+            </if>
+            <if test="params.activityState != null and params.activityState != ''">
+                AND lg.activity_status = #{params.activityState}
+            </if>
+            <if test="params.startTime != null and params.startTime != ''">
+                AND lg.start_time &gt;= #{params.startTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND lg.end_time &lt;= #{params.endTime}
+            </if>
+        </where>
+        ORDER BY lg.create_date DESC
+    </select>
+</mapper>

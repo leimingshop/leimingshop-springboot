@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.seckill.SeckillSessionDao">
+
+    <resultMap type="com.leimingtech.modules.entity.seckill.SeckillSessionEntity" id="seckillSessionMap">
+        <result property="id" column="id"/>
+        <result property="activityStartDate" column="activity_start_date"/>
+        <result property="activityEndDate" column="activity_end_date"/>
+        <result property="activityEffectiveTime" column="activity_effective_time"/>
+        <result property="payEffectiveTime" column="pay_effective_time"/>
+        <result property="reminderTime" column="reminder_time"/>
+        <result property="auditSwitch" column="audit_switch"/>
+        <result property="sellPriceSwitch" column="sell_price_switch"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="baseColumn4DTO">
+        id, activity_start_date, activity_end_date, activity_effective_time, pay_effective_time, reminder_time,
+        audit_switch, sell_price_switch
+    </sql>
+
+    <!--查询某天开始的所有场次-->
+    <select id="getSeckillSessionListByStartDay" resultType="com.leimingtech.modules.dto.seckill.SeckillSessionDTO">
+        SELECT
+            <include refid="baseColumn4DTO" />
+        FROM
+            lmshop_seckill_session
+        WHERE
+            del_flag = 0
+        AND DATE_FORMAT(
+            activity_start_date,
+            '%Y-%m-%d'
+        ) = #{startDay}
+    </select>
+
+
+</mapper>

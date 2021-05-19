@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.SysRoleDao">
+
+    <resultMap id="BaseResultMap" type="com.leimingtech.dto.SysRoleDTO">
+        <result column="name" property="name"/>
+        <result column="remark" property="remark"/>
+        <result column="role_flag" property="roleFlag"/>
+        <result column="id" property="id"/>
+        <result column="create_date" property="createDate"/>
+    </resultMap>
+
+    <!--查询角色数量及信息,并实现角色名称模糊查询-->
+    <select id="selectCountInfo" resultType="com.leimingtech.dto.SysRoleDTO" >
+        SELECT
+        sr.*,
+        ( SELECT count( 1 ) FROM  sys_user su
+        INNER JOIN sys_role_user sru on su.id=sru.user_id WHERE sru.role_id = sr.id AND sru.del_flag = 0 ) number
+        FROM
+        sys_role sr
+        WHERE
+        del_flag =0
+        <if test="name !=null and name !=''">
+            and name like concat('%',#{name},'%')
+        </if>
+    </select>
+
+</mapper>

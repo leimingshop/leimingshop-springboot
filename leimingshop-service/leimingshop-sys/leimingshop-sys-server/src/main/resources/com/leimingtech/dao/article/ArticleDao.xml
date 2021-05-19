@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.article.ArticleDao">
+
+    <resultMap type="com.leimingtech.entity.article.ArticleEntity" id="articleMap">
+        <result property="id" column="id"/>
+        <result property="acId" column="ac_id"/>
+        <result property="articleUrl" column="article_url"/>
+        <result property="articleTitle" column="article_title"/>
+        <result property="articleContent" column="article_content"/>
+        <result property="showFlag" column="show_flag"/>
+        <result property="sort" column="sort"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <resultMap type="com.leimingtech.dto.article.ArticleDTO" id="article">
+        <result property="id" column="id"/>
+        <result property="acId" column="ac_id"/>
+        <result property="acName" column="ac_name"/>
+        <result property="articleTitle" column="article_title"/>
+        <result property="articleUrl" column="article_url"/>
+        <result property="articleContent" column="article_content"/>
+        <result property="showFlag" column="show_flag"/>
+        <result property="sort" column="sort"/>
+        <result property="createDate" column="create_date"/>
+    </resultMap>
+    <select id="selectArticleList" resultMap="article" parameterType="java.util.Map">
+        SELECT
+            la.id ,
+            la.ac_id ,
+            lac.ac_name ,
+            la.article_title,
+            la.article_url,
+            la.article_content,
+            la.show_flag,
+            la.sort ,
+            la.create_date
+        FROM
+            lmshop_article la
+            LEFT JOIN lmshop_article_class lac ON la.ac_id = lac.id
+        <include refid="whereSearchSql"/>
+    </select>
+    <select id="selectDetail" resultMap="article" parameterType="java.lang.Long">
+        SELECT
+        la.id ,
+        la.ac_id ,
+        lac.ac_name ,
+        la.article_title,
+        la.article_url,
+        la.article_content,
+        la.show_flag,
+        la.sort ,
+        la.create_date
+        FROM
+        lmshop_article la
+        LEFT JOIN lmshop_article_class lac ON la.ac_id = lac.id
+        where la.id = #{id} AND la.del_flag = 0
+    </select>
+
+    <sql id="whereSearchSql">
+      <where>
+          la.del_flag = 0
+        <if test=" '' != id and null != id">
+           AND la.id = #{id}
+        </if>
+        <if test=" '' != acId and null != acId">
+            AND la.ac_id = #{acId}
+        </if>
+        <if test=" '' != acName and null != acName">
+            AND lac.ac_name = #{acName}
+        </if>
+        <if test=" '' != title and null != title">
+            AND la.article_title like concat('%',#{title},'%')
+        </if>
+        <if test=" '' != showFlag and null != showFlag">
+            AND la.show_flag = #{showFlag}
+        </if>
+        <if test=" '' != createDate and null != createDate">
+            AND la.create_date = #{createDate}
+        </if>
+      </where>
+    </sql>
+</mapper>

@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.adv.AdvDao">
+
+    <resultMap type="com.leimingtech.modules.entity.adv.AdvEntity" id="advMap">
+        <result property="id" column="id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="advKey" column="adv_key"/>
+        <result property="advTitle" column="adv_title"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="advType" column="adv_type"/>
+        <result property="classId" column="class_id"/>
+        <result property="relationId" column="relation_id"/>
+        <result property="relationName" column="relation_name"/>
+        <result property="relationType" column="relation_type"/>
+        <result property="relationTarget" column="relation_target"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="sort" column="sort"/>
+        <result property="storeId" column="store_id"/>
+        <result property="siteId" column="site_id"/>
+        <result property="advState" column="adv_state"/>
+        <result property="applyState" column="apply_state"/>
+        <result property="applyBy" column="apply_by"/>
+        <result property="applyDate" column="apply_date"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.adv.AdvDTO" id="advList">
+        <collection property="advLinkConfigDTOList" column="id"
+                    ofType="com.leimingtech.modules.dto.adv.AdvLinkConfigDTO"
+                    select="findAdvLink">
+        </collection>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.vo.adv.AdvEntityVo" id="advVoMap">
+        <result property="id" column="id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="advKey" column="adv_key"/>
+        <result property="advTitle" column="adv_title"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="advType" column="adv_type"/>
+        <result property="relationId" column="relation_id"/>
+        <result property="relationType" column="relation_type"/>
+        <result property="relationTarget" column="relation_target"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="sort" column="sort"/>
+        <result property="storeId" column="store_id"/>
+        <result property="siteId" column="site_id"/>
+        <result property="advState" column="adv_state"/>
+        <result property="applyState" column="apply_state"/>
+        <result property="applyBy" column="apply_by"/>
+        <result property="applyDate" column="apply_date"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="floorName" column="floor_name"/>
+        <result property="gcName" column="gc_name"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        la.id,
+        la.category_id,
+        la.adv_key,
+        la.adv_title,
+        la.start_date,
+        la.end_date,
+        la.adv_type,
+        la.relation_id,
+        la.relation_type,
+        la.relation_target,
+        la.image_url,
+        la.sort,
+        la.store_id,
+        la.site_id,
+        la.adv_state,
+        la.apply_state,
+        la.apply_by,
+        la.apply_date,
+        la.creator,
+        la.create_date,
+        la.updater,
+        la.update_date,
+        la.del_flag,
+        la.version
+    </sql>
+
+    <sql id="whereStatement">
+        <where>
+            <if test="categoryId != null and categoryId != ''">
+                AND la.category_id = #{categoryId}
+            </if>
+            <if test="advTitle != null and advTitle != ''">
+                AND la.adv_title LIKE concat('%', #{advTitle}, '%')
+            </if>
+            <if test="advKey != null and advKey != ''">
+                AND la.adv_key = #{advKey}
+            </if>
+            <if test="advType != null">
+                AND la.adv_type = #{advType}
+            </if>
+            <if test="relationId != null">
+                AND la.relation_id = #{relationId}
+            </if>
+            <if test="startDate != null">
+                AND la.start_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND la.end_date &lt;= #{endDate}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="whereStatementDel">
+        <where>
+            la.del_flag = 0
+            <if test="categoryId != null and categoryId != ''">
+                AND la.category_id = #{categoryId}
+            </if>
+            <if test="advTitle != null and advTitle != ''">
+                AND la.adv_title LIKE concat('%', #{advTitle}, '%')
+            </if>
+            <if test="advKey != null and advKey != ''">
+                AND la.adv_key = #{advKey}
+            </if>
+            <if test="advType != null and advType != ''">
+                AND la.adv_type = #{advType}
+            </if>
+            <if test="relationId != null and relationId != ''">
+                AND la.relation_id = #{relationId}
+            </if>
+            <if test="startDate1 != null and startDate1 !=  ''">
+                AND la.start_date &gt;= #{startDate1}
+            </if>
+            <if test="startDate2 != null and startDate2 !=  ''">
+                AND la.start_date &lt;= #{startDate2}
+            </if>
+            <if test="endDate1 != null and endDate1 != ''">
+                AND la.end_date &gt;= #{endDate1}
+            </if>
+            <if test="endDate2 != null and endDate2 != ''">
+                AND la.end_date &lt;= #{endDate2}
+            </if>
+        </where>
+    </sql>
+
+    <!--广告展示集合查询-->
+    <select id="findAdvList" resultMap="advMap">
+        select
+        <include refid="Base_Column_List"/>
+        from lmshop_adv la
+        <include refid="whereStatementDel"/>
+    </select>
+
+    <!--广告展示集合查询-->
+    <select id="findAdvShowList" resultMap="advVoMap">
+        SELECT
+        la.id,
+        la.category_id,
+        la.adv_key,
+        la.adv_title,
+        la.image_url,
+        la.start_date,
+        la.end_date,
+        la.sort,
+        case when la.adv_type=1 then lwf.floor_type when la.adv_type=2 then lgcc.show_type end as type,
+        la.adv_state,
+        la.apply_state,
+        lac.category_name,
+        lwf.floor_name,
+        lgcc.gc_name
+        FROM lmshop_adv la
+        LEFT JOIN lmshop_adv_category lac ON la.category_id = lac.id
+        LEFT JOIN lmshop_web_floor lwf ON la.relation_id = lwf.id
+        LEFT JOIN lmshop_goods_class_custom lgcc ON la.relation_id = lgcc.id
+        where la.del_flag = 0
+        <if test="params.categoryId != null and params.categoryId != ''">
+            AND la.category_id = #{params.categoryId}
+        </if>
+        <if test="params.type != null and params.type != ''">
+            <if test="params.advType != null and params.advType != '' and params.advType==1">
+                AND lwf.floor_type = #{params.type}
+            </if>
+            <if test="params.advType != null and params.advType != '' and params.advType==2">
+                AND lgcc.show_type = #{params.type}
+            </if>
+        </if>
+        <if test="params.advTitle != null and params.advTitle != ''">
+            AND la.adv_title LIKE concat('%', #{params.advTitle}, '%')
+        </if>
+        <if test="params.advKey != null and params.advKey != ''">
+            AND la.adv_key = #{params.advKey}
+        </if>
+        <if test="params.storeId != null">
+            AND la.store_id = #{params.storeId}
+        </if>
+        <if test="params.storeId == null ">
+            AND la.store_id is null
+        </if>
+        <if test="params.advType != null and params.advType != ''">
+            AND la.adv_type = #{params.advType}
+        </if>
+        <if test="params.relationId != null and params.relationId != ''">
+            AND la.relation_id = #{params.relationId}
+        </if>
+        <if test="params.startDate1 != null and params.startDate1 !=  ''">
+            AND la.start_date &gt;= #{params.startDate1}
+        </if>
+        <if test="params.startDate2 != null and params.startDate2 !=  ''">
+            AND la.start_date &lt;= #{params.startDate2}
+        </if>
+        <if test="params.endDate1 != null and params.endDate1 != ''">
+            AND la.end_date &gt;= #{params.endDate1}
+        </if>
+        <if test="params.endDate2 != null and params.endDate2 != ''">
+            AND la.end_date &lt;= #{params.endDate2}
+        </if>
+        <if test="params.categoryName != null and params.categoryName != ''">
+            AND lac.category_name LIKE concat('%', #{params.categoryName}, '%')
+        </if>
+        <if test="params.floorName != null and params.floorName != ''">
+            AND lwf.floor_name LIKE concat('%', #{params.floorName}, '%')
+        </if>
+        <if test="params.gcName != null and params.gcName != ''">
+            AND lgcc.gc_name LIKE concat('%', #{params.gcName}, '%')
+        </if>
+
+
+        <if test="params.advType == 0">
+            AND lac.del_flag = 0
+            ORDER BY lac.create_date DESC,
+        </if>
+        <if test="params.advType == 1">
+            AND lwf.del_flag = 0
+            ORDER BY lwf.sort ASC,
+            lwf.create_date DESC,
+        </if>
+        <if test="params.advType == 2">
+            AND lgcc.del_flag = 0
+            ORDER BY lgcc.sort ASC,
+            lgcc.create_date DESC,
+        </if>
+        la.sort ASC,
+        la.create_date DESC
+    </select>
+
+    <!--广告详情查询-->
+    <select id="findAdvById" resultMap="advVoMap">
+        SELECT
+	      la.*,lac.category_name,lwf.floor_name,lgcc.gc_name
+        FROM
+            lmshop_adv la
+        LEFT JOIN lmshop_adv_category lac ON la.category_id = lac.id
+        LEFT JOIN lmshop_web_floor lwf ON la.relation_id = lwf.id
+        LEFT JOIN lmshop_goods_class_custom lgcc ON la.relation_id = lgcc.id
+        where la.id = #{id}
+    </select>
+
+    <!--根据类别id查询展示中的广告-->
+    <select id="findIngAdv" resultMap="advList">
+        select * from lmshop_adv la
+        <include refid="whereStatementDel"/>
+        and (la.end_date &gt;= NOW() or la.end_date is null) and la.start_date &lt;= NOW()
+        and la.adv_state = 1 and la.apply_state = 1
+        ORDER BY la.sort ASC
+    </select>
+    <select id="stoeGoodsClassAdv" resultType="com.leimingtech.modules.dto.adv.AdvDTO">
+        select * from lmshop_adv la
+        and (la.end_date &gt;= NOW() or la.end_date is null) and la.start_date &lt;= NOW()
+        and la.adv_state = 1 and la.apply_state = 1 and la.adv_type=2
+        and la.store_id is not null
+        ORDER BY la.sort ASC
+    </select>
+    <select id="findStoreAdvShowList" resultType="com.leimingtech.modules.vo.adv.AdvEntityVo">
+        SELECT
+        la.id,
+        la.category_id,
+        la.adv_key,
+        la.adv_title,
+        la.image_url,
+        la.start_date,
+        la.end_date,
+        la.sort,
+        case when la.adv_type=1 then lwf.floor_type end as type,
+        la.adv_state,
+        la.apply_state,
+        lac.category_name,
+        lwf.floor_name,
+        la.relation_name
+        FROM lmshop_adv la
+        LEFT JOIN lmshop_adv_category lac ON la.category_id = lac.id
+        LEFT JOIN lmshop_web_floor lwf ON la.relation_id = lwf.id
+        where la.del_flag = 0
+        <if test="params.categoryId != null and params.categoryId != ''">
+            AND la.category_id = #{params.categoryId}
+        </if>
+        <if test="params.type != null and params.type != ''">
+            <if test="params.advType != null and params.advType != '' and params.advType==1">
+                AND lwf.floor_type = #{params.type}
+            </if>
+        </if>
+        <if test="params.advTitle != null and params.advTitle != ''">
+            AND la.adv_title LIKE concat('%', #{params.advTitle}, '%')
+        </if>
+        <if test="params.advKey != null and params.advKey != ''">
+            AND la.adv_key = #{params.advKey}
+        </if>
+        <if test="params.storeId != null">
+            AND la.store_id = #{params.storeId}
+        </if>
+        <if test="params.storeId == null ">
+            AND la.store_id is null
+        </if>
+        <if test="params.advType != null and params.advType != ''">
+            AND la.adv_type = #{params.advType}
+        </if>
+        <if test="params.relationId != null and params.relationId != ''">
+            AND la.relation_id = #{params.relationId}
+        </if>
+        <if test="params.startDate1 != null and params.startDate1 !=  ''">
+            AND la.start_date &gt;= #{params.startDate1}
+        </if>
+        <if test="params.startDate2 != null and params.startDate2 !=  ''">
+            AND la.start_date &lt;= #{params.startDate2}
+        </if>
+        <if test="params.endDate1 != null and params.endDate1 != ''">
+            AND la.end_date &gt;= #{params.endDate1}
+        </if>
+        <if test="params.endDate2 != null and params.endDate2 != ''">
+            AND la.end_date &lt;= #{params.endDate2}
+        </if>
+        <if test="params.categoryName != null and params.categoryName != ''">
+            AND lac.category_name LIKE concat('%', #{params.categoryName}, '%')
+        </if>
+        <if test="params.floorName != null and params.floorName != ''">
+            AND lwf.floor_name LIKE concat('%', #{params.floorName}, '%')
+        </if>
+        <if test="params.gcName != null and params.gcName != ''">
+            AND la.relation_name LIKE concat('%', #{params.gcName}, '%')
+        </if>
+        <if test="params.advType == 0">
+            AND lac.del_flag = 0
+            ORDER BY la.sort ASC, la.create_date DESC
+        </if>
+        <if test="params.advType == 1">
+            AND lwf.del_flag = 0
+            ORDER BY la.sort ASC,
+            la.create_date DESC
+        </if>
+        <if test="params.advType == 2">
+            ORDER BY la.sort ASC,
+            la.create_date DESC
+        </if>
+
+
+    </select>
+    <select id="relevanceClass" resultType="java.lang.Long">
+        select la.relation_id
+        from lmshop_adv la
+        left join lmshop_goods_class_custom lgcu on lgcu.id=la.relation_id
+        where la.del_flag=0 and show_type=1 and  lgcu.del_flag=0
+
+    </select>
+
+    <select id="findAdvLink" resultType="com.leimingtech.modules.dto.adv.AdvLinkConfigDTO">
+      select *
+      from lmshop_adv_link_config
+      where del_flag=0 and adv_id=#{advId}
+    </select>
+    <select id="getLogoCount" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_adv
+        where del_flag=0 and adv_state=1 and adv_key='pcStoreLogo' and store_id=#{storeId}
+        <if test="advId!=null">
+            id != #{advId}
+        </if>
+    </select>
+    <select id="getClassIdByCustomId" resultType="java.lang.Long">
+        select class_id
+        from lmshop_goods_class_custom
+        where id = #{relationTarget}
+    </select>
+
+    <!--编辑广告-->
+    <update id="editAdv">
+        update lmshop_adv
+        <set>
+            adv_title = #{advTitle},
+            start_date = #{startDate},
+            end_date = #{endDate},
+            relation_target = #{relationTarget},
+            relation_type = #{relationType},
+            class_id = #{classId},
+            image_url = #{imageUrl},
+            sort = #{sort},
+            adv_state = #{advState},
+            apply_state = #{applyState},
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

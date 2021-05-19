@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.custom.GoodsClassCustomDao">
+
+    <resultMap type="com.leimingtech.modules.entity.custom.GoodsClassCustomEntity" id="goodsClassCustomMap">
+        <result property="id" column="id"/>
+        <result property="gcParentId" column="gc_parent_id"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="gcPic" column="gc_pic"/>
+        <result property="gcUrl" column="gc_url"/>
+        <result property="classId" column="class_id"/>
+        <result property="idPath" column="id_path"/>
+        <result property="showFlag" column="show_flag"/>
+        <result property="showType" column="show_type"/>
+        <result property="sort" column="sort"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--启用/禁用展示类目-->
+    <update id="updateShowFlag" parameterType="java.util.Map">
+        UPDATE lmshop_goods_class_custom
+        SET show_flag = #{showFlag}
+        WHERE
+        ( id = #{id} OR id_path LIKE concat( '%', #{id}, '%' ) )
+        AND del_flag = 0
+    </update>
+    <!--根据分类ID 删除展示类目-->
+    <update id="deleteCustomByGoodsClassId">
+        update lmshop_goods_class_custom set del_flag=1
+        where class_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+    <!--更新时验证分类名称是否重复-->
+    <select id="updateVerifyClassName" resultType="java.lang.Integer">
+         select count(*)
+        from lmshop_goods_class_custom
+        where del_flag=0 and gc_parent_id=#{gcParentId}  and gc_name=#{gcName} and id!=#{id}
+        <if test="showType != null">
+            AND show_type = #{showType}
+        </if>
+        <if test="showType == null">
+            AND show_type = 0
+        </if>
+    </select>
+
+    <!--查询展示类别详情-->
+    <select id="selectDetailById" parameterType="java.lang.Long"
+            resultType="com.leimingtech.modules.dto.custom.GoodsClassCustomDetailDTO">
+	   SELECT
+            lgcc.id as id,
+            lgcc.gc_parent_id as gcParentId,
+            lgcc.gc_name as gcName,
+            lgcc.gc_pic as gcPic,
+            lgcc.gc_url as gcUrl,
+            lgcc.class_id as classId,
+            lgcc.id_path as idPath,
+            lgcc.show_flag as showFlag,
+            lgcc.sort as sort,
+            pgcc.gc_name as parentName
+        FROM
+            lmshop_goods_class_custom lgcc
+            LEFT JOIN lmshop_goods_class_custom pgcc ON lgcc.gc_parent_id = pgcc.id
+        WHERE
+            lgcc.id = #{id}
+    </select>
+    <select id="selectAllCustom" resultType="com.leimingtech.modules.dto.custom.GoodsClassCustomListDTO">
+        SELECT
+            id,
+            gc_parent_id,
+            gc_name,
+            sort,
+            create_date,
+            show_flag,
+            id_path,
+            gc_pic,
+            gc_url,
+            class_id,
+            gc_parent_id as pid
+        FROM
+            lmshop_goods_class_custom
+        <where>
+            del_flag = 0
+            <if test="showFlag != null">
+                AND show_flag = #{showFlag}
+            </if>
+            <if test="showType != null">
+                AND show_type = #{showType}
+            </if>
+            <if test="showType == null">
+                AND show_type = 0
+            </if>
+        </where>
+        ORDER BY sort ASC,
+        create_date ASC
+    </select>
+    <!--首页楼层查询分类(返回树形结构)映射-->
+    <resultMap id="tree" type="com.leimingtech.modules.dto.custom.GoodsClassCustomTreeDTO">
+        <result property="id" column="id"/>
+        <result property="pid" column="gc_parent_id"/>
+        <result property="gcName" column="gc_name"/>
+    </resultMap>
+    <!--首页楼层查询分类H5(返回树形结构)-->
+    <select id="sellectCustomTree" resultMap="tree">
+        SELECT
+        id,
+        gc_parent_id,
+        gc_name
+    FROM
+        lmshop_goods_class_custom
+    WHERE
+        del_flag = 0 AND show_flag = 1
+        <if test="showType!=null">
+            and   show_type=#{showType}
+        </if>
+        <if test="showType==null">
+            and   show_type=0
+        </if>
+    </select>
+    <!--查询分类名称是否重复-->
+    <select id="findClassName" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_goods_class_custom
+        where del_flag=0 and gc_parent_id=#{gcParentId} and gc_name=#{gcName}
+        <if test="showType!=null">
+          and   show_type=#{showType}
+        </if>
+        <if test="showType==null">
+          and   show_type=0
+        </if>
+    </select>
+    <!--校验子级名称是否和父级名称一样-->
+    <select id="findParentName" resultType="java.lang.Integer">
+         select count(*)
+        from lmshop_goods_class_custom
+        where del_flag=0 and id=#{parentId} and gc_name=#{gcName}
+    </select>
+<!--    查找goodsClassCustom-->
+    <select id="findByClassName" resultMap="goodsClassCustomMap">
+        select  * from lmshop_goods_class_custom
+        where del_flag=#{showType} and gc_parent_id=#{gcParentId} and gc_name=#{gcName}
+    </select>
+</mapper>

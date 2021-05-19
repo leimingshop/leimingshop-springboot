@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goods.spec.GoodsSpecAttrValurAttrDao">
+
+    <resultMap type="com.leimingtech.modules.dto.spec.GoodsSpecListAttrValurDTO" id="goodsSpecMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="specSerial" column="spec_serial"/>
+        <result property="specName" column="spec_name"/>
+        <result property="specStorage" column="spec_storage"/>
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="specCostPrice" column="spec_cost_price"/>
+        <result property="specAttrName" column="spec_attr_name"/>
+        <result property="isEnable" column="is_enable"/>
+        <result property="specMainPicture" column="spec_main_picture"/>
+        <result property="specSaleNum" column="spec_sale_num"/>
+        <result property="specShow" column="spec_show"/>
+        <collection property="goodsSpecAttrValurAttrDTO" column="id"
+                    ofType="com.leimingtech.modules.dto.spec.GoodsSpecAttrValurAttrDTO"
+                    select="com.leimingtech.modules.dao.goods.spec.GoodsSpecAttrValurAttrDao.findListAttrRel"
+                    javaType="java.util.List">
+        </collection>
+    </resultMap>
+
+
+    <select id="findListAttrRel" resultType="com.leimingtech.modules.dto.spec.GoodsSpecAttrValurAttrDTO">
+        SELECT lgsar.`spec_attr_value_id` AS specAttrValueId,
+        lgsar.`spec_attr_id` AS specAttrId,
+        lgsar.`spec_id` AS  specId,
+        lgsar.`is_main` AS isMain,
+        lgsar.`goods_id` AS goodsId
+         FROM lmshop_goods_spec_attr_rel lgsar
+        where  lgsar.spec_id=#{id}
+    </select>
+
+
+    <!--<select id="findListAttrRel" resultType="com.leimingtech.modules.dto.spec.GoodsSpecAttrValurAttrDTO">-->
+        <!--SELECT lgsar.`spec_attr_value_id` AS specAttrValueId,-->
+        <!--lgsar.`spec_attr_id` AS specAttrId,-->
+        <!--lgsar.`spec_id` AS  specId,-->
+        <!--lgsa.`spec_attr_name` AS specAttrName,-->
+        <!--lgsav.`spec_attr_value`  AS specAttrValue,-->
+        <!--lgsar.`is_main` AS isMain,-->
+        <!--lgsar.`goods_id` AS goodsId-->
+         <!--FROM lmshop_goods_spec_attr_rel lgsar-->
+        <!--LEFT JOIN lmshop_goods_spec_attr lgsa ON lgsa.`id`=lgsar.`spec_attr_id`-->
+        <!--LEFT JOIN lmshop_goods_spec_attr_value lgsav ON lgsav.`id`=lgsar.`spec_attr_value_id`-->
+        <!--where  lgsar.spec_id=#{id}-->
+    <!--</select>-->
+
+
+
+    <select id="findListSpecAttrRel" resultMap="goodsSpecMap">
+           SELECT * FROM lmshop_goods_spec
+    </select>
+
+
+    <select id="goodsAllSpec" resultType="com.leimingtech.modules.dto.spec.GoodsAllSpecDTO">
+              SELECT
+          lgs.`goods_id` AS goodsId,
+          lgs.`spec_main_picture` AS specMainPicture,
+          lgsa.`spec_attr_name` AS specAttrName,
+          lgsa.`id` AS lgsaId,
+          lgsav.`id` AS lgsavId,
+          lgsav.`spec_attr_value` AS specAttrValue,
+          lgsar.`id` AS Id
+        FROM
+          lmshop_goods_spec lgs
+          LEFT JOIN lmshop_goods_spec_attr_rel lgsar
+            ON lgsar.`spec_id` = lgs.`id`
+          LEFT JOIN lmshop_goods_spec_attr lgsa
+            ON lgsa.`id` = lgsar.`spec_attr_id`
+          LEFT JOIN lmshop_goods_spec_attr_value lgsav
+            ON lgsav.`id` = lgsar.`spec_attr_value_id`
+    </select>
+
+
+
+</mapper>

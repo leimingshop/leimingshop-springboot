@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.recommend.CartRecommendDao">
+
+    <resultMap type="com.leimingtech.modules.entity.recommend.CartRecommendEntity" id="cartRecommendMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="sortNum" column="sort_num"/>
+        <result property="category" column="category"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <insert id="insertBatch">
+        INSERT INTO shop_cart_recommend
+        (id,
+        goods_id,
+        sort_num,
+        category)
+        VALUES
+        <foreach collection="list" item="cartRecommend" index="index" separator=",">
+            ( #{cartRecommend.id},
+            #{cartRecommend.goodsId},
+            #{cartRecommend.sortNum},
+            #{cartRecommend.goodsName},
+            #{cartRecommend.category},
+            #{cartRecommend.price},
+            #{cartRecommend.stock},
+            #{cartRecommend.creator},
+            #{cartRecommend.createDate},
+            #{cartRecommend.updater},
+            #{cartRecommend.updateDate},
+            #{cartRecommend.delFlag},
+            #{cartRecommend.version} )
+        </foreach>
+
+    </insert>
+    <update id="updateBatch">
+        update lmshop_cart_recommend
+        set sort_num =
+        <foreach collection="list" item="cartRecommend" index="index"
+                 separator=" " open="case id" close="end">
+            when #{cartRecommend.id} then
+            #{cartRecommend.sortNum}
+        </foreach>
+        where id in
+        <foreach collection="list" item="cartRecommend" index="index"
+                 separator="," open="(" close=")">
+            #{cartRecommend.id}
+        </foreach>
+    </update>
+
+    <select id="pageList" resultType="com.leimingtech.modules.dto.recommend.CartRecommendPageDTO">
+        SELECT
+            lcr.id,
+            lcr.goods_id,
+            lcr.sort_num,
+            lcr.category,
+            lg.goods_name,
+            lg.spec_sell_price,
+            lg.goods_sub_title,
+            lg.spec_id,
+            gll.label_name,
+            lg.goods_main_picture AS specMainPicture,
+            lgi.comment_num,
+            lgi.sale_num,
+            ( SELECT sum( spec_storage ) FROM lmshop_goods_spec WHERE del_flag = 0 AND goods_id = lcr.goods_id ) AS STORAGE
+        FROM
+            lmshop_cart_recommend lcr
+            LEFT JOIN lmshop_goods lg ON lcr.goods_id = lg.id
+            LEFT JOIN lmshop_goods_label_rel gll ON gll.goods_id = lg.id
+            LEFT JOIN lmshop_goods_info lgi ON lgi.id = lg.id
+        WHERE
+            lcr.del_flag =0
+        <if test="params.goodsId!=null and params.goodsId!=''">
+            and lcr.goods_id like concat('%',#{params.goodsId},'%')
+        </if>
+
+        <if test="params.goodsName!=null and params.goodsName!=''">
+            and lg.goods_name like concat('%',#{params.goodsName},'%')
+        </if>
+        order by lcr.sort_num asc , lcr.update_date desc ,  lcr.id desc
+    </select>
+
+    <select id="findGoodsPage" resultType="com.leimingtech.modules.dto.recommend.GoodsPageDTO">
+        select id as goodsId,goods_name as goodsName,spec_sell_price as goodsSellPrice,gc_name as categoty,goods_main_picture as goodsMainPicture
+        from lmshop_goods
+        where del_flag=0 and goods_show=1
+        <if test="params.goodsName !=null and params.goodsName!=''">
+            AND (goods_name like concat('%', #{params.goodsName}, '%') OR id = #{params.goodsName})
+        </if>
+        <if test="params.categoryId != null and params.categoryId != ''">
+            AND gc_id = #{params.categoryId}
+        </if>
+        and id not in (select goods_id from lmshop_cart_recommend where del_flag=0)
+
+    </select>
+
+    <select id="findList" resultType="com.leimingtech.modules.dto.goods.GoodsRecommendDTO">
+        SELECT
+            lg.id,
+            lg.goods_name,
+            lg.store_id,
+            lg.store_name,
+            lg.spec_id,
+            lg.spec_sell_price AS goodsStorePrice,
+            lg.store_type,
+            lg.goods_main_picture AS specMainPicture,
+            lgi.comment_num,
+            lgi.sale_num,
+            label.label_name AS labelName
+        FROM
+            lmshop_goods lg
+            LEFT JOIN lmshop_cart_recommend lcr ON lg.id = lcr.goods_id
+            LEFT JOIN lmshop_goods_label_rel labelRel ON labelRel.goods_id = lg.id
+            LEFT JOIN lmshop_goods_label label ON label.id = labelRel.label_id
+            LEFT JOIN lmshop_goods_info lgi ON lgi.id = lg.id
+        WHERE
+            lcr.del_flag = 0
+            AND lg.goods_show = 1
+            AND lg.del_flag = 0
+        ORDER BY
+            lcr.sort_num ASC
+            LIMIT 10
+
+    </select>
+
+</mapper>

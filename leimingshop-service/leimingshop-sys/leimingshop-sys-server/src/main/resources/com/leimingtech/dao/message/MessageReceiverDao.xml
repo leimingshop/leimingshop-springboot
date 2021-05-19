@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.message.MessageReceiverDao">
+
+    <resultMap type="com.leimingtech.entity.message.MessageReceiverEntity" id="messageReceiverMap">
+        <result property="id" column="id"/>
+        <result property="messageId" column="message_id"/>
+        <result property="sendId" column="send_id"/>
+        <result property="sendName" column="send_name"/>
+        <result property="receiveId" column="receive_id"/>
+        <result property="receiveName" column="receive_name"/>
+        <result property="status" column="status"/>
+        <result property="showFlag" column="show_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        message_id,
+        send_id,
+        send_name,
+        receive_id,
+        receive_name,
+        status,
+        show_flag,
+        creator,
+        create_date
+    </sql>
+
+    <!--运营端站内信接收人列表-->
+    <select id="adminList" resultType="com.leimingtech.dto.message.MessageReceiverDTO">
+        select
+        lmr.id,
+        lmr.message_id,
+        lmr.send_id,
+        lmr.send_name,
+        lmr.receive_id,
+        lmr.receive_name,
+        lmr.status,
+        lmr.show_flag,
+        lmr.update_date,
+        lmt.message_content
+        from lmshop_message_receiver lmr left join lmshop_message_text lmt on lmr.message_id=lmt.id
+        where lmr.del_flag = 0
+        <if test="params.messageId != null and params.messageId != ''">
+            and lmr.message_id = #{params.messageId}
+        </if>
+        <if test="params.receiveName != null and params.receiveName != ''">
+            and (lmr.receive_name like concat('%',#{params.receiveName},'%') or lmr.send_name like
+            concat('%',#{params.receiveName},'%'))
+        </if>
+        <if test="params.status != null and params.status != ''">
+            and lmr.status = #{params.status}
+        </if>
+        <if test="params.strTime != null and params.strTime != ''">
+            and lmr.DATE_FORMAT(update_date,'%Y-%m-%d') &gt;= #{params.strTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != ''">
+            and lmr.DATE_FORMAT(update_date,'%Y-%m-%d') &lt;= #{params.endTime}
+        </if>
+        order by lmr.receive_id desc
+    </select>
+
+    <!--查询接收人获取消息总条数-->
+    <select id="selectByReceiveId" parameterType="java.lang.Long" resultType="int">
+        SELECT
+	    count(1)
+        FROM
+	      lmshop_message_text mt
+        LEFT JOIN lmshop_message_receiver mr ON mt.id = mr.message_id
+        WHERE
+	      receive_id = #{id}
+        AND mt.del_flag = 0
+        AND mr.status = 0
+    </select>
+    <!--根据接收人查询消息列表-->
+    <select id="getList" resultMap="messageReceiverMap">
+        select
+        <include refid="Base_Column_List"/>
+        from lmshop_message_receiver
+        where del_flag = 0 and receive_id = #{receiveId}
+    </select>
+    <select id="sellerMessagePage" resultType="com.leimingtech.dto.message.SellerMessageReceiverDTO">
+        select
+        lmr.id,
+        lmt.id as messageId,
+        lmr.send_id as sendId,
+        lmr.send_name as sendName,
+        lmt.send_time,lmr.send_name,
+        lmr.status,lmt.message_type,
+        lmt.message_title
+        from lmshop_message_text lmt
+        left join lmshop_message_receiver lmr on lmt.id=lmr.message_id
+        where lmr.receive_id=#{params.receiveId} and lmt.del_flag=0 and lmr.show_flag=0 and lmr.del_flag=0
+        <if test="params.status!=null and params.status!=''">
+            and lmr.status=#{params.status}
+        </if>
+        <if test="params.messageTitle!=null and params.messageTitle!=''">
+            and lmt.message_title like concat('%',#{params.messageTitle},'%')
+        </if>
+        <if test="params.sendName!=null and params.sendName!=''">
+            and lmr.send_name like concat('%',#{params.sendName},'%')
+        </if>
+        <if test="params.messageType!=null and params.messageType!=''">
+            and lmt.message_type=#{params.messageType}
+        </if>
+
+        <if test="params.strTime != null and params.strTime != ''">
+            and DATE_FORMAT(lmt.send_time,'%Y-%m-%d') &gt;= #{params.strTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != ''">
+            and DATE_FORMAT(lmt.send_time,'%Y-%m-%d') &lt;= #{params.endTime}
+        </if>
+        ORDER BY lmr.status ASC,lmt.send_time DESC
+
+    </select>
+    <!--修改为已读状态-->
+    <update id="updateStatus" parameterType="java.lang.Long">
+        update lmshop_message_receiver set status = 1 where receive_id=#{id} and message_id = #{messageId} and del_flag = 0
+    </update>
+    <update id="read">
+        update lmshop_message_receiver set status = 1 where del_flag=0 and receive_id=#{memberId}
+    </update>
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.topic.TopicRelDao">
+
+    <resultMap type="com.leimingtech.modules.entity.topic.TopicRelEntity" id="topicRelMap">
+        <result property="id" column="ID"/>
+        <result property="creator" column="CREATOR"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <result property="updater" column="UPDATER"/>
+        <result property="updateDate" column="UPDATE_DATE"/>
+        <result property="delFlag" column="DEL_FLAG"/>
+        <result property="version" column="VERSION"/>
+        <result property="topicId" column="TOPIC_ID"/>
+        <result property="goodsId" column="GOODS_ID"/>
+        <result property="sort" column="SORT"/>
+    </resultMap>
+    <update id="deleteByTopicId">
+        update lmshop_topic_rel set  DEL_FLAG = 1  where TOPIC_ID = #{id}
+
+    </update>
+    <select id="getRecGoodsId" resultType="java.lang.Long">
+      select GOODS_ID from lmshop_topic_rel where del_flag = 0 and TOPIC_ID=#{topicId}
+    </select>
+    <select id="topicPage" resultType="com.leimingtech.modules.dto.topic.TopicRelGoodsPageDTO">
+        select itr.SORT,itr.ID,ig.GOODS_NAME,ig.SPEC_SELL_PRICE,ig.ID as goodsId,ig.gc_name as gcName
+        from lmshop_topic_rel itr
+        left join lmshop_goods ig on ig.ID=itr.GOODS_ID
+        where itr.DEL_FLAG=0 and ig.DEL_FLAG=0 and itr.TOPIC_ID=#{params.topicId}
+        <if test="params.goodsName!= null and params.goodsName!= ''">
+            and ig.GOODS_NAME like CONCAT(CONCAT('%',#{params.goodsName}),'%')
+        </if>
+        <if test="params.gcId!= null">
+            and ig.GC_ID=#{params.gcId}
+        </if>
+
+    </select>
+
+
+</mapper>

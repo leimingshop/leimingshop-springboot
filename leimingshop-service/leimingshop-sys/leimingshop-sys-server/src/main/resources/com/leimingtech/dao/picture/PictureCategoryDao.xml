@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.picture.PictureCategoryDao">
+
+    <resultMap type="com.leimingtech.entity.picture.PictureCategoryEntity" id="pictureCategoryMap">
+        <result property="id" column="id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="storeId" column="store_id"/>
+        <result property="parentCategoryId" column="parent_category_id"/>
+        <result property="parentCategoryName" column="parent_category_name"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.dto.picture.FindPictureCategoryDTO" id="categoryMap">
+        <result property="id" column="id"/>
+        <result property="categoryName" column="category_name"/>
+        <collection property="list" column="id" ofType="com.leimingtech.dto.picture.SubordinateCategoryDTO"
+                    select="com.leimingtech.dao.picture.PictureCategoryDao.selectCategory" javaType="java.util.List">
+        </collection>
+
+    </resultMap>
+
+
+    <!--图片分类实体字段-->
+    <sql id="Base_column">
+        id,category_name,store_id,parent_category_id,parent_category_name
+
+    </sql>
+    <!--删除分组以及分组下的子分组-->
+    <update id="deleteCategory">
+        update lmshop_picture_category set del_flag=1
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        or parent_category_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+    <!--查询分组名称-->
+    <select id="selectByName" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_picture_category
+        where category_name = #{categoryName}
+        and del_flag = 0
+        and store_id=#{storeId}
+        <if test="id != null">
+            and id !=#{id}
+        </if>
+        <choose>
+            <when test="parentCategoryId != null">
+                and parent_category_id=#{parentCategoryId}
+            </when>
+            <otherwise>
+                and parent_category_id=0
+            </otherwise>
+        </choose>
+
+    </select>
+    <!--查询所有的一级ID集合-->
+    <select id="selectCategoryCounts" resultMap="categoryMap">
+        SELECT
+            lpc.*, count(category_id) AS pictureCount
+        FROM
+            lmshop_picture_category lpc
+        LEFT JOIN lmshop_picture lp ON lp.category_id =lpc.id and lp.del_flag = 0
+        WHERE
+            lpc.del_flag = 0
+        AND lpc.parent_category_id = 0
+        AND lpc.store_id =#{storeId}
+        GROUP BY
+        lpc.category_name
+    </select>
+
+    <!--查询所有的图片分组，并且当前分组下的数量-->
+    <select id="selectCategory" resultType="com.leimingtech.dto.picture.SubordinateCategoryDTO">
+        SELECT
+        count(category_id) AS pictureCount,
+        lmshop_picture_category.category_name AS categoryName,
+        lmshop_picture_category.id AS id
+        FROM
+        lmshop_picture_category
+        LEFT JOIN lmshop_picture ON lmshop_picture.category_id = lmshop_picture_category.id and lmshop_picture.del_flag=0
+        where lmshop_picture_category.del_flag=0 and lmshop_picture_category.parent_category_id=#{id}
+        GROUP BY
+        lmshop_picture_category.category_name
+    </select>
+    <select id="findAll" resultType="com.leimingtech.dto.picture.PictureCategoryDTOs">
+        select <include refid="Base_column"/>
+        from lmshop_picture_category
+        where del_flag=0 and store_id=#{storeId}
+    </select>
+</mapper>

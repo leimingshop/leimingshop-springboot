@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.attribute.AttributeDao">
+
+    <resultMap type="com.leimingtech.modules.entity.attribute.AttributeEntity" id="attributeMap">
+        <result property="id" column="id"/>
+        <result property="attrName" column="attr_name"/>
+        <result property="attrFormat" column="attr_format"/>
+        <result property="attrValue" column="attr_value"/>
+        <result property="attrSort" column="attr_sort"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.attribute.AttributeIdAndNameDTO" id="attrIdAndNameMap">
+        <result property="id" column="id"/>
+        <result property="attrName" column="attr_name"/>
+    </resultMap>
+
+    <!--批量查询属性名称-->
+    <select id="selectNameBatchByids" resultMap="attrIdAndNameMap">
+        select s.id, s.attr_name from lmshop_attribute s
+        <where>
+            s.del_flag = 0 AND s.id IN
+            <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+    <!--属性条件查询,可输入分组查询-->
+    <select id="findAttrListByGroupName" resultMap="attributeMap">
+        select distinct
+        a.*
+        from lmshop_attribute a left join lmshop_attr_group_rel agr on a.id = agr.attr_id
+        left join lmshop_attribute_group ag on agr.group_id = ag.id
+        <where>
+            a.del_flag = 0
+            <if test="attrName != null and attrName != ''">
+                AND a.attr_name like concat('%', #{attrName}, '%')
+            </if>
+            <if test="groupName != null and groupName!=''">
+                and agr.del_flag = 0 and ag.del_flag = 0
+                AND ag.group_name like concat('%', #{groupName}, '%')
+            </if>
+        </where>
+        order by a.create_date desc
+    </select>
+
+    <!--查询属性关联后台分类数量-->
+    <select id="countClass" resultType="com.leimingtech.modules.dto.attribute.AttrClassDTO" >
+        SELECT
+        a.id,
+        a.attr_name,
+        ifnull(b.number,0) as number
+        FROM
+        lmshop_attribute a
+        LEFT JOIN (
+        SELECT
+        gca.attr_id,
+        count(1) AS number
+        FROM
+        lmshop_goods_class_attr gca
+        INNER JOIN lmshop_goods_class gc ON gca.gc_class_id = gc.id
+        WHERE
+        gca.del_flag = 0
+        AND gc.del_flag = 0
+        GROUP BY
+        gca.attr_id
+        ) b ON a.id = b.attr_id
+        WHERE
+        a.del_flag = 0 and a.id in
+        <foreach collection="array" index="index" item="item"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by a.id
+    </select>
+
+
+</mapper>

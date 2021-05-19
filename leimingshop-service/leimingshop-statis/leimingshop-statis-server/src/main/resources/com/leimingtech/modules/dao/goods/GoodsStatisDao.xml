@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goods.GoodsStatisDao">
+
+
+    <select id="selectClassName" resultType="com.leimingtech.modules.dto.goods.GoodsClassNameDTO">
+        select id as classId ,gc_name as className from lmshop_goods_class WHERE gc_parent_id = 0 and del_flag = 0
+    </select>
+    <!--     不使用where  使用left jion -->
+    <!--log.goods_image AS goodsMainPicture,-->
+    <!--如果两个数据库不在同一台服务器，该SQL需要修改-->
+    <select id="goodsStatisSales" resultType="com.leimingtech.modules.dto.goods.GoodsStatisDTO">
+        	SELECT
+                    log.first_gc_id AS firstGcId,
+                    log.store_id AS storeId,
+                    log.spec_id AS specId,
+                    log.goods_id AS goodsId,
+                    log.spec_serial AS specSerial,
+                    log.spu_serial AS goodsSerial,
+                    log.spu_name AS goodsName,
+                    log.goods_name AS specName,
+                    log.buyer_id  AS buyerId,
+                    sum( log.goods_num ) AS salesNumber,
+                    sum(log.spec_pay_price*log.goods_num+log.avg_preferential_amount) AS salesAmount
+            FROM
+                    lmshop_order_goods log
+                    LEFT JOIN lmshop_order lo on log.order_id = lo.id and lo.payment_status = 1 AND lo.del_flag = 0
+            WHERE
+                DATE_FORMAT( log.create_date, '%Y-%m-%d' ) = #{date} and lo.payment_status = 1
+            GROUP BY
+                log.spec_id
+    </select>
+    <select id="selectGoodsMainPic" resultType="com.leimingtech.modules.entity.goods.GoodsPicEntity">
+        select
+            id as goodsId,
+            goods_main_picture
+        from lmshop_goods where 1=1
+        <if test="goodsIds != null ">
+            and id in
+            <foreach collection="goodsIds" open="(" close=")" separator="," item="goodsId">
+                #{goodsId}
+            </foreach>
+        </if>
+    </select>
+</mapper>

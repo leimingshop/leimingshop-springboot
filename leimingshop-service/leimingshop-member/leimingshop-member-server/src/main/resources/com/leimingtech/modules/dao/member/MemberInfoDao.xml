@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.member.MemberInfoDao">
+
+    <resultMap type="com.leimingtech.modules.entity.member.MemberInfoEntity" id="memberInfoMap">
+        <result property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="paymentPasswd" column="payment_passwd"/>
+        <result property="availableBalance" column="available_balance"/>
+        <result property="blockedBalance" column="blocked_balance"/>
+        <result property="consumePoint" column="consume_point"/>
+        <result property="availablePoint" column="available_point"/>
+        <result property="gradePoint" column="grade_point"/>
+        <result property="memberAreaid" column="member_areaid"/>
+        <result property="memberCityid" column="member_cityid"/>
+        <result property="memberProvinceid" column="member_provinceid"/>
+        <result property="stressId" column="stress_id"/>
+        <result property="memberAreainfo" column="member_areainfo"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--根据用户名修改-->
+    <update id="updateByMemberId" parameterType="com.leimingtech.modules.dto.member.MemberUpdateDTO">
+        update lmshop_member_info
+        <set>
+            <if test="memberProvinceid != null and memberProvinceid !=''">
+                member_areaid=#{memberAreaid},
+            </if>
+            <if test="memberCityid != null and memberCityid !=''">
+                member_cityid=#{memberCityid},
+            </if>
+            <if test="memberAreaid != null and memberAreaid !=''">
+                member_provinceid=#{memberProvinceid},
+            </if>
+            <if test="stressId != null and stressId !=''">
+                stress_id=#{stressId},
+            </if>
+            <if test="memberAreainfo != null and memberAreainfo !=''">
+                member_areainfo=#{memberAreainfo},
+            </if>
+            <if test="availablePoint != null">
+                available_point = available_point + #{availablePoint},
+            </if>
+            <if test="gradePoint != null">
+                grade_point = grade_point + #{gradePoint},
+            </if>
+            <if test="availableBalance != null and availableBalance !=''">
+                available_balance = available_balance + #{availableBalance},
+            </if>
+            <if test="blockedBalance != null and blockedBalance !=''">
+                blocked_balance = blocked_balance + #{blockedBalance},
+            </if>
+            <if test="availableWithdrawal != null and availableWithdrawal !=''">
+                available_withdrawal = available_withdrawal + #{availableWithdrawal},
+            </if>
+        </set>
+        where member_id=#{id} and del_flag = 0
+    </update>
+
+    <!-- lixiang 2019/12/26 10:39 修改会员成长值-->
+    <update id="updateGradePoint">
+        update lmshop_member_info
+        <set>
+            <if test="gradePoint != null">
+                grade_point = #{gradePoint},
+            </if>
+        </set>
+        where member_id=#{memberId} and del_flag = 0
+    </update>
+
+
+    <!--根据等级积分获取人数-->
+    <select id="selectMemberNum" resultType="java.lang.Long">
+        select count(DISTINCT member_id) from lmshop_member_info where del_flag = 0 and grade_point >= #{min} and grade_point <![CDATA[ < ]]> #{max}
+    </select>
+
+</mapper>

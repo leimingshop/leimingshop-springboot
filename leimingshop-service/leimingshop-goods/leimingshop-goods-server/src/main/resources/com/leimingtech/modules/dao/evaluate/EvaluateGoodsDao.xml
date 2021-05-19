@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.evaluate.EvaluateGoodsDao">
+
+    <resultMap type="com.leimingtech.modules.entity.evaluate.EvaluateGoodsEntity" id="evaluateGoodsMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="orderGoodsId" column="order_goods_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsPrice" column="goods_price"/>
+        <result property="specMainPicture" column="spec_main_picture"/>
+        <result property="evaluateScores" column="evaluate_scores"/>
+        <result property="evaluateContent" column="evaluate_content"/>
+        <result property="isAnonymous" column="is_anonymous"/>
+        <result property="storeId" column="store_id"/>
+        <result property="illegalDel" column="illegal_del"/>
+        <result property="storeName" column="store_name"/>
+        <result property="memberId" column="member_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="memberAvatar" column="member_avatar"/>
+        <result property="evaluateState" column="evaluate_state"/>
+        <result property="readState" column="read_state"/>
+        <result property="evaluateRemark" column="evaluate_remark"/>
+        <result property="evaluateExplain" column="evaluate_explain"/>
+        <result property="evaluateImage" column="evaluate_image"/>
+        <result property="replyContent" column="reply_content"/>
+        <result property="replyDate" column="reply_date"/>
+        <result property="specInfo" column="spec_info"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="goodsSpecId" column="goods_spec_id"/>
+        <result property="browseNum" column="browse_num"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <update id="illegalDel">
+        update  lmshop_evaluate_goods set  illegal_del =1
+        where id in
+        <foreach collection="id" open="(" close=")" separator="," item="id">
+        #{id}
+    </foreach>
+    </update>
+    <!--计算出好评率-->
+    <select id="reputably" resultType="java.lang.String">
+        SELECT
+        CONVERT (
+            (SELECT
+             count(evaluate_scores) AS count
+             FROM
+             lmshop_evaluate_goods
+             WHERE
+             del_flag = 0
+             AND goods_id = #{goodsId}
+             AND evaluate_scores IN (4, 5) ) / count(*) * 100,DECIMAL (10, 2)
+            )
+            FROM
+            lmshop_evaluate_goods
+        WHERE
+            del_flag = 0
+        AND goods_id = #{goodsId}
+    </select>
+    <select id="findPage" resultType="com.leimingtech.modules.dto.evaluate.FindEvaluateGoodsDTO">
+
+        select leg.*
+        from lmshop_evaluate_goods leg
+        left join lmshop_goods_spec lgc on lgc.id=leg.goods_spec_id
+        where leg.del_flag=0
+        <if test="goodsId!= null and goodsId!=''">
+            AND leg.goods_id = #{goodsId} and leg.evaluate_state=0
+        </if>
+        <if test="memberId!= null">
+            AND leg.member_id = #{memberId}
+        </if>
+        <if test="specId!= null">
+            AND leg.goods_spec_id = #{specId}
+        </if>
+        <if test="type==2">
+            AND leg.evaluate_image is not null
+        </if>
+        <if test="type==3">
+            AND leg.evaluate_scores in (4,5)
+        </if>
+        <if test="type==4">
+            AND leg.evaluate_scores in (2,3)
+        </if>
+        <if test="type==5">
+            AND leg.evaluate_scores =1
+        </if>
+        order by leg.create_date desc
+
+
+    </select>
+    <select id="findById" resultType="com.leimingtech.modules.dto.evaluate.EvaluateGoodsDTO">
+        select leg.*,lg.goods_sub_title
+        from lmshop_evaluate_goods leg
+        left join lmshop_goods lg on leg.goods_id=lg.id
+        where leg.del_flag=0
+        <if test="id!=null and id!=''">
+            and ( leg.id=#{id} or leg.order_id=#{id} )
+        </if>
+        <if test="orderGoodsId!=null and orderGoodsId!=''">
+            and leg.order_goods_id=#{orderGoodsId}
+        </if>
+
+
+    </select>
+    <select id="selectEvaCount" resultType="com.leimingtech.modules.dto.evaluate.H5EvaluateGoodsDTO">
+        select
+        count(1) as totalCount,
+        (select count(1)
+        from lmshop_evaluate_goods
+        where del_flag=0 and evaluate_image is not null
+        <if test="goodsId!=null">
+            and goods_id=#{goodsId}
+        </if>
+        <if test="specId!=null">
+            and goods_spec_id=#{specId}
+        </if>) as imgEvaCount,
+        (select count(1)
+        from lmshop_evaluate_goods
+        where del_flag=0 and evaluate_scores in (4,5)
+        <if test="goodsId!=null">
+            and goods_id=#{goodsId}
+        </if>
+        <if test="specId!=null">
+            and goods_spec_id=#{specId}
+        </if>) as goodEvaluate,
+        (select count(1)
+        from lmshop_evaluate_goods
+        where del_flag=0 and evaluate_scores in (2,3)
+        <if test="goodsId!=null">
+            and goods_id=#{goodsId}
+        </if>
+        <if test="specId!=null">
+            and goods_spec_id=#{specId}
+        </if>) as mediumEvaluate,
+        (select count(1)
+        from lmshop_evaluate_goods
+        where del_flag=0 and evaluate_scores =1
+        <if test="goodsId!=null">
+            and goods_id=#{goodsId}
+        </if>
+        <if test="specId!=null">
+            and goods_spec_id=#{specId}
+        </if>) as negativeEvaluate
+        from lmshop_evaluate_goods
+        where
+        del_flag=0
+        <if test="goodsId!=null">
+            and goods_id=#{goodsId}
+        </if>
+        <if test="specId!=null">
+            and goods_spec_id=#{specId}
+        </if>
+    </select>
+    <select id="pcEvaInfo" resultType="com.leimingtech.modules.vo.evaluate.EvaluateGoodsInfoVO">
+        select leg.*,lg.goods_sub_title as goodsSubTitle,
+        (select count(1) from lmshop_evaluate_goods where goods_id=leg.goods_id and del_flag=0) as num
+        from lmshop_evaluate_goods leg
+        left join lmshop_goods lg on leg.goods_id=lg.id
+        where leg.del_flag=0 and leg.order_id=#{orderId}
+
+    </select>
+    <select id="findEvaluateNum" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_evaluate_goods
+            where goods_id=#{goodsId} and del_flag=0
+    </select>
+
+
+</mapper>

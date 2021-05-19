@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.comment.CmsCommentDao">
+
+    <resultMap type="com.leimingtech.modules.entity.comment.CmsCommentEntity" id="cmsCommentMap">
+        <result property="id" column="id"/>
+        <result property="articleId" column="article_id"/>
+        <result property="commentContent" column="comment_content"/>
+        <result property="commentPicture" column="comment_picture"/>
+        <result property="commentCreaterId" column="comment_creater_id"/>
+        <result property="commentedId" column="commented_id"/>
+        <result property="commentParentId" column="comment_parent_id"/>
+        <result property="commentFirstId" column="comment_first_id"/>
+        <result property="commentLevel" column="comment_level"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="acCode" column="ac_code"/>
+        <result property="status" column="status"/>
+        <result property="version" column="version"/>
+        <result property="remind" column="remind"/>
+    </resultMap>
+
+    <!-- 后台评论列表 -->
+    <select id="selectCommentList" resultType="com.leimingtech.modules.dto.comment.CmsCommentDTO">
+        SELECT
+        lcc.id,
+        lcc.comment_content,
+        lcc.comment_picture,
+        lcc.creator,
+        lcc.create_date,
+        lcc.status,
+        lca.article_creater_id articleCreaterId,
+        IFNULL(lca.article_title,lca.article_content) articleTitle
+        FROM lmshop_cms_comment lcc
+        left join lmshop_cms_article lca
+        on lcc.article_id = lca.id
+        WHERE lcc.del_flag = 0
+        and lcc.ac_code = #{params.acCode}
+        <if test="params.articleTitle != null and params.articleTitle != ''">
+            and (instr(lca.article_title,#{params.articleTitle}) > 0 or instr(lca.article_content,#{params.articleTitle}) > 0)
+        </if>
+        <if test="params.creator != null and params.creator != ''">
+            and instr(lcc.creator,#{params.creator}) > 0
+        </if>
+        <if test="params.commentContent != null and params.commentContent != ''">
+            and instr(lcc.comment_content,#{params.commentContent}) > 0
+        </if>
+        <if test="params.status != null">
+            and lcc.status = #{params.status}
+        </if>
+        <if test="params.startTime != null and params.startTime!=''">
+            AND lcc.create_date &gt;= #{params.startTime}
+        </if>
+        <if test="params.endTime != null and params.endTime!=''">
+            AND lcc.create_date &lt;= #{params.endTime}
+        </if>
+        order by lcc.create_date desc
+    </select>
+
+    <!-- 资讯/圈子前台一级评论分页查询 -->
+    <select id="selectCommentFrontFirstList" resultType="com.leimingtech.modules.dto.comment.CmsCommentFrontPageDTO">
+        SELECT
+        lcc.id,
+        lcc.comment_content,
+        lcc.comment_picture,
+        lcc.comment_creater_id,
+        lcc.commented_id,
+        lcc.comment_parent_id,
+        lcc.create_date,
+        lcc.comment_level,
+        lcc.remind,
+        IF(lca.id,1,0) praiseFlag,
+        count(lcaa.id) praiseNum
+        FROM lmshop_cms_comment lcc
+        left join
+        lmshop_cms_attention lca
+        on lcc.id = lca.focused_id
+        and lca.attention_creater_id = #{params.memberId}
+        and lca.attention_flag = 4
+        left join lmshop_cms_attention lcaa
+        on lcc.id = lcaa.focused_id
+        WHERE lcc.article_id = #{params.articleId}
+        and lcc.del_flag = 0
+        and lcc.ac_code = #{params.acCode}
+        and lcc.comment_level = 1
+        and lcc.status = 1
+        group by lcc.id
+        ORDER BY lcc.create_date desc
+    </select>
+
+    <!-- 一条二级回复 -->
+    <select id="selectCommentSecond" resultType="com.leimingtech.modules.dto.comment.CmsCommentFrontPageDTO">
+        select
+        lcc.id,
+        lcc.comment_content,
+        lcc.comment_picture,
+        lcc.comment_creater_id,
+        lcc.commented_id,
+        lcc.comment_parent_id,
+        lcc.create_date,
+        lcc.remind,
+        count(lca.id) praiseNum
+        from lmshop_cms_comment lcc
+        left join lmshop_cms_attention lca
+        on lcc.id = lca.focused_id
+        where lcc.ac_code = #{acCode}
+        and lcc.del_flag = 0
+        and lcc.comment_level = 2
+        and lcc.status = 1
+        and comment_parent_id = #{commentParentId}
+        GROUP BY lcc.id
+        order by lcc.create_date desc
+    </select>
+
+    <!-- 资讯/圈子前台二级评论分页查询 -->
+    <select id="selectCommentFrontSecondList" resultType="com.leimingtech.modules.dto.comment.CmsCommentFrontPageDTO">
+        SELECT
+        lcc.id,
+        lcc.comment_content,
+        lcc.comment_picture,
+        lcc.comment_creater_id,
+        lcc.commented_id,
+        lcc.comment_parent_id,
+        lcc.create_date,
+        lcc.comment_level,
+        lcc.remind,
+        IF(lca.id,1,0) praiseFlag,
+        count(lcaa.id) praiseNum
+        FROM lmshop_cms_comment lcc
+        left join lmshop_cms_attention lca
+        on lcc.id = lca.focused_id
+        and lca.attention_creater_id = #{params.memberId}
+        and lca.attention_flag = 4
+        left join lmshop_cms_attention lcaa
+        on lcc.id = lcaa.focused_id
+        WHERE lcc.article_id = #{params.articleId}
+        and lcc.comment_first_id = #{params.commentParentId}
+        and lcc.del_flag = 0
+        and lcc.ac_code = #{params.acCode}
+        and lcc.comment_level &lt;&gt; 1
+        and lcc.status = 1
+        group by lcc.id
+        ORDER BY lcc.create_date desc
+    </select>
+
+</mapper>

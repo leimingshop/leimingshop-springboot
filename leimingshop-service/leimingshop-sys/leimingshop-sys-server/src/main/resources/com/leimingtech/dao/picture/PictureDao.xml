@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.picture.PictureDao">
+
+    <resultMap type="com.leimingtech.entity.picture.PictureEntity" id="lmpictureMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="pictureName" column="picture_name"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="thumbPath" column="thumb_path"/>
+        <result property="picturePath" column="picture_path"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <!--查询分组的数量-->
+    <select id="selectCategoryCount" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_picture
+        where category_id=#{categoryId} and del_flag=0
+    </select>
+    <!--查询未分组的图片-->
+    <select id="selectIsNotCategoryPicture" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_picture
+        where category_id is null and del_flag=0 and store_id=#{storeId}
+    </select>
+    <!--查询所有图片数量-->
+    <select id="findAllPictureCount" resultType="java.lang.Integer">
+    select count(*)
+    from lmshop_picture
+    where del_flag=0 and store_id=#{storeId}
+    </select>
+    <!--删除图片所在的分组-->
+    <update id="deletePictureCategory">
+        update lmshop_picture lp
+        <set>
+            <if test="delFlag == 0">
+                lp.category_id=null
+            </if>
+            <if test="delFlag == 1">
+                ,lp.del_flag=1
+            </if>
+        </set>
+        where lp.category_id in
+        (select qqw.id
+        from
+        (select id,parent_category_id
+        from lmshop_picture_category
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        or parent_category_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        ) qqw)
+
+    </update>
+
+</mapper>

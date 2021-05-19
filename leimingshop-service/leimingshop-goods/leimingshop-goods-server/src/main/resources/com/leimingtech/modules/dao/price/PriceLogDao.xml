@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.price.PriceLogDao">
+
+    <resultMap type="com.leimingtech.modules.entity.price.PriceLogEntity" id="priceLogMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="sku" column="sku"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="beforeCostPrice" column="before_cost_price"/>
+        <result property="beforeMarketPrice" column="before_market_price"/>
+        <result property="afterCostPrice" column="after_cost_price"/>
+        <result property="afterMarketPrice" column="after_market_price"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <select id="selectPriceLog" resultType="com.leimingtech.modules.dto.price.PriceLogDTO">
+        select *
+        from
+        (select *
+        from lmshop_price_log
+        where del_flag=0 and spec_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        order by create_date desc) ssq
+        group by ssq.spec_id
+
+    </select>
+    <select id="selectLogPage" resultType="com.leimingtech.modules.dto.price.PriceLogDTO">
+    select lpl.*,lgs.spec_attr_name as specName,lgs.spec_main_picture
+    from lmshop_price_log lpl
+    left join lmshop_goods_spec lgs on lpl.sku = lgs.id
+    left join lmshop_goods g on g.id=lpl.goods_id
+    <where>
+        lpl.del_flag=0
+        <if test="id!=null and id!=''">
+            and lpl.id=#{id}
+        </if>
+        <if test="storeId!=null and storeId !=''">
+            and lpl.store_id=#{storeId}
+        </if>
+        <if test="goodsId!=null and goodsId!=''">
+            and lpl.goods_id=#{goodsId}
+        </if>
+        <if test="sku !=null and sku !=''">
+            and lpl.sku=#{sku}
+        </if>
+        <if test="storeName!=null and storeName !=''">
+            and lpl.store_name like concat('%',#{storeName},'%')
+        </if>
+        <if test="goodsName !=null and goodsName !=''">
+            AND (lpl.goods_name like concat('%', #{goodsName}, '%') OR g.goods_serial = #{goodsName})
+        </if>
+    </where>
+
+
+    </select>
+
+
+</mapper>

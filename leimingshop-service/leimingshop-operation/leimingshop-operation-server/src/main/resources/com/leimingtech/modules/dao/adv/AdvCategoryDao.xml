@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.adv.AdvCategoryDao">
+
+    <resultMap type="com.leimingtech.modules.entity.adv.AdvCategoryEntity" id="advCategoryMap">
+        <result property="id" column="id"/>
+        <result property="advKey" column="adv_key"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="advTips" column="adv_tips"/>
+        <result property="advWeidth" column="adv_weidth"/>
+        <result property="advHeight" column="adv_height"/>
+        <result property="categoryType" column="category_type"/>
+        <result property="sysFlag" column="sys_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        adv_key,
+        category_name,
+        adv_tips,
+        adv_weidth,
+        adv_height,
+        category_type,
+        sys_flag,
+        status,
+        creator,
+        create_date,
+        updater,
+        update_date,
+        del_flag,
+        version
+    </sql>
+
+    <sql id="whereStatement">
+        <where>
+            <if test="advKey != null and advKey != ''">
+                AND  adv_key = #{advKey}
+            </if>
+            <if test="categoryName != null and categoryName != ''">
+                AND  category_name LIKE concat('%', #{categoryName}, '%')
+            </if>
+            <if test="categoryType != null">
+                AND  category_type = #{categoryType}
+            </if>
+            <if test="status != null">
+                AND  status = #{status}
+            </if>
+            <if test="sysFlag != null">
+                AND  sys_flag = #{sysFlag}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="whereStatementDel">
+        <where>
+            del_flag = 0
+            <if test="advKey != null and advKey != ''">
+                AND  adv_key = #{advKey}
+            </if>
+            <if test="categoryName != null and categoryName != ''">
+                AND  category_name LIKE concat('%', #{categoryName}, '%')
+            </if>
+            <if test="categoryType != null">
+                AND  category_type = #{categoryType}
+            </if>
+            <if test="status != null">
+                AND  status = #{status}
+            </if>
+            <if test="sysFlag != null">
+                AND  sys_flag = #{sysFlag}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findAdvCategoryList" resultMap="advCategoryMap">
+        select <include refid="Base_Column_List" /> from lmshop_adv_category
+        <include refid="whereStatementDel" />
+    </select>
+
+    <select id="findAdvCategoryPage" resultMap="advCategoryMap">
+        select <include refid="Base_Column_List" /> from lmshop_adv_category
+        <where>
+            del_flag = 0
+            <if test="params.advKey != null and params.advKey != ''">
+                AND  adv_key = #{params.advKey}
+            </if>
+            <if test="params.categoryName != null and params.categoryName != ''">
+                AND  category_name LIKE concat('%', #{params.categoryName}, '%')
+            </if>
+            <if test="params.categoryType != null">
+                AND  category_type = #{params.categoryType}
+            </if>
+            <if test="params.status != null">
+                AND  status = #{params.status}
+            </if>
+            <if test="params.sysFlag != null">
+                AND  sys_flag = #{params.sysFlag}
+            </if>
+        </where>
+    </select>
+
+    <!--统计系统广告类别数量-->
+    <select id="countAdvCategory" resultType="integer">
+        select count(1) from  lmshop_adv_category
+        where sys_flag &lt;&gt; 1
+        <if test="ids != null and ids != '' and  ids !='[]'">
+            and id in
+            <foreach item="item" index="index" collection="ids"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--根据广告分类标识查询广告分类-->
+    <select id="findAdvCategoryByAdvKey" resultMap="advCategoryMap">
+        select <include refid="Base_Column_List" /> from lmshop_adv_category
+        where del_flag = 0 and adv_key = #{advKey}
+    </select>
+
+</mapper>

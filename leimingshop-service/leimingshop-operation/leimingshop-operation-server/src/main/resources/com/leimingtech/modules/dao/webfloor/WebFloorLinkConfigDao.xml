@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.webfloor.WebFloorLinkConfigDao">
+
+    <resultMap type="com.leimingtech.modules.entity.webfloor.WebFloorLinkConfigEntity" id="webFloorLinkConfigMap">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="subTitle" column="sub_title"/>
+        <result property="description" column="description"/>
+        <result property="typeKeyWord" column="type_key_word"/>
+        <result property="imgUrl" column="img_url"/>
+        <result property="configStyle" column="config_style"/>
+        <result property="linkType" column="link_type"/>
+        <result property="imgMarking" column="img_marking"/>
+        <result property="typeShowMarking" column="type_show_marking"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="classIds" column="class_ids"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createDate" column="create_date"/>
+        <result property="creator" column="creator"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="updater" column="updater"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        title,
+        sub_title,
+        description,
+        type_key_word,
+        img_url,
+        link_type,
+        img_marking,
+        type_show_marking,
+        goods_name,
+        gc_name,
+        class_ids,
+        del_flag,
+        create_date,
+        creator
+        update_date,
+        updater,
+        version
+    </sql>
+
+    <sql id="whereStatement">
+        <where>
+            <if test="floorId != null and floorId != ''">
+                and floor_id = #{floorId}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="subTitle != null and subTitle != ''">
+                and sub_title = #{subTitle}
+            </if>
+            <if test="typeKeyWord != null and typeKeyWord != ''">
+                and type_key_word = #{typeKeyWord}
+            </if>
+            <if test="imgUrl != null and imgUrl != ''">
+                and img_url = #{imgUrl}
+            </if>
+            <if test="imgMarking != null and imgMarking != ''">
+                and img_marking = #{imgMarking}
+            </if>
+            <if test="typeShowMarking != null and typeShowMarking != ''">
+                and type_show_marking = #{typeShowMarking}
+            </if>
+            <if test="updateTime != null ">
+                and update_time = #{updateTime}
+            </if>
+            <if test="linkType != null and linkType != ''">
+                and link_type = #{linkType}
+            </if>
+            <if test="gcName != null and gcName != ''">
+                and gc_name = #{gcName}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="whereStatementDel">
+        <where>
+            del_flag = 0
+            <if test="floorId != null and floorId != ''">
+                and floor_id = #{floorId}
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="subTitle != null and subTitle != ''">
+                and sub_title = #{subTitle}
+            </if>
+            <if test="typeKeyWord != null and typeKeyWord != ''">
+                and type_key_word = #{typeKeyWord}
+            </if>
+            <if test="imgUrl != null and imgUrl != ''">
+                and img_url = #{imgUrl}
+            </if>
+            <if test="imgMarking != null and imgMarking != ''">
+                and img_marking = #{imgMarking}
+            </if>
+            <if test="typeShowMarking != null and typeShowMarking != ''">
+                and type_show_marking = #{typeShowMarking}
+            </if>
+            <if test="updateTime != null ">
+                and update_time = #{updateTime}
+            </if>
+            <if test="linkType != null and linkType != ''">
+                and link_type = #{linkType}
+            </if>
+            <if test="gcName != null and gcName != ''">
+                and gc_name = #{gcName}
+            </if>
+        </where>
+    </sql>
+
+    <!--查询楼层关联图片跳转列表-->
+    <select id="findWebFloorLinkConfigList" resultMap="webFloorLinkConfigMap" parameterType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM lmshop_web_floor_link_config
+        <include refid="whereStatementDel"/>
+    </select>
+
+    <!-- 查询楼层配置根据楼层ID -->
+    <select id="findConfigListByFloorId"
+            resultType="com.leimingtech.modules.dto.webfloor.WebFloorLinkConfigDTO" parameterType="java.lang.Long">
+	SELECT
+            wflc.id,
+            title,
+            <if test="storeId!=null">
+                type_key_word,
+            </if>
+            sub_title,
+            description,
+			case when link_type='searchGoodsByClass' then (select class_id from lmshop_goods_class_custom where id =type_key_word and del_flag = 0) else type_key_word end as type_key_word,
+            img_url,
+            link_type,
+            config_style,
+            img_marking,
+            type_show_marking,
+            goods_name,
+            class_ids,
+            wflc.gc_name
+        FROM
+            lmshop_web_floor_link_config wflc
+        WHERE
+            floor_id = #{floorId}
+            AND wflc.del_flag = 0
+    </select>
+    <select id="findFloorNumByTopicId" resultType="java.lang.Integer">
+        select  count(1)
+        from lmshop_web_floor_link_config
+        where del_flag = 0 and  LINK_TYPE = 'topic' and TYPE_KEY_WORD = #{id}
+    </select>
+
+    <!--根据条件删除-->
+    <delete id="deleteWebFloorLinkConfig" parameterType="java.util.Map">
+        DELETE FROM lmshop_web_floor_link_config
+        <include refid="whereStatementDel"/>
+    </delete>
+
+    <!--根据条件逻辑删除-->
+    <update id="logicDeleteWebFloorLinkConfig" parameterType="java.util.Map">
+        UPDATE lmshop_web_floor_link_config set del_flag = 1
+        <include refid="whereStatementDel"/>
+    </update>
+
+
+</mapper>

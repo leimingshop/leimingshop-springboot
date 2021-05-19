@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.browse.GoodsBrowseDao">
+
+    <resultMap type="com.leimingtech.modules.entity.browse.GoodsBrowseEntity" id="goodsBrowseMap">
+        <result property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsImage" column="goods_image"/>
+        <result property="goodsPrice" column="goods_price"/>
+        <result property="goodsSpecId" column="goods_spec_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.browse.FindGoodsBrowseDTO" id="baseMap">
+        <result property="browseTime" column="browseTime"/>
+        <result property="memberId" column="memberId"/>
+    </resultMap>
+
+    <!--sql片段-->
+    <sql id="base_column">
+        id,member_id,store_id,goods_name,goods_image,goods_price,goods_spec_id,update_date
+
+    </sql>
+
+    <!--根据ID获取信息-->
+    <select id="findById" resultType="com.leimingtech.modules.dto.browse.GoodsBrowseDTO">
+        select
+        <include refid="base_column"/>
+        from lmshop_goods_browse
+        where to_days(update_date) = to_days(now()) and goods_spec_id=#{specId} and del_flag=0 and
+        member_id=#{memberId};
+
+    </select>
+    <!--分页查询足迹-->
+    <select id="findPage" resultMap="baseMap">
+        SELECT
+        DATE_FORMAT(ssq.update_date, "%Y-%m-%d") as browseTime
+        FROM
+            lmshop_goods_browse ssq
+        WHERE
+            ssq.member_id = #{memberId}
+        AND ssq.del_flag = 0
+        GROUP BY
+            DATE_FORMAT(ssq.update_date, "%Y-%m-%d")
+
+
+    </select>
+    <!--根据时间查询浏览记录-->
+    <select id="findListByTime" resultType="com.leimingtech.modules.dto.browse.GoodsBrowseDTO">
+        select lgb.*,lgb.update_date as browseTime
+        from (
+        select *
+        from lmshop_goods_browse
+        where del_flag=0 and  member_id=#{memberId}
+        order by update_date desc
+        ) lgb
+        where DATE(lgb.update_date)=#{browseTime}
+        GROUP BY
+        lgb.goods_spec_id
+        order by lgb.update_date desc
+
+
+    </select>
+    <!--查询当前商品是否有记录-->
+    <select id="findBrowse" resultType="com.leimingtech.modules.dto.browse.GoodsBrowseDTO">
+      select *
+      from lmshop_goods_browse
+      where del_flag=0 and member_id=#{memberId} and goods_id=#{goodsId}
+    </select>
+
+    <!-- lixiang 2019/8/16 12:30 查询用户足迹数量 -->
+    <select id="countByMemberId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        SELECT
+            count( 1 )
+        FROM
+            lmshop_goods_browse lgb
+            LEFT JOIN lmshop_goods_spec lgs ON lgb.goods_spec_id = lgs.id
+        WHERE
+            lgb.member_id = #{id}
+            AND lgb.del_flag = 0
+            AND lgs.del_flag = 0
+    </select>
+
+
+</mapper>

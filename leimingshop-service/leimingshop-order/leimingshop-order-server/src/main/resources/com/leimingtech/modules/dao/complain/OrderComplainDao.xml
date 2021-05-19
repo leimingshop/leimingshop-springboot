@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.complain.OrderComplainDao">
+
+    <resultMap type="com.leimingtech.modules.entity.complain.OrderComplainEntity" id="orderComplainMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="memberId" column="member_id"/>
+        <result property="account" column="account"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="type" column="type"/>
+        <result property="source" column="source"/>
+        <result property="cause" column="cause"/>
+        <result property="picture" column="picture"/>
+        <result property="phone" column="phone"/>
+        <result property="status" column="status"/>
+        <result property="showFlag" column="show_flag"/>
+        <result property="disposePerson" column="dispose_person"/>
+        <result property="disposeDate" column="dispose_date"/>
+        <result property="verdict" column="verdict"/>
+        <result property="replyContent" column="reply_content"/>
+        <result property="remark" column="remark"/>
+        <result property="customerSatisfaction" column="customer_satisfaction"/>
+        <result property="customerContent" column="customer_content"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.complain.OrderComplainPageDTO" id="pageMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="type" column="type"/>
+        <result property="createDate" column="create_date"/>
+        <collection property="list" column="order_id"
+                    ofType="com.leimingtech.modules.dto.complain.OrderComplainGoodsDetail"
+                    select="orderDetail"
+                    javaType="list">
+        </collection>
+    </resultMap>
+    <!--H5删除投诉-->
+    <update id="updateBatch">
+        update lmshop_order_complain set show_flag=1
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+
+    </update>
+    <!--H5订单投诉分页-->
+    <select id="h5Page" resultMap="pageMap">
+      select id,order_id,order_sn,store_id,store_name,type,create_date
+      from lmshop_order_complain
+      where del_flag=0 and show_flag=0 and member_id=#{memberId}
+
+    </select>
+    <!--订单商品信息-->
+    <select id="orderDetail" resultType="com.leimingtech.modules.dto.complain.OrderComplainGoodsDetail">
+        select goods_image,goods_num,goods_name
+        from lmshop_order_goods
+        where order_id=#{orderId}
+
+    </select>
+    <!--admin端投诉详情-->
+    <select id="info" resultType="com.leimingtech.modules.dto.complain.OrderComplainDetailDTO">
+        select loc.*,lo.create_date as downOrderTime,lo.order_status as orderStatus,lo.order_amount as orderAmount
+        from lmshop_order_complain loc
+        left join lmshop_order lo on lo.id=loc.order_id
+        where loc.del_flag=0 and loc.id=#{id}
+    </select>
+    <!--导出查询-->
+    <select id="excel" resultType="com.leimingtech.modules.dto.complain.OrderComplainDetailDTO">
+        select loc.*,lo.order_amount as orderAmount
+        from lmshop_order_complain loc
+        left join lmshop_order lo on lo.id=loc.order_id
+        where loc.del_flag=0
+        <if test="status!=null and status!=''">
+            and loc.status=#{status}
+        </if>
+        <if test="account!=null and account!=''">
+            and loc.account=#{account}
+        </if>
+
+        <if test="phone!=null and phone!=''">
+            and loc.phone=#{phone}
+        </if>
+
+        <if test="type!=null and type!=''">
+            and loc.type=#{type}
+        </if>
+
+        <if test="source!=null and source!=''">
+            and loc.source=#{source}
+        </if>
+
+        <if test="verdict!=null and verdict!=''">
+            and loc.verdict=#{verdict}
+        </if>
+
+        <if test="disposeStartDate!=null and disposeStartDate!=''">
+        and loc.dispose_date &gt;= #{disposeStartDate}
+        </if>
+        <if test="disposeEndDate!=null and disposeEndDate!=''">
+            and loc.dispose_date &gt;= #{disposeEndDate}
+        </if>
+
+        <if test="disposePerson!=null and disposePerson!=''">
+            and loc.dispose_person=#{disposePerson}
+        </if>
+
+        <if test="createStartDate!=null and createStartDate!=''">
+            and loc.create_date &gt;= #{createStartDate}
+        </if>
+        <if test="createEndDate!=null and createEndDate!=''">
+            and loc.create_date &gt;= #{createEndDate}
+        </if>
+    </select>
+
+
+</mapper>

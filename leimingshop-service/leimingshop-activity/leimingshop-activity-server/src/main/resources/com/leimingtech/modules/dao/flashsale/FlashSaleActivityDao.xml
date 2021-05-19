@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.flashsale.FlashSaleActivityDao">
+
+    <resultMap type="com.leimingtech.modules.entity.flashsale.FlashSaleActivityEntity" id="flashSaleActivityMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="activityStartDate" column="activity_start_date"/>
+        <result property="activityEndDate" column="activity_end_date"/>
+        <result property="activityState" column="activity_state"/>
+        <result property="payValidTime" column="pay_valid_time"/>
+        <result property="memberGradeId" column="member_grade_id"/>
+        <result property="memberGradeName" column="member_grade_name"/>
+        <result property="memberGradeLimit" column="member_grade_limit"/>
+        <result property="restrictionQuantity" column="restriction_quantity"/>
+        <result property="browseNum" column="browse_num"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="pointFlag" column="point_flag"/>
+        <result property="balanceFlag" column="balance_flag"/>
+        <result property="couponsFlag" column="coupons_flag"/>
+        <result property="reduceFlag" column="reduce_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+    <!--增加活动浏览量-->
+    <update id="increaseBrowserNum">
+        UPDATE
+        lmshop_flash_sale_activity
+        SET
+        browse_num = browse_num + 1
+        WHERE del_flag = 0 and id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+    <update id="increaseOrderNum">
+        UPDATE
+        lmshop_flash_sale_activity
+        SET
+        order_num = order_num + 1
+        WHERE del_flag = 0 and id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="managePage" resultType="com.leimingtech.modules.dto.flashsale.FlashSaleActivityPageDTO">
+        SELECT
+            fsa.id,
+            fsa.activity_name,
+            fsa.activity_start_date,
+            fsa.activity_end_date,
+            fsa.browse_num,
+            fsa.order_num,
+            fsa.activity_state,
+            (
+            SELECT
+                COUNT( DISTINCT lag.goods_id )
+            FROM
+                lmshop_activity_goods lag
+            WHERE
+                lag.del_flag = 0
+                AND lag.activity_id = fsa.id
+                AND lag.activity_type = 5
+            ) AS goodsNum
+        FROM
+            lmshop_flash_sale_activity fsa
+        <where>
+            del_flag = 0
+            <if test="params.storeId != null and params.storeId != ''">
+                AND fsa.store_id = #{params.storeId}
+            </if>
+            <if test="params.activityName != null and params.activityName != ''">
+                AND fsa.activity_name LIKE CONCAT('%', #{params.activityName}, '%')
+            </if>
+            <if test="params.activityState != null and params.activityState != ''">
+                AND fsa.activity_state = #{params.activityState}
+            </if>
+            <if test="params.activityStartDate != null and params.activityStartDate != ''">
+                AND fsa.activity_start_date &gt;= #{params.activityStartDate}
+            </if>
+            <if test="params.activityEndDate != null and params.activityEndDate != ''">
+                AND fsa.activity_end_date &lt;= #{params.activityEndDate}
+            </if>
+        </where>
+        ORDER BY fsa.create_date DESC
+
+    </select>
+
+
+</mapper>

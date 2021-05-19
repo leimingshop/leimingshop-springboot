@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.log.MemberLoginLogDao">
+
+    <resultMap type="com.leimingtech.modules.entity.log.MemberLoginLogEntity" id="memberLoginLogMap">
+        <result property="id" column="id"/>
+        <result property="loginName" column="login_name"/>
+        <result property="memberId" column="member_id"/>
+        <result property="ip" column="ip"/>
+        <result property="userAgent" column="user_agent"/>
+        <result property="loginArea" column="login_area"/>
+        <result property="source" column="source"/>
+        <result property="status" column="status"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.log.MemberLoginLogDTO" id="memberListMap">
+        <result property="id" column="id"/>
+        <result property="loginName" column="login_name"/>
+        <result property="memberId" column="member_id"/>
+        <result property="ip" column="ip"/>
+        <result property="userAgent" column="user_agent"/>
+        <result property="loginArea" column="login_area"/>
+        <result property="source" column="source"/>
+        <result property="status" column="status"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="createDate" column="create_date"/>
+    </resultMap>
+
+    <!--查询列表-->
+    <sql id="Base_Column_List">
+        id,
+        login_name,
+        member_id,
+        ip,
+        user_agent,
+        login_area,
+        source,
+        status,
+        phone_number,
+        create_date
+    </sql>
+
+    <!--查询列表-->
+    <select id="selectMemberList" resultMap="memberListMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM  lmshop_member_login_log
+        <where>
+            del_flag = 0
+            <if test="params.memberId != null and params.memberId != ''">
+                AND (member_id like concat('%', #{params.memberId}, '%') or login_name like concat('%', #{params.memberId}, '%') or phone_number like concat('%', #{params.memberId}, '%'))
+            </if>
+            <if test="params.starTime != null and params.starTime != ''">
+                AND create_date &gt;= #{params.starTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND create_date &lt;= #{params.endTime}
+            </if>
+            <if test="params.source != null and params.source != ''">
+                AND source = #{params.source}
+            </if>
+        </where>
+        ORDER BY create_date desc
+    </select>
+
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.leimingtech.logging.LogStandardLayout">
+                <format>${LOG_FORMAT}</format>
+            </layout>
+            <charset>utf8</charset>
+        </encoder>
+        <file>${LOG_PATH}/${SYSTEM_ID}/${SYSTEM_ID}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${SYSTEM_ID}/${SYSTEM_ID}.%d{yyyyMMdd}.%i.log</fileNamePattern>
+            <maxFileSize>200MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+</included>

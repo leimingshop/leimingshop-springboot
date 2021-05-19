@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.aftersale.dao.ArbitrationDao">
+
+    <resultMap type="com.leimingtech.modules.aftersale.entity.ArbitrationEntity" id="arbitrationMap">
+        <result property="id" column="id"/>
+        <result property="aftersaleSn" column="aftersale_sn"/>
+        <result property="storeId" column="store_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="contacts" column="contacts"/>
+        <result property="contactsWay" column="contacts_way"/>
+        <result property="detailedDescription" column="detailed_description"/>
+        <result property="imagesArr" column="images_arr"/>
+        <result property="arbitrationApplyDate" column="arbitration_apply_date"/>
+        <result property="arbitrationAuditDate" column="arbitration_audit_date"/>
+        <result property="arbitrationStatus" column="arbitration_status"/>
+        <result property="auditReason" column="audit_reason"/>
+        <result property="auditor" column="auditor"/>
+        <result property="arbitrationType" column="arbitration_type"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <select id="selectPageList" resultType="com.leimingtech.modules.aftersale.dto.ArbitrationPageDTO">
+        SELECT
+        a.id AS id,
+        a.aftersale_sn AS aftersaleSn,
+        a.member_name AS memberName,
+        a.arbitration_apply_date AS arbitrationApplyDate,
+        a.arbitration_audit_date AS arbitrationAuditDate,
+        a.arbitration_status AS arbitrationStatus,
+        a.auditor AS auditor,
+        a.arbitration_type AS arbitrationType,
+        ag.goods_name AS goodsName,
+        ag.spec_id AS specId ,
+        ag.spec_main_picture,
+        ag.spec_serial AS specSerial
+        FROM
+        lmshop_arbitration a
+        LEFT JOIN lmshop_aftersale_goods ag ON ag.aftersale_sn = a.aftersale_sn
+        WHERE
+        a.del_flag = 0
+        <if test="null != params.storeId and '' != params.storeId ">
+            and a.store_id = #{params.storeId}
+        </if>
+        <if test="null != params.memberName and '' != params.memberName ">
+           and a.member_name LIKE concat('%', #{params.memberName}, '%')
+        </if>
+        <if test="null != params.afterSn and '' != params.afterSn ">
+            and a.aftersale_sn = #{params.afterSn}
+        </if>
+        <if test="null != params.arbitrationType and '' != params.arbitrationType ">
+            and a.arbitration_type = #{params.arbitrationType}
+        </if>
+        <if test="null != params.specSerial and '' != params.specSerial ">
+            and ag.spec_serial = #{params.specSerial}
+        </if>
+        <if test="null != params.goodsName and '' != params.goodsName ">
+            and ag.goods_name  LIKE concat('%', #{params.goodsName}, '%')
+        </if>
+        <if test="null != params.auditor and '' != params.auditor ">
+            and a.auditor = #{params.auditor}
+        </if>
+        <if test="null != params.arbitrationStatus and '' != params.arbitrationStatus ">
+            and a.arbitration_status = #{params.arbitrationStatus}
+        </if>
+        <if test="null != params.applyStartDate and '' != params.applyStartDate">
+            and a.arbitration_apply_date &gt;=  #{params.applyStartDate}
+        </if>
+        <if test="null != params.applyEndDate and '' != params.applyEndDate">
+            and  a.arbitration_apply_date &lt;=  #{params.applyEndDate}
+        </if>
+        <if test="null != params.auditStartDate and '' != params.auditStartDate">
+            and a.arbitration_audit_date  &gt;= #{params.auditStartDate}
+        </if>
+        <if test="null != params.auditEndDate and '' != params.auditEndDate">
+            and a.arbitration_audit_date  &lt;=  #{params.auditEndDate}
+        </if>
+        ORDER BY
+        a.arbitration_apply_date DESC
+
+    </select>
+
+
+</mapper>

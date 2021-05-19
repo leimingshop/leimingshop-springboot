@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.store.search.StoreSearchDao">
+
+
+
+
+
+    <select id="selectStoreIndexInfoByUpdateTime"
+            resultType="com.leimingtech.modules.dto.store.StoreSearchDTO">
+
+        select
+        ls.id,ls.store_name,ls.store_logo,ls.store_type,
+        (select count(1) from lmshop_store_favorites where del_flag=0 and store_id=ls.id) as storeFavNum,
+        lsg.sg_name as storeGradeName,ls.is_enable
+        from lmshop_store ls
+        left join lmshop_store_grade lsg on ls.grade_id=lsg.id
+        where ls.del_flag= 0 and ls.register_audit_status=20
+        <if test="startTime != null ">
+            and ls.update_date &gt;= #{startTime}
+        </if>
+        <if test="endTime != null ">
+            and ls.update_date &lt;= #{endTime}
+        </if>
+        <if test="storeId != null ">
+            and ls.id= #{storeId}
+        </if>
+
+    </select>
+    <select id="get" resultType="com.leimingtech.modules.dto.store.StoreDTO">
+        select *
+        from lmshop_store
+        where del_flag=0 and id=#{storeId}
+
+    </select>
+    <select id="getNameById" resultType="java.lang.String">
+        select sg_name
+        from lmshop_store_grade
+        where del_flag=0 and id=#{gradeId}
+    </select>
+</mapper>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.area.AreaDao">
+    <resultMap id="areaList" type="com.leimingtech.entity.area.AreaEntity">
+        <result column="id" property="id"/>
+        <result column="area_name" property="areaName"/>
+        <result column="region_id" property="regionId"/>
+    </resultMap>
+
+    <resultMap id="AreaJSDTO" type="com.leimingtech.dto.area.AreaJSDTO">
+        <result column="id" property="i"/>
+        <result column="area_name" property="n"/>
+        <result column="area_parent_id" property="p"/>
+    </resultMap>
+
+
+<!--    <resultMap id="currentAreaAndChildren" type="com.leimingtech.dto.area.AreaPcDTO">-->
+<!--        <result column="id" property="id"/>-->
+<!--        <result column="area_name" property="areaName"/>-->
+<!--        <result column="area_parent_id" property="areaParentId"/>-->
+<!--        <collection property="children" javaType="java.util.ArrayList"-->
+<!--                    ofType="com.leimingtech.dto.area.AreaPcDTO">-->
+<!--            <result column="id" property="id"/>-->
+<!--            <result column="area_name" property="areaName"/>-->
+<!--            <result column="area_parent_id" property="areaParentId"/>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
+
+    <select id="regionList" resultType="com.leimingtech.dto.area.RegionDTO">
+        select *
+        from lmshop_region
+        where del_flag=0
+    </select>
+
+    <select id="regionAsAreaList" resultType="com.leimingtech.dto.area.AreaAndRegionTreeDTO">
+        select id,
+        region_name as areaName,
+        0 as areaParentId,
+        -1 as areaDeep
+        from lmshop_region
+        where del_flag=0
+    </select>
+
+    <select id="areaAsAreaList" resultType="com.leimingtech.dto.area.AreaAndRegionTreeDTO">
+        SELECT
+            id,
+            area_name AS areaName,
+            CASE area_deep
+        WHEN 1 THEN
+            region_id
+        ELSE
+            area_parent_id
+        END AS areaParentId,
+         area_deep AS areaDeep
+        FROM
+            lmshop_area
+        WHERE
+            del_flag = 0
+    </select>
+
+    <select id="threeAreaAsAreaList" resultType="com.leimingtech.dto.area.AreaAndRegionTreeDTO">
+        SELECT
+            id,
+            area_name AS areaName,
+            CASE area_deep
+        WHEN 1 THEN
+            region_id
+        ELSE
+            area_parent_id
+        END AS areaParentId,
+         area_deep AS areaDeep
+        FROM
+            lmshop_area
+        WHERE
+            del_flag = 0
+            AND area_deep NOT IN (4)
+    </select>
+
+    <!-- 根据设置名称查询网址设置的系统设置内容(根据父id查询地区) -->
+    <select id="getAreasListByParentId" resultMap="areaList" parameterType="java.lang.Long">
+        select
+        id,area_name
+        from lmshop_area
+        <where>
+            del_flag = 0
+            <if test="areaParentId != null">
+                and area_parent_id = #{areaParentId}
+            </if>
+            <if test="areaParentId == null">
+                and area_parent_id is null
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getAreaByAeraDeep" resultMap="AreaJSDTO">
+        select * from lmshop_area
+        where area_deep = #{areaDeep} and del_flag = 0
+        order by id asc
+    </select>
+
+    <select id="getAreaAll" resultMap="AreaJSDTO">
+        select * from lmshop_area order by id asc
+    </select>
+    <select id="selectArea" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_area
+        where del_flag=0 and area_parent_id=#{id}
+    </select>
+    <select id="selectAll" resultType="com.leimingtech.dto.area.AreaTreeDTO">
+        select *
+        from lmshop_area
+        where del_flag=0 and area_deep !=4
+
+    </select>
+    <select id="selectParnetId" resultType="com.leimingtech.dto.area.AreaDTO">
+        select *
+        from lmshop_area
+        where id=#{parentId}
+    </select>
+    <select id="findPage" resultType="com.leimingtech.dto.area.AreaPageDTO">
+        select la.*,lr.region_name as regionName
+        from lmshop_area la
+        left join lmshop_region lr on la.region_id=lr.id
+        <where>
+            la.del_flag=0
+            <if test="areaName!=null and areaName!=''">
+                and la.area_name LIKE concat('%', #{areaName}, '%')
+            </if>
+            <if test="parentId!=null and parentId!=''">
+                and la.area_parent_id=#{parentId}
+            </if>
+        </where>
+    </select>
+    <select id="selectCurrentAndChildren" resultType="com.leimingtech.dto.area.AreaPcDTO">
+        SELECT
+            id,
+            area_name,
+            area_parent_id,
+            ( SELECT COUNT( la.id ) FROM lmshop_area la WHERE la.area_parent_id = lmshop_area.id ) count
+        FROM
+            lmshop_area
+        WHERE
+            area_parent_id = #{parentId}
+    </select>
+    <!--    <select id="selectCurrentAndChildren" resultMap="currentAreaAndChildren">-->
+<!--        SELECT-->
+<!--            lmshop_area.id  ,-->
+<!--            lmshop_area.area_name,-->
+<!--            lmshop_area.area_parent_id,-->
+<!--            la.id as childrenId,-->
+<!--            la.area_name as childrenName,-->
+<!--            la.area_parent_id as childrenParentId-->
+<!--        FROM-->
+<!--            lmshop_area-->
+<!--            LEFT JOIN lmshop_area la ON la.area_parent_id = lmshop_area.id-->
+<!--        WHERE-->
+<!--            lmshop_area.area_parent_id = 0-->
+
+<!--    </select>-->
+
+</mapper>

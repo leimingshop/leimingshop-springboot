@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.order.OrderStatisDao">
+
+
+    <select id="transactionData" resultType="com.leimingtech.modules.entity.order.TransactionStatisEntity">
+        SELECT
+            id as id,
+            store_id AS storeId,
+            SUM( refund_amount ) AS refundAmount,
+            DATE_FORMAT( create_date, '%Y-%m-%d' ) AS createDayTime
+        FROM
+            lmshop_aftersale_return
+        WHERE
+            aftersale_status = 6
+            AND del_flag = 0
+            AND DATE_FORMAT( create_date, '%Y-%m-%d' ) = #{date}
+        GROUP BY
+            store_id
+    </select>
+    <select id="selectPaymentGoodsNumber" resultType="java.util.Map">
+        SELECT
+            storeId,
+            SUM( goods_num ) as num
+        FROM
+            (
+            SELECT
+                log.store_id AS storeId,
+                log.goods_num
+            FROM
+                lmshop_order lo
+                LEFT JOIN lmshop_order_goods log ON log.order_id = lo.id
+            WHERE
+                lo.del_flag = 0
+                AND lo.payment_status = 1
+                and DATE_FORMAT(log.create_date,'%Y-%m-%d') = #{date}
+            ) a GROUP BY a.storeId
+    </select>
+    <select id="selectOrderByDate" resultType="com.leimingtech.modules.dto.order.OrderStatisDTO">
+        SELECT
+            lo.id,
+            lo.id AS orderId,
+            lo.buyer_id AS memberId,
+            lo.store_id AS storeId,
+            sum(log.goods_num) AS goodsNum,
+            lo.order_amount AS orderAmount,
+            lo.order_status AS orderStatus,
+            lo.payment_status AS paymentStatus,
+            lo.create_date AS createTime,
+            lo.order_platform as orderSource,
+            DATE_FORMAT( lo.create_date, '%Y-%m-%d' ) AS createDayTime
+        FROM
+            lmshop_order lo
+            LEFT JOIN lmshop_order_goods log ON lo.id = log.order_id
+        WHERE
+            lo.del_flag = 0
+            AND lo.is_split = 0
+            AND DATE_FORMAT( lo.create_date, '%Y-%m-%d' ) = #{date}
+        group by lo.id
+    </select>
+    <select id="selectOrderSourceByDate"
+            resultType="com.leimingtech.modules.dto.order.OrderSourceStatisticDTO">
+        SELECT
+            order_platform AS orderSource,
+            COUNT( DISTINCT buyer_id ) AS currentBuyerCount,
+            sum( order_amount ) AS currentOrderAmount,
+            create_date AS createTime
+        FROM
+            lmshop_order
+        WHERE
+            payment_status = 1
+            AND DATE_FORMAT( create_date, '%Y-%m' )= #{dateStr}
+        GROUP BY
+            order_platform
+    </select>
+</mapper>

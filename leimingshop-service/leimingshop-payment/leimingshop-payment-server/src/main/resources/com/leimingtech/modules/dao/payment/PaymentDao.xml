@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.payment.PaymentDao">
+
+    <resultMap type="com.leimingtech.modules.dto.payment.PaymentDTO" id="paymentMap">
+        <result property="id" column="id"/>
+        <result property="paymentCode" column="payment_code"/>
+        <result property="paymentName" column="payment_name"/>
+        <result property="paymentConfig" column="payment_config"/>
+        <result property="paymentState" column="payment_state"/>
+        <result property="paymentLogo" column="payment_logo"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, payment_code,payment_name,payment_config,payment_state,payment_logo,remark
+    </sql>
+
+</mapper>

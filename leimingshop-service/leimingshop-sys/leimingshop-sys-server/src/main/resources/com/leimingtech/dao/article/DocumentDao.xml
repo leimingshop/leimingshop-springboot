@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.article.DocumentDao">
+
+    <resultMap type="com.leimingtech.entity.article.DocumentEntity" id="documentMap">
+        <result property="id" column="id"/>
+        <result property="acId" column="ac_id"/>
+        <result property="docCode" column="doc_code"/>
+        <result property="docTitle" column="doc_title"/>
+        <result property="docContent" column="doc_content"/>
+        <result property="sort" column="sort"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+</mapper>

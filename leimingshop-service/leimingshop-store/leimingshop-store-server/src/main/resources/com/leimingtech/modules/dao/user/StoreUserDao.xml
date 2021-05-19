@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.user.StoreUserDao">
+
+    <resultMap type="com.leimingtech.modules.entity.user.StoreUserEntity" id="storeUserMap">
+        <result property="id" column="id"/>
+        <result property="account" column="account"/>
+        <result property="password" column="password"/>
+        <result property="nickname" column="nickname"/>
+        <result property="sex" column="sex"/>
+        <result property="email" column="email"/>
+        <result property="mobilePhone" column="mobile_phone"/>
+        <result property="roleId" column="role_id"/>
+        <result property="isEnable" column="is_enable"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="base_column">
+        id,account,password,nickname,sex,mobile_phone,role_id,is_enable
+    </sql>
+    <!--修改密码-->
+    <update id="updatePassWord">
+        update lmshop_store_user set password = #{newPassword} where id = #{id} and del_flag = 0
+    </update>
+    <!--检验账号是否重复-->
+    <select id="verify" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_store_user lsu
+        left join lmshop_store_user_manage lsum on lsu.id=lsum.store_user_id
+        where lsu.account=#{account} and lsu.del_flag=0
+        <if test="storeId!=null">
+            and lsum.store_id=#{storeId}
+        </if>
+        <if test="userId!=null">
+            and lsu.id != #{userId}
+        </if>
+    </select>
+
+    <select id="getUserByUsername" resultType="com.leimingtech.modules.dto.user.StoreUserDTO">
+        SELECT
+            lsu.id,
+            lsu.account,
+            lsu.PASSWORD,
+            lsu.nickname,
+            lsu.sex,
+            lsu.mobile_phone,
+            lsu.role_id,
+            lsu.is_enable,
+            lsr.role_mark as superAdmin
+        FROM
+            lmshop_store_user lsu
+            LEFT JOIN lmshop_store_role lsr ON lsr.id = lsu.role_id
+        WHERE
+             lsu.del_flag = 0
+            AND lsr.del_flag = 0 and  (account = #{username} or mobile_phone=#{username})
+    </select>
+    <!--分页查询当前店铺下所有的用户-->
+    <select id="findPage" resultType="com.leimingtech.modules.dto.user.FindStoreUserDTO">
+
+        select lsu.* ,lsr.role_mark as roleMark,lsr.role_name as roleName,ls.store_name as storeName
+        from lmshop_store_user_manage lsum
+        left join lmshop_store_user lsu on lsu.id=lsum.store_user_id
+        left join lmshop_store_role lsr on lsu.role_id=lsr.id
+        left join lmshop_store ls on ls.id = lsum.store_id
+        where lsum.del_flag=0
+        and lsum.store_user_id is not null
+
+        <choose>
+            <when test="storeId != null and storeId != ''">
+                and lsum.store_id=#{storeId}
+            </when>
+            <otherwise>
+                and lsum.store_id in(
+                select store_id
+                from lmshop_store_user_manage
+                where del_flag=0 and store_user_id=#{userId}
+                )
+            </otherwise>
+        </choose>
+
+        <if test="username != null and username.trim() != ''">
+            and lsu.account like concat('%', #{username}, '%')
+        </if>
+
+        <if test="roleId != null and roleId != ''">
+            and lsr.id=#{roleId}
+        </if>
+    </select>
+    <!--查询是否有超级管理员-->
+    <select id="findUserMark" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_store_user lsu
+        left join lmshop_store_role lsr on lsu.role_id=lsr.id
+        where lsr.role_mark=1 and lsu.id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+    <!--根据用户id获取详细信息-->
+    <select id="findById" resultType="com.leimingtech.modules.dto.user.UpdateStoreUserDTO">
+
+        select lsu.*,lsr.role_name as roleName,lsr.role_mark as roleMark,lsum.store_id
+        from lmshop_store_user_manage lsum
+        left join lmshop_store_user lsu on lsu.id=lsum.store_user_id and lsu.del_flag=0
+        left join lmshop_store_role lsr on lsu.role_id=lsr.id
+        where lsu.id=#{id} and lsum.del_flag=0
+
+    </select>
+    <!--查询角色下面是否关联用户-->
+    <select id="findUserCountByRole" resultType="java.lang.Integer">
+        select count(*)
+        from lmshop_store_user
+        where del_flag=0 and role_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+
+    </select>
+    <select id="getStorePhone" resultType="java.lang.String">
+    SELECT
+	lsu.mobile_phone
+    FROM
+	lmshop_store_user_manage lsum
+	LEFT JOIN lmshop_store_user lsu ON lsu.id = lsum.store_user_id
+	LEFT JOIN lmshop_store_role lsr ON lsu.role_id = lsr.id
+    WHERE
+	lsum.del_flag = 0
+	AND lsum.store_id = #{storeId} and lsr.role_mark=1
+
+    </select>
+    <select id="verifyMobile" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_store_user
+        where del_flag=0 and mobile_phone=#{mobile}
+        <if test="userId != null">
+            and id != #{userId}
+        </if>
+
+    </select>
+    <select id="verifyEmail" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_store_user
+        where del_flag=0 and email=#{email}
+        <if test="userId != null">
+            and id != #{userId}
+        </if>
+    </select>
+    <select id="verifyUserPhone" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_store_user
+        where del_flag=0 and account=#{userName} or  mobile_phone=#{userName} or email=#{userName}
+
+    </select>
+    <select id="getPhoneEmail" resultType="com.leimingtech.modules.dto.user.StoreUserPhoneEmailDTO">
+         select mobile_phone,email as eMail,id
+        from lmshop_store_user
+        where del_flag=0 and account=#{userName} or  mobile_phone=#{userName} or email=#{userName}
+    </select>
+
+    <!--根据用户id查询商户个人中心信息-->
+    <select id="findPersonInfoById" resultType="com.leimingtech.modules.dto.user.FindStoreUserPersonInfoDTO"
+            parameterType="java.lang.Long">
+       SELECT
+            account,
+            logo,
+            mobile_phone,
+            email email
+        FROM
+            lmshop_store_user
+        WHERE
+            del_flag = 0
+            AND id = #{id}
+    </select>
+
+    <select id="adminStoreUserPage" resultType="com.leimingtech.modules.dto.user.StoreUserDTO">
+        select lsu.account,lsu.id,lsu.nickname as nickname,lsu.mobile_phone,lsu.email,lsu.is_enable
+        from lmshop_store_user lsu
+        left join lmshop_store_role lsr on lsu.role_id=lsr.id
+        where lsu.del_flag=0 and role_mark in (1,2)
+        <if test="username != null and username.trim() != ''">
+            and lsu.account like concat('%', #{username}, '%')
+        </if>
+        <if test="mobilePhone != null and mobilePhone.trim() != ''">
+            and lsu.mobile_phone = #{mobilePhone}
+        </if>
+        <if test="email != null and email.trim() != ''">
+            and lsu.email like concat('%', #{email}, '%')
+        </if>
+        <if test="isEnable != null and isEnable != ''">
+            and lsu.is_enable = #{isEnable}
+        </if>
+    </select>
+    <select id="findNotStoreUser" resultType="com.leimingtech.modules.dto.user.StoreUserListDTO">
+       select lsu.id,lsu.account,lsu.mobile_phone,lsu.email,lsu.sex
+        from lmshop_store_user lsu
+        where lsu.del_flag=0
+        <if test="params.account!=null and params.account!=''">
+            and lsu.account like concat('%', #{params.account}, '%')
+        </if>
+        <if test="params.mobilePhone!=null and params.mobilePhone!=''">
+            and lsu.mobile_phone  like concat('%', #{params.mobilePhone}, '%')
+        </if>
+        <if test="params.email!=null and params.email!=''">
+            and lsu.email like concat('%', #{params.email}, '%')
+        </if>
+        and lsu.id  in (
+        select store_user_id
+        from lmshop_store_user_manage
+        where del_flag=0 and store_user_id is not null and store_id is NULL
+        )
+    </select>
+
+
+</mapper>

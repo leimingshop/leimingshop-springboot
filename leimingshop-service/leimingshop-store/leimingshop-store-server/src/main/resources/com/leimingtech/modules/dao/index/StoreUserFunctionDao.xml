@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.index.StoreUserFunctionDao">
+
+    <resultMap type="com.leimingtech.modules.entity.index.StoreUserFunctionEntity" id="storeUserFunctionMap">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="menuId" column="menu_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <update id="deleteByUserId">
+        update lmshop_store_user_function set del_flag=1 where user_id=#{userId}
+    </update>
+    <select id="getList" resultType="com.leimingtech.modules.dto.index.StoreUserFunctionDTO">
+        select lsuf.*,lsm.menu_name as menuName,lsm.menu_icon as icon,lsm.menu_url as menuUrl
+        from lmshop_store_user_function lsuf
+        left join lmshop_store_menu lsm on lsuf.menu_id=lsm.id
+        where lsuf.del_flag=0 and lsm.del_flag=0 and lsuf.user_id=#{userId}
+    </select>
+
+
+</mapper>

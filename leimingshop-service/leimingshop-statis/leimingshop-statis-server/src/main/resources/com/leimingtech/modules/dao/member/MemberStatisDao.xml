@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.member.MemberStatisDao">
+
+
+    <select id="selectMemberGrade" resultType="com.leimingtech.modules.dto.member.MemberGradeNameDTO">
+        SELECT id as gradeId , grade_name as gradeName , integration as integral FROM lmshop_member_grade  where del_flag=0 ORDER BY integration DESC
+    </select>
+    <select id="selectMemberGradeStatis" resultType="com.leimingtech.modules.entity.member.MemberGradeStatisEntity">
+        SELECT a.gradeId , a.memberGraderName,  COUNT(a.gradeId) as memberNumber
+        FROM (
+            SELECT lm.id,lmi.grade_point,
+                <foreach collection="gradeNameList" index="index" item="item" close="" open="CASE" separator=" " >
+                    WHEN lmi.grade_point &lt; ( SELECT integration FROM lmshop_member_grade ORDER BY integration DESC LIMIT #{item.start},1 )
+                    and lmi.grade_point &gt;= ( SELECT integration  FROM  lmshop_member_grade ORDER BY integration DESC LIMIT #{item.end} ,1 )
+                    THEN (SELECT grade_name FROM lmshop_member_grade  ORDER BY integration DESC LIMIT #{item.end},1)
+                </foreach>
+            else
+               (SELECT grade_name FROM lmshop_member_grade  ORDER BY integration DESC LIMIT 0,1)
+             end as memberGraderName ,
+            <foreach collection="gradeNameList" index="index" item="item" close="" open="CASE" separator=" " >
+                WHEN lmi.grade_point &lt; ( SELECT integration FROM lmshop_member_grade ORDER BY integration DESC LIMIT #{item.start},1 )
+                and lmi.grade_point &gt;= ( SELECT integration  FROM  lmshop_member_grade ORDER BY integration DESC LIMIT #{item.end} ,1 )
+                THEN (SELECT id as gradeId FROM lmshop_member_grade  ORDER BY integration DESC LIMIT #{item.end},1)
+            </foreach>
+            else
+            (SELECT id as gradeId FROM lmshop_member_grade  ORDER BY integration DESC LIMIT 0,1)
+            end as gradeId
+            FROM lmshop_member lm LEFT JOIN lmshop_member_info lmi on lm.id = lmi.member_id
+          ORDER BY grade_point    ) a GROUP BY a.gradeId
+
+    </select>
+
+
+    <select id="selectMemberAddCount" resultType="java.util.Map">
+        SELECT
+            member_source as source,
+            COUNT( member_source ) as num
+        FROM
+            lmshop_member
+        WHERE  del_flag=0
+           and DATE_FORMAT( create_date, '%Y-%m-%d %H' ) = #{date}
+        GROUP BY
+            member_source
+    </select>
+</mapper>

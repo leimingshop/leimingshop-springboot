@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.message.MessageTextDao">
+
+    <resultMap type="com.leimingtech.entity.message.MessageTextEntity" id="messageTextMap">
+        <result property="id" column="id"/>
+        <result property="messageTitle" column="message_title"/>
+        <result property="messageContent" column="message_content"/>
+        <result property="messageType" column="message_type"/>
+        <result property="receiverType" column="receiver_type"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="sendMode" column="send_mode"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <resultMap id="messageListMap" type="com.leimingtech.dto.message.MessageTextListDTO">
+        <result property="id" column="id"/>
+        <result property="messageTitle" column="message_title"/>
+        <result property="messageContent" column="message_content"/>
+        <result property="messageType" column="message_type"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="status" column="status"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        mt.id,
+        mt.message_title,
+        mt.message_content,
+        mt.message_type,
+        mt.creator,
+        mt.create_date,
+        mr.status
+    </sql>
+    <update id="updateStatus">
+        update lmshop_message_receiver set status =1 where del_flag=0 and id=#{receiveInfoId}
+    </update>
+
+    <!--查询列表-->
+    <select id="selectMessageList" resultMap="messageListMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        lmshop_message_text mt
+        LEFT JOIN lmshop_message_receiver mr ON mt.id = mr.message_id
+        <where>
+            mt.del_flag = 0 and mr.show_flag=0
+            <if test="params.receiveId != null and params.receiveId != ''">
+                AND mr.receive_id = #{params.receiveId}
+            </if>
+            <if test="params.showFlag != null and params.showFlag != ''">
+                AND mr.show_flag = #{params.showFlag}
+            </if>
+        </where>
+        ORDER BY mt.create_date desc
+    </select>
+    <!--查询短信开关-->
+    <select id="getMessageNo" resultType="com.leimingtech.dto.message.FindMessageTemplateDTO">
+        select
+        <if test="type != null and type == 0 ">
+            is_send_inner as isSendSms,
+        </if>
+        <if test="type != null and type == 1 ">
+            is_send_sms as isSendSms,
+        </if>
+        <if test="type != null and type == 4 ">
+            is_send_sms as isSendSms,
+            is_send_inner as isSendInner,
+            is_send_wechat as isSendWechat,
+            is_send_umeng as isSendUmeng,
+        </if>
+        temp_sms_code as tempSmsCode,
+        temp_title as tempTitle,
+        temp_inner_content as tempInnerContent,
+        umeng_title as umengTitle,
+        temp_umeng_content as tempUmengContent,
+        wechat_template_id as wechatTemplateId
+        from sys_message_template
+
+        <where>
+            del_flag=0
+            <if test="code != null and code != ''">
+                AND message_type_id = #{code}
+            </if>
+        </where>
+
+    </select>
+    <select id="sellerMessageInfo" resultType="com.leimingtech.dto.message.SellerMessageTextDTO">
+        select lmt.id,lmt.message_title,lmt.message_content,lmr.send_name,lmt.send_time,lmr.id as receiveId
+        from lmshop_message_text lmt
+        left join lmshop_message_receiver lmr on lmt.id=lmr.message_id
+        where lmt.del_flag=0 and lmr.id=#{receiveInfoId}
+    </select>
+
+    <select id="findCount" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_message_receiver lmr
+        LEFT JOIN lmshop_message_text lmt on lmt.id=lmr.message_id
+        where lmr.receive_id=#{storeId} and lmr.status=0 and lmr.show_flag=0 and lmr.del_flag=0 and lmt.del_flag=0
+        <if test="type!=null">
+            and lmt.message_type=#{type}
+        </if>
+    </select>
+
+</mapper>

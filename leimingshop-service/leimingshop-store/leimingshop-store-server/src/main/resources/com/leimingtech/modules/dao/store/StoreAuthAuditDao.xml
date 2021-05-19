@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.store.StoreAuthAuditDao">
+
+    <resultMap type="com.leimingtech.modules.entity.store.StoreAuthAuditEntity" id="storeAuthAuditMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="companyName" column="company_name"/>
+        <result property="legalPersonName" column="legal_person_name"/>
+        <result property="electronicBusinessLicense" column="electronic_business_license"/>
+        <result property="companyAddressDetail" column="company_address_detail"/>
+        <result property="taxpayerId" column="taxpayer_id"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="bankAccountNumber" column="bank_account_number"/>
+        <result property="taxpayerPicture" column="taxpayer_picture"/>
+        <result property="bankAccountPicture" column="bank_account_picture"/>
+        <result property="idCardNatPicture" column="id_card_nat_picture"/>
+        <result property="idCardPeoPicture" column="id_card_peo_picture"/>
+        <result property="authAuditStatus" column="auth_audit_status"/>
+        <result property="authAuditCause" column="auth_audit_cause"/>
+        <result property="companyPhone" column="company_phone"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="whereStatement">
+        <where>
+            ls.del_flag = 0 and lsum.del_flag=0 and lsr.role_mark=1 and lsum.store_user_id is not null
+            <if test="storeId != null and storeId!=''">
+                AND ls.id = #{storeId}
+            </if>
+            <if test="storeName != null and storeName != ''">
+                AND ls.store_name LIKE concat('%', #{storeName}, '%')
+            </if>
+            <if test="gradeId != null and gradeId!=''">
+                AND ls.grade_id = #{gradeId}
+            </if>
+            <if test="storeType != null and storeType!=''">
+                AND ls.store_type = #{storeType}
+            </if>
+            <if test="startTime != null and startTime!=''">
+                AND ls.create_date &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime!=''">
+                AND ls.create_date &lt;= #{endTime}
+            </if>
+
+            <if test="userName != null and userName!=''">
+                AND lsu.account= #{userName}
+            </if>
+
+            <if test="audit != null and audit!=''">
+                AND ls.register_audit_status= #{audit}
+            </if>
+        </where>
+    </sql>
+    <update id="updateStoreStatus">
+        update lmshop_store_auth_audit set auth_audit_status=#{registerAuditStatus},auth_audit_cause=#{registerAuditCause},update_date =NOW()
+        where del_flag=0 and auth_audit_status =10 and id=#{id}
+    </update>
+    <select id="getInfoByStoreId" resultType="com.leimingtech.modules.dto.store.StoreAuthAuditDTO">
+
+        select *
+        from lmshop_store_auth_audit
+        where del_flag=0 and store_id=#{storeId}
+        <if test="createDate!=null and createDate !=''">
+           and create_date=#{createDate}
+        </if>
+        order by update_date desc
+        limit 1
+
+    </select>
+    <select id="authAuditPage" resultType="com.leimingtech.modules.dto.store.StoreAuthAuditPageDTO">
+        select
+        lsaa.id,ls.id as store_id,ls.store_name,ls.store_logo,lsaa.create_date,lsu.account as account,lsaa.auth_audit_status,
+        lsaa.company_name,lsaa.company_phone
+        from  lmshop_store_auth_audit lsaa
+        left join  lmshop_store ls on lsaa.store_id=ls.id
+        LEFT JOIN lmshop_store_user_manage lsum on ls.id=lsum.store_id
+        LEFT JOIN lmshop_store_user lsu on lsum.store_user_id = lsu.id
+        left join lmshop_store_role lsr on lsr.id=lsum.role_id
+
+        <include refid="whereStatement"/>
+        order by lsaa.auth_audit_status asc ,lsaa.create_date desc
+
+    </select>
+
+
+</mapper>

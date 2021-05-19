@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.attribute.AttributeValueDao">
+
+    <resultMap type="com.leimingtech.modules.entity.attribute.AttributeValueEntity" id="attributeValueMap">
+        <result property="id" column="id"/>
+        <result property="attrId" column="attr_id"/>
+        <result property="attrValueName" column="attr_value_name"/>
+        <result property="attrValueImage" column="attr_value_image"/>
+        <result property="attrValueSort" column="attr_value_sort"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--物理删除-->
+    <delete id="deleteAttrValueByAttrId">
+        delete from lmshop_attribute_value
+        where del_flag = 0 and attr_id = #{attrId}
+    </delete>
+
+    <!-- LX 2019/6/13 16:49 根据属性ID查询属性值集合  -->
+    <select id="findListByAttrId" resultMap="attributeValueMap" parameterType="java.lang.Long">
+        SELECT
+            id, attr_id,attr_value_name,attr_value_image,attr_value_sort
+            FROM
+            lmshop_attribute_value
+        WHERE
+	       del_flag = 0
+           AND attr_id = #{id}
+           ORDER BY
+	       attr_value_sort DESC
+    </select>
+</mapper>

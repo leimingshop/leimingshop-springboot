@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.label.LabelGroupDao">
+
+    <resultMap type="com.leimingtech.modules.entity.label.LabelGroupEntity" id="labelGroupMap">
+        <result property="id" column="id"/>
+        <result property="groupName" column="group_name"/>
+        <result property="labelNum" column="label_num"/>
+        <result property="sort" column="sort"/>
+        <result property="groupStatus" column="group_status"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--修改时校验分组名称是否重复-->
+    <select id="checkGroupNameUpate" resultType="java.lang.Integer" parameterType="com.leimingtech.modules.dto.goodslable.LabelGroupUpdateDTO">
+        SELECT
+            count( 1 )
+        FROM
+        ( SELECT * FROM lmshop_goods_label_group WHERE id !=#{id} ) temp
+        WHERE
+            del_flag = 0
+            <if test="groupName !=null and groupName !=''">
+                AND group_name = #{groupName}
+            </if>
+    </select>
+
+    <!--保存时校验分组名称是否重复-->
+    <select id="checkGroupNameSave" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT
+            count( 1 )
+        FROM
+            lmshop_goods_label_group
+        WHERE
+            del_flag = 0
+            <if test="groupName !=null and groupName !=''">
+                AND group_name =#{groupName}
+            </if>
+    </select>
+
+    <!--分页查询所有分组信息-->
+    <select id="findListPage" resultType="com.leimingtech.modules.dto.goodslable.LabelGroupDTO">
+        SELECT
+            id,
+            group_name,
+            label_num,
+            sort,
+            group_status,
+            create_date
+        FROM
+            `lmshop_goods_label_group`
+        WHERE
+            del_flag = 0
+            <if test="groupStatus != null ">
+                and group_status =#{groupStatus}
+            </if>
+            <if test="id != null and id != ''">
+                AND (group_name like concat('%', #{id}, '%') OR id = #{id})
+            </if>
+        ORDER BY
+            sort ASC,
+            create_date DESC
+    </select>
+    <select id="getByLabelId" resultType="com.leimingtech.modules.dto.goodslable.LabelGroupDTO">
+        SELECT
+            glg.id,
+            glg.group_name,
+            glg.label_num,
+            glg.sort,
+            glg.group_status,
+            glg.create_date
+        FROM
+            lmshop_goods_label_group glg
+            LEFT JOIN lmshop_goods_label_group_rel glgr ON glg.id = glgr.group_id
+        WHERE
+            glg.del_flag = 0
+            AND glgr.label_id = #{labelId}
+    </select>
+
+</mapper>

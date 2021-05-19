@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.SysResourceDao">
+
+    <delete id="deleteByCode">
+        delete from sys_resource where resource_code = #{value}
+    </delete>
+
+    <select id="getMenuResourceList" resultType="com.leimingtech.entity.SysResourceEntity">
+        select resource_url, resource_method from sys_resource where resource_code = #{value} order by create_date asc
+    </select>
+
+    <select id="getResourceList" resultType="com.leimingtech.entity.SysResourceEntity">
+        select resource_url, resource_method, auth_level from sys_resource order by auth_level desc
+    </select>
+
+    <select id="getUserResourceList" resultType="com.leimingtech.entity.SysResourceEntity">
+        select t3.resource_url, t3.resource_method from sys_role_user t1
+            left join sys_role_menu t2 on t1.role_id = t2.role_id
+            inner join sys_resource t3 on t2.menu_id = t3.resource_code
+        where t1.user_id = #{userId}
+    </select>
+
+</mapper>

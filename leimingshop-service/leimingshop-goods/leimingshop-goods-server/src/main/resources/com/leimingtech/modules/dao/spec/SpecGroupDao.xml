@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.spec.SpecGroupDao">
+
+    <resultMap type="com.leimingtech.modules.entity.spec.SpecGroupEntity" id="specGroupMap">
+        <result property="id" column="id"/>
+        <result property="groupName" column="group_name"/>
+        <result property="lableNum" column="lable_num"/>
+        <result property="sort" column="sort"/>
+        <result property="groupStatus" column="group_status"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--规格列表展示-->
+    <select id="findSpecGroupShowList" resultMap="specGroupMap">
+        select a.id, a.group_name, a.sort, a.group_status, a.create_date, IFNULL(b.lable_num ,0) as lable_num from
+        lmshop_spec_group a left join
+        (select lsg.id, count(1) as lable_num from lmshop_spec_group lsg
+        left join lmshop_spec_group_rel lsgr on lsg.id = lsgr.group_id
+        left join lmshop_spec ls on lsgr.spec_id = ls.id
+        where lsg.del_flag = 0 and lsgr.del_flag = 0 and ls.del_flag = 0
+        group by lsg.id
+        ) b on a.id = b.id
+        where a.del_flag = 0
+        <if test="groupName != null and groupName !=''">
+            and a.group_name like concat('%', #{groupName}, '%')
+        </if>
+        <if test="groupStatus != null and groupStatus !=''">
+            and a.group_status = #{groupStatus}
+        </if>
+    </select>
+
+</mapper>

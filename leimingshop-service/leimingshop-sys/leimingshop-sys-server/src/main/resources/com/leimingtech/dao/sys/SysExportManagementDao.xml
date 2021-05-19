@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.sys.SysExportManagementDao">
+
+    <resultMap type="com.leimingtech.entity.sys.SysExportManagementPO" id="sysExportManagementMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="failureNumber" column="failure_number"/>
+        <result property="successfulNumber" column="successful_number"/>
+        <result property="assignmentName" column="assignment_name"/>
+        <result property="operationStatus" column="operation_status"/>
+        <result property="finishTime" column="finish_time"/>
+        <result property="operatingLogo" column="operating_logo"/>
+        <result property="downloadLink" column="download_link"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <insert id="saveBach">
+        INSERT INTO sys_export_management
+        (id,
+        store_id,
+                failure_number,
+                successful_number,
+                assignment_name,
+                operation_status,
+        operating_logo,
+                finish_time,
+                download_link,
+                creator,
+                create_date,
+                updater,
+                update_date,
+                del_flag,
+                version                )
+        VALUES
+        <foreach collection="list" item="sysExportManagement" index="index" separator=",">
+            (                #{sysExportManagement.id},
+                                        #{sysExportManagement.storeId},
+                                        #{sysExportManagement.failureNumber},
+                                        #{sysExportManagement.successfulNumber},
+                                        #{sysExportManagement.assignmentName},
+                                        #{sysExportManagement.operationStatus},
+                                        #{sysExportManagement.operatingLogo},
+                                        #{sysExportManagement.finishTime},
+                                        #{sysExportManagement.downloadLink},
+                                        #{sysExportManagement.creator},
+                                        #{sysExportManagement.createDate},
+                                        #{sysExportManagement.updater},
+                                        #{sysExportManagement.updateDate},
+                                        #{sysExportManagement.delFlag},
+                                        #{sysExportManagement.version}                        )
+        </foreach>
+
+    </insert>
+
+
+    <update id="updateBach">
+        UPDATE sys_export_management SET
+                    id=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.id}
+            </foreach>
+                    ,failure_number=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.failureNumber}
+            </foreach>
+                    ,successful_number=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.successfulNumber}
+            </foreach>
+                    ,assignment_name=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.assignmentName}
+            </foreach>
+                    ,operation_status=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.operationStatus}
+            </foreach>
+                    ,finish_time=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.finishTime}
+            </foreach>
+                    ,download_link=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.downloadLink}
+            </foreach>
+                    ,creator=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.creator}
+            </foreach>
+                    ,create_date=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.createDate}
+            </foreach>
+                    ,updater=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.updater}
+            </foreach>
+                    ,update_date=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.updateDate}
+            </foreach>
+                    ,del_flag=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.delFlag}
+            </foreach>
+                    ,version=
+            <foreach collection="list" item="sysExportManagement" index="index"
+                     separator=" " open="case id" close="end">
+                when #{sysExportManagement.id} then
+                #{sysExportManagement.version}
+            </foreach>
+                where id in
+        <foreach collection="list" item="sysExportManagement" index="index"
+                 separator="," open="(" close=")">
+            #{sysExportManagement.id}
+        </foreach>
+    </update>
+
+    <select id="errorExportListById" resultType="com.leimingtech.dto.excel.ImportErrorExcel">
+      select sifr.failure_id failureId,sifr.failure_reasons failureReasons from sys_import_failure_record sifr
+      where sifr.management_id = #{sysManagerId}
+    </select>
+</mapper>

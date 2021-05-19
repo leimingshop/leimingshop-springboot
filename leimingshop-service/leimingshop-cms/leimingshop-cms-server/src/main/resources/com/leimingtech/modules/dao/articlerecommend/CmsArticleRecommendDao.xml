@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.articlerecommend.CmsArticleRecommendDao">
+
+    <resultMap type="com.leimingtech.modules.entity.articlerecommend.CmsArticleRecommendEntity" id="cmsArticleRecommendMap">
+        <result property="id" column="id"/>
+        <result property="mainArticleId" column="main_article_id"/>
+        <result property="recommendArticleId" column="recommend_article_id"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!-- 资讯相关推荐 -->
+    <select id="selectCmsRecommendList" resultType="com.leimingtech.modules.dto.articlerecommend.CmsArticleRecommendDTO" parameterType="java.util.Map">
+        select
+        lcar.id,
+        lca.id articleId,
+        lca.article_title,
+        lca.article_belong,
+        lca.author,
+        lca.ac_id,
+        lcc.ac_name acName,
+        lca.status,
+        lca.comment_flag,
+        lca.audit,
+        lca.update_date
+        from lmshop_cms_article_recommend lcar
+        left join lmshop_cms_article lca
+        on lcar.recommend_article_id = lca.id
+        left join lmshop_cms_class lcc
+        on lca.ac_id = lcc.id
+        where lcar.main_article_id = #{params.id}
+        and lca.ac_code = 2
+        and lca.del_flag = 0
+        <if test="params.audit != null">
+            and lca.audit = #{params.audit}
+        </if>
+        <if test="params.articleTitle != null and params.articleTitle != ''">
+            and instr(lca.article_title,#{params.articleTitle}) > 0
+        </if>
+        <if test="params.articleBelong != null and params.articleBelong != ''">
+            and instr(lca.article_belong,#{params.articleBelong}) > 0
+        </if>
+        <if test="params.author != null and params.author != ''">
+            and instr(lca.author,#{params.author}) > 0
+        </if>
+        <if test="params.acId != null">
+            and lca.ac_id = #{params.acId}
+        </if>
+        <if test="params.status != null">
+            and lca.status = #{params.status}
+        </if>
+        <if test="params.commentFlag != null">
+            and lca.comment_flag = #{params.commentFlag}
+        </if>
+        order by lcar.update_date desc
+    </select>
+
+    <!-- 资讯添加相关推荐列表 -->
+    <select id="selectAddRecommendList" resultType="com.leimingtech.modules.dto.articlerecommend.CmsArticleAddRecommendDTO" parameterType="java.util.Map">
+        select
+        lca.id articleId,
+        lca.article_title,
+        lca.article_belong,
+        lca.author,
+        lca.ac_id,
+        lcc.ac_name acName,
+        lca.update_date,
+        lca.comment_flag
+        from
+        lmshop_cms_article lca,lmshop_cms_class lcc
+        where lca.ac_id = lcc.id
+        and lca.id not in (select recommend_article_id from lmshop_cms_article_recommend where main_article_id = #{params.id})
+        and lca.id &lt;&gt; #{params.id}
+        and lca.ac_code = 2
+        and lca.del_flag = 0
+        and lca.status = 1
+        and lca.audit = 1
+        <if test="params.articleTitle != null and params.articleTitle != ''">
+            and instr(lca.article_title,#{params.articleTitle}) > 0
+        </if>
+        <if test="params.articleBelong != null and params.articleBelong != ''">
+            and instr(lca.article_belong,#{params.articleBelong}) > 0
+        </if>
+        <if test="params.author != null and params.author != ''">
+            and instr(lca.author,#{params.author}) > 0
+        </if>
+        <if test="params.acId != null">
+            and lca.ac_id = #{params.acId}
+        </if>
+        <if test="params.commentFlag != null">
+            and lca.comment_flag = #{params.commentFlag}
+        </if>
+        order by lca.update_date desc
+    </select>
+
+    <!--物理删除相关推荐-->
+    <delete id="deleteRecommends">
+        delete from lmshop_cms_article_recommend WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 资讯相关推荐 -->
+    <select id="pageFront" resultType="com.leimingtech.modules.dto.articlerecommend.CmsFrontArticleRecommendDTO" parameterType="java.util.Map">
+        select
+        lca.id articleId,
+        lca.article_title
+        from lmshop_cms_article_recommend lcar
+        left join lmshop_cms_article lca
+        on lcar.recommend_article_id = lca.id
+        where lcar.main_article_id = #{params.id}
+        and lca.ac_code = 2
+        and lca.status = 1
+        and lca.audit = 1
+        and lca.del_flag = 0
+        order by lcar.update_date desc
+    </select>
+
+</mapper>

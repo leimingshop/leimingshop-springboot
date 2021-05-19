@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.brand.BrandDao">
+
+    <resultMap type="com.leimingtech.modules.dto.brand.BrandDTO" id="brandMap">
+        <result property="id" column="id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="brandNameEn" column="brand_name_en"/>
+        <result property="brandInitials" column="brand_initials"/>
+        <result property="brandPic" column="brand_pic"/>
+        <result property="brandSort" column="brand_sort"/>
+        <result property="storeId" column="store_id"/>
+        <result property="brandApply" column="brand_apply"/>
+    </resultMap>
+
+    <sql id="column_list">
+        id,brand_name,brand_name_en,brand_initials,brand_pic,brand_sort,store_id,brand_apply
+
+    </sql>
+
+    <!--保存时-根据品牌名称,品牌英文名称查询品牌信息-->
+<!--    <select id="findByName" resultType="com.leimingtech.modules.dto.brand.BrandDTO">-->
+
+<!--        select-->
+<!--        <include refid="column_list"/>-->
+<!--        from lmshop_brand-->
+<!--        where del_flag =0-->
+<!--        and (brand_name =#{brandName} or brand_name_en = #{brandNameEn})-->
+<!--    </select>-->
+
+    <!--修改时-查询品牌名称,品牌英文名称数量防止重复校验-->
+<!--    <select id="selectByBrandName" parameterType="com.leimingtech.modules.dto.brand.BrandDTO"-->
+<!--            resultType="java.lang.Integer">-->
+<!--        SELECT count( 1 ) FROM-->
+<!--          ( SELECT * FROM lmshop_brand WHERE id != #{id} ) b-->
+<!--        WHERE-->
+<!--          del_flag = 0-->
+<!--        <if test="brandName !=null and brandName !='' ">-->
+<!--            and brand_name =#{brandName}-->
+<!--        </if>-->
+<!--        <if test="brandNameEn !=null and brandNameEn !=''">-->
+<!--            OR brand_name_en = #{brandNameEn}-->
+<!--        </if>-->
+
+<!--    </select>-->
+
+    <!--根据分类id集合获取品牌-->
+    <select id="selectByGcId" resultType="com.leimingtech.modules.dto.brand.BrandDTO">
+        SELECT DISTINCT
+        lb.id AS id,
+        lb.brand_name
+        FROM
+        lmshop_brand lb
+        LEFT JOIN lmshop_goods_class_brand lgcb ON lb.id = lgcb.brand_id
+        LEFT JOIN lmshop_goods_class lgc ON lgcb.gc_class_id = lgc.id
+        WHERE
+        lgc.del_flag = 0
+        AND lgcb.del_flag = 0
+        AND lb.del_flag = 0
+        and lgcb.gc_class_id in
+        <foreach collection="classIds" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectCountByCondition" parameterType="com.leimingtech.modules.dto.brand.BrandDTO" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            lmshop_brand
+        WHERE
+            del_flag = 0
+        <if test="null != id">
+            and id != #{id}
+        </if>
+        and (
+            brand_name = #{brandName}
+       <if test="null != brandNameEn and '' != brandNameEn ">
+        or brand_name_en = #{brandNameEn}
+       </if>
+            )
+
+    </select>
+
+</mapper>

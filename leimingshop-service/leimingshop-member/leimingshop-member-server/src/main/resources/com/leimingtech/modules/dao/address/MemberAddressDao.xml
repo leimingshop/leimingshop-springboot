@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.address.MemberAddressDao">
+
+    <resultMap type="com.leimingtech.modules.entity.address.MemberAddressEntity" id="memberAddressMap">
+        <result property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="trueName" column="true_name"/>
+        <result property="mobPhone" column="mob_phone"/>
+        <result property="areaId" column="area_id"/>
+        <result property="provinceId" column="province_id"/>
+        <result property="cityId" column="city_id"/>
+        <result property="areaInfo" column="area_info"/>
+        <result property="zipCode" column="zip_code"/>
+        <result property="address" column="address"/>
+        <result property="lastSelected" column="last_selected"/>
+        <result property="defaultFlag" column="default_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <!--修改地址默认状态-->
+    <update id="updateDefaultFlag">
+        update lmshop_member_address set default_flag=#{defaultFlag} where id=#{id} and del_flag = 0
+    </update>
+
+    <!--将此用户默认状态设为非默认状态-->
+    <update id="updateDefaultFlagByMemberId">
+        update lmshop_member_address set default_flag=#{defaultFlag} where member_id=#{memberId} and del_flag = 0 and default_flag = 1
+    </update>
+    <update id="updateLastSelectedByMemberId">
+        update lmshop_member_address set last_selected=#{lastSelected} where member_id=#{memberId} and del_flag = 0 and last_selected &lt;&gt; #{lastSelected}
+    </update>
+    <update id="updateSettingSelected">
+        update lmshop_member_address set last_selected=#{lastSelected} where id = #{addressId} and del_flag = 0
+    </update>
+
+
+</mapper>

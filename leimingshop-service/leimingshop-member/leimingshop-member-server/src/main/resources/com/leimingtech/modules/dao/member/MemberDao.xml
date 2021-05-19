@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.member.MemberDao">
+
+    <resultMap type="com.leimingtech.modules.entity.member.MemberEntity" id="memberMap">
+        <result property="id" column="id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="memberMobile" column="member_mobile"/>
+        <result property="memberEmail" column="member_email"/>
+        <result property="memberRealName" column="member_real_name"/>
+        <result property="memberAvatar" column="member_avatar"/>
+        <result property="memberSex" column="member_sex"/>
+        <result property="memberPasswd" column="member_passwd"/>
+        <result property="memberBirthday" column="member_birthday"/>
+        <result property="memberLoginIp" column="member_login_ip"/>
+        <result property="memberLoginTime" column="member_login_time"/>
+        <result property="lastLoginDate" column="last_login_date"/>
+        <result property="lastLoginIp" column="last_login_ip"/>
+        <result property="wechatOpenid" column="wechat_openid"/>
+        <result property="wechatUnionid" column="wechat_unionid"/>
+        <result property="qqOpenid" column="qq_openid"/>
+        <result property="deviceToken" column="device_token"/>
+        <result property="umengSource" column="umeng_source"/>
+        <result property="weiboUid" column="weibo_uid"/>
+        <result property="memberSource" column="member_source"/>
+        <result property="memberRole" column="member_role"/>
+        <result property="memberState" column="member_state"/>
+        <result property="emailValidateState" column="email_validate_state"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.vo.member.MemberVo" id="memberVoMap">
+        <result property="id" column="id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="memberMobile" column="member_mobile"/>
+        <result property="memberEmail" column="member_email"/>
+        <result property="memberRealName" column="member_real_name"/>
+        <result property="memberAvatar" column="member_avatar"/>
+        <result property="memberSex" column="member_sex"/>
+        <result property="memberPasswd" column="member_passwd"/>
+        <result property="memberBirthday" column="member_birthday"/>
+        <result property="memberLoginIp" column="member_login_ip"/>
+        <result property="memberLoginTime" column="member_login_time"/>
+        <result property="lastLoginDate" column="last_login_date"/>
+        <result property="lastLoginIp" column="last_login_ip"/>
+        <result property="wechatOpenid" column="wechat_openid"/>
+        <result property="wechatUnionid" column="wechat_unionid"/>
+        <result property="qqOpenid" column="qq_openid"/>
+        <result property="weiboUid" column="weibo_uid"/>
+        <result property="memberSource" column="member_source"/>
+        <result property="memberState" column="member_state"/>
+        <result property="emailValidateState" column="email_validate_state"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+        <association javaType="com.leimingtech.modules.entity.member.MemberInfoEntity" property="memberInfoEntity">
+            <result property="id" column="id"/>
+            <result property="memberId" column="member_id"/>
+            <result property="paymentPasswd" column="payment_passwd"/>
+            <result property="availableBalance" column="available_balance"/>
+            <result property="consumePoint" column="consume_point"/>
+            <result property="availablePoint" column="available_point"/>
+            <result property="gradePoint" column="grade_point"/>
+            <result property="memberAreaid" column="member_areaid"/>
+            <result property="memberCityid" column="member_cityid"/>
+            <result property="memberProvinceid" column="member_provinceid"/>
+            <result property="stressId" column="stress_id"/>
+            <result property="memberAreainfo" column="member_areainfo"/>
+            <result property="creator" column="creator"/>
+            <result property="createDate" column="create_date"/>
+            <result property="updater" column="updater"/>
+            <result property="updateDate" column="update_date"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="version" column="version"/>
+        </association>
+    </resultMap>
+    <!--会员编辑页面-->
+    <resultMap type="com.leimingtech.modules.dto.member.MemberUpdateDTO" id="memberUpdateMap">
+        <result property="id" column="id"/>
+        <result property="memberAreaid" column="member_areaid"/>
+        <result property="memberCityid" column="member_cityid"/>
+        <result property="memberPasswd" column="member_passwd"/>
+        <result property="memberProvinceid" column="member_provinceid"/>
+    </resultMap>
+    <!--用户详情-->
+    <sql id="Base_Column_List">
+        m.id,
+        m.member_name,
+        m.nick_name,
+        m.member_mobile,
+        m.member_email,
+        m.member_real_name,
+        m.member_avatar,
+        m.member_sex,
+        m.member_passwd,
+        m.member_birthday,
+        m.member_state,
+        m.email_validate_state,
+        m.member_source,
+        m.member_state,
+        m.last_login_date,
+        m.last_login_ip,
+        mi.consume_point,
+        mi.available_point,
+        mi.available_balance,
+        mi.payment_passwd,
+        mi.grade_point,
+        mi.member_areaid,
+        mi.member_cityid,
+        mi.member_areainfo,
+        mi.stress_id,
+        mi.member_provinceid
+    </sql>
+    <!--会员基本信息-->
+    <sql id="Base_Column_List1">
+        id,
+        member_name,
+        nick_name,
+        member_mobile,
+        member_email,
+        member_real_name,
+        member_avatar,
+        member_sex,
+        member_passwd,
+        member_birthday,
+        member_login_ip,
+        member_login_time,
+        last_login_date,
+        last_login_ip,
+        wechat_openid,
+        wechat_unionid,
+        qq_openid,
+        weibo_uid,
+        member_source,
+        member_state,
+        email_validate_state
+    </sql>
+    <!--会员列表信息-->
+    <sql id="Base_Column_List2">
+        m.id,
+        m.member_avatar,
+        m.member_name,
+        m.nick_name,
+        m.member_mobile,
+        mi.grade_point,
+        mi.available_balance,
+        m.member_source,
+        m.create_date,
+        m.member_email,
+        m.member_real_name,
+        m.member_state
+    </sql>
+    <!--会员编辑页面-->
+    <sql id="member_update">
+        m.id,
+        m.nick_name,
+        m.member_name,
+        m.member_passwd,
+        mi.member_areaid,
+        mi.member_cityid,
+        mi.stress_id,
+        mi.member_provinceid
+    </sql>
+    <!--会员管理列表页-->
+    <select id="getList" resultMap="memberVoMap">
+        select
+        <include refid="Base_Column_List2"/>
+        from lmshop_member m LEFT JOIN lmshop_member_info mi ON
+        m.id = mi.member_id where m.del_flag = 0
+        <if test="params.nickName != null and params.nickName.trim() != ''">
+            and m.member_name like #{params.nickName} or m.nick_name like #{params.nickName} or m.id like
+            #{params.nickName}
+        </if>
+        <if test="params.memberMobile != null and params.memberMobile.trim() != ''">
+            and m.member_mobile = #{params.memberMobile}
+        </if>
+        <if test="params.type != null">
+            <if test="params.type == 0 and params.memberName != null and params.memberName.trim() != ''">
+                and nick_name like concat('%', #{params.memberName}, '%')
+            </if>
+            <if test="params.type == 2 and params.memberName != null and params.memberName.trim() != ''">
+                and member_email like concat('%',#{params.memberName},'%')
+            </if>
+            <if test="params.type == 3 and params.memberName != null and params.memberName.trim() != ''">
+                and member_name like concat('%',#{params.memberName},'%')
+            </if>
+        </if>
+        <if test="params.min != null">
+            and mi.grade_point &gt;= #{params.min}
+        </if>
+        <if test="params.max != null">
+            and mi.grade_point &lt; #{params.max}
+        </if>
+    </select>
+
+    <!--导出会员列表查询-->
+    <select id="findListExport" resultType="com.leimingtech.modules.dto.member.EasyMemberExcelDTO">
+        SELECT
+            m.id,
+            m.member_avatar,
+            m.member_name,
+            m.nick_name,
+            m.member_mobile,
+            m.member_source,
+            m.create_date,
+            m.member_email,
+            m.member_real_name,
+            m.member_state,
+            (
+            SELECT
+            grade_name
+            FROM
+            lmshop_member_grade
+            WHERE
+            integration = ( SELECT MAX( integration ) FROM lmshop_member_grade WHERE del_flag=0 and integration &lt;= mi.grade_point )
+            ) AS gradeName
+        FROM
+            lmshop_member m
+        LEFT JOIN lmshop_member_info mi ON m.id = mi.member_id
+        WHERE
+            m.del_flag = 0
+        <if test="params.memberName != null and params.memberName.trim() != ''">
+            and m.member_name like #{params.memberName}
+        </if>
+        <if test="params.id != null and params.id.trim() != ''">
+            and m.id like #{params.id}
+        </if>
+        <if test="params.type != null">
+            <if test="params.type == 0 and params.memberName != null and params.memberName.trim() != ''">
+                and nick_name like concat('%', #{params.memberName}, '%')
+            </if>
+            <if test="params.type == 2 and params.memberName != null and params.memberName.trim() != ''">
+                and member_email like concat('%',#{params.memberName},'%')
+            </if>
+            <if test="params.type == 3 and params.memberName != null and params.memberName.trim() != ''">
+                and member_name like concat('%',#{params.memberName},'%')
+            </if>
+        </if>
+    </select>
+
+    <select id="getPage" resultMap="memberVoMap">
+        select
+        <include refid="Base_Column_List2"/>
+        from lmshop_member m LEFT JOIN lmshop_member_info mi ON
+        m.id = mi.member_id where m.del_flag = 0
+        <if test="params.memberName != null and params.memberName.trim() != ''">
+            and m.member_name like concat(concat('%',#{params.memberName}),'%')
+        </if>
+        <if test="params.id != null and params.id.trim() != ''">
+            and m.id like #{params.id}
+        </if>
+        <if test="params.type != null">
+            <if test="params.type == 0 and params.memberName != null and params.memberName.trim() != ''">
+                and nick_name like concat('%', #{params.memberName}, '%')
+            </if>
+            <if test="params.type == 2 and params.memberName != null and params.memberName.trim() != ''">
+                and member_email like concat('%',#{params.memberName},'%')
+            </if>
+            <if test="params.type == 3 and params.memberName != null and params.memberName.trim() != ''">
+                and member_name like concat('%',#{params.memberName},'%')
+            </if>
+        </if>
+        <if test="params.min != null">
+            and mi.grade_point >= #{params.min}
+        </if>
+        <if test="params.max != null">
+            and mi.grade_point <![CDATA[ < ]]> #{params.max}
+        </if>
+    </select>
+
+    <!--查询用户详情-->
+    <select id="selectMemberById" resultMap="memberVoMap">
+        select
+        <include refid="Base_Column_List"/>
+        from lmshop_member m,lmshop_member_info mi
+        where m.id = mi.member_id and m.del_flag = 0 and mi.del_flag = 0 AND m.id = #{id}
+    </select>
+
+    <!--用户名称返回用户信息和userid-->
+    <select id="selectMemberByUserName" resultType="com.leimingtech.modules.entity.member.MemberEntity">
+        select
+        <include refid="Base_Column_List1"/>
+        FROM lmshop_member lm WHERE lm.`member_name`=#{username} AND lm.`del_flag`=0
+    </select>
+
+
+    <!--查询security认证信息-->
+    <select id="selectSecurityUserInfo" resultType="com.leimingtech.modules.dto.member.SecurityDTO">
+       SELECT
+        le.`id` AS id,le.`member_name` AS username ,le.`member_passwd` AS PASSWORD ,le.`member_state` AS memberState
+        FROM  lmshop_member le
+      WHERE le.`member_mobile`=#{userName} AND le.`del_flag`=0
+    </select>
+
+
+    <!--查询手机号是否被注册过-->
+    <select id="selectMemberByUsermaneOrMobile" resultType="java.lang.Boolean">
+         select count(id) from lmshop_member  where (member_name = #{memberMobile} or member_mobile = #{memberMobile}) and del_flag = 0
+    </select>
+
+    <!--查询邮箱是否被注册过-->
+    <select id="selectMemberByMemberEmail" resultType="java.lang.Boolean">
+                 select count(id) from lmshop_member m where member_email = #{memberEmail} and del_flag = 0
+    </select>
+
+    <!--根据用户名密码查询-->
+    <select id="findByName" resultType="com.leimingtech.modules.entity.member.MemberEntity">
+        select
+        <include refid="Base_Column_List1"/>
+        from lmshop_member m where member_name = #{memberName} and del_flag = 0
+    </select>
+    <!--根据unionid查询-->
+    <select id="selectByUnionid" resultType="com.leimingtech.modules.entity.member.MemberEntity">
+        select
+        <include refid="Base_Column_List1"/>
+        from lmshop_member m where wechat_unionid = #{unionid} and del_flag = 0
+    </select>
+
+    <!--根据unionid查询-->
+    <select id="selectByWeiboUid" resultType="com.leimingtech.modules.entity.member.MemberEntity">
+        select
+        <include refid="Base_Column_List1"/>
+        from lmshop_member m where weibo_uid = #{weiboUid} and del_flag = 0
+    </select>
+
+    <!--根据id查询(编辑页面)-->
+    <select id="selectMemberUpdateDTO" resultMap="memberUpdateMap">
+        select
+        <include refid="member_update"/>
+        FROM
+        lmshop_member m
+        LEFT JOIN lmshop_member_info mi ON m.id = mi.member_id
+        WHERE
+        m.id = #{id}
+    </select>
+    <!--根据手机号修改密码-->
+    <update id="updatePasswordByMobile" parameterType="java.lang.String">
+        update lmshop_member set member_passwd=#{passwd} where member_mobile=#{mobile} and del_flag = 0
+    </update>
+
+    <!--根据手机号查询用户信息-->
+    <select id="selectByMobile" parameterType="java.lang.String" resultType="com.leimingtech.modules.dto.member.MemberPhoneDTO">
+        select nick_name,member_avatar
+        from lmshop_member where member_mobile =#{mobile} and del_flag =0
+    </select>
+    <select id="selectPhoneListById" resultType="com.leimingtech.modules.dto.member.MemberDTO">
+        select id,nick_name,member_mobile ,device_token,umeng_source
+        from lmshop_member
+        where del_flag=0 and id in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+
+    </select>
+    <select id="selectIndexMemberData" resultType="com.leimingtech.modules.dto.member.IndexMemberDataDTO">
+        SELECT count( id ) AS newMemberCount,( SELECT count( id ) FROM lmshop_member WHERE del_flag = 0 ) AS memberCount
+        FROM
+        lmshop_member
+        WHERE
+        del_flag = 0
+        AND create_date &gt;= #{startDate}
+        AND create_date &lt;= #{endDate}
+
+    </select>
+
+    <!--根据用户昵称搜索用户列表-->
+    <select id="selectMemberList" resultType="com.leimingtech.modules.entity.member.MemberEntity">
+        select
+            id,
+            nick_name,
+            member_avatar
+        from lmshop_member
+        where 1 = 1
+        <if test="params.nickName != null and params.nickName.trim() != ''">
+           and nick_name  LIKE concat('%', #{params.nickName}, '%')
+        </if>
+         and del_flag =0
+    </select>
+    <select id="selectUmengTokenByIds" resultType="com.leimingtech.modules.dto.member.MemberUmengTokenInfo">
+        select id,member_name as memberName ,device_token as deviceToken,umeng_source as umengSource
+        from lmshop_member
+        where del_flag=0 and id in
+        <foreach collection="memberIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+    <select id="getUserInfoById" resultType="com.leimingtech.modules.dto.member.MemberLabelDTO">
+        select lm.member_sex as sex,year( from_days( datediff( now( ), lm.member_birthday))) as age ,lmi.member_provinceid as country,lmi.member_cityid as city from lmshop_member lm left join lmshop_member_info lmi on lm.id=lmi.member_id
+        where lm.id=#{memberId}
+    </select>
+</mapper>

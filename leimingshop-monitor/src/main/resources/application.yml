@@ -1,0 +1,33 @@
+server:
+  port: 30101
+  servlet:
+    context-path: /
+
+leimingtech:
+  system:
+    id: LMB01
+
+spring:
+  application:
+    name: leimingtech-monitor
+  boot:
+    admin:
+      context-path: /monitor
+  profiles:
+    active: @active@
+  security:
+    user:
+      name: leiming
+      password:  Leimingtech1205
+#fegin连接超时时间
+ribbon:
+  ReadTimeout: 10000   #负载均衡超时时间，默认值5000
+  ConnectTimeout: 4000 #ribbon请求连接的超时时间，默认值2000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS

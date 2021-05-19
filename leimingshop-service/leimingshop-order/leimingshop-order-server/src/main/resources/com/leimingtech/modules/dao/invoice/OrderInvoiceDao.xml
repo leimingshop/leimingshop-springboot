@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.invoice.OrderInvoiceDao">
+
+    <resultMap type="com.leimingtech.modules.entity.invoice.OrderInvoiceEntity" id="orderInvoiceMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="memberName" column="member_name"/>
+        <result property="storeId" column="store_id"/>
+        <result property="payAmount" column="pay_amount"/>
+        <result property="createOrderDate" column="create_order_date"/>
+        <result property="applyDate" column="apply_date"/>
+        <result property="companyType" column="company_type"/>
+        <result property="memberInvoiceType" column="member_invoice_type"/>
+        <result property="memberInvoiceContent" column="member_invoice_content"/>
+        <result property="storeInvoiceType" column="store_invoice_type"/>
+        <result property="storeInvoiceContent" column="store_invoice_content"/>
+        <result property="personalName" column="personal_name"/>
+        <result property="addresseeName" column="addressee_name"/>
+        <result property="addresseePhone" column="addressee_phone"/>
+        <result property="addresseeMail" column="addressee_mail"/>
+        <result property="addresseeAddress" column="addressee_address"/>
+        <result property="detailedAddress" column="detailed_address"/>
+        <result property="provinceId" column="province_id"/>
+        <result property="cityId" column="city_id"/>
+        <result property="districtId" column="district_id"/>
+        <result property="streetId" column="street_id"/>
+        <result property="company" column="company"/>
+        <result property="dutyParagraph" column="duty_paragraph"/>
+        <result property="registeredAddress" column="registered_address"/>
+        <result property="officePhone" column="office_phone"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="bankNumber" column="bank_number"/>
+        <result property="invoiceEvolve" column="invoice_evolve"/>
+        <result property="changeFlag" column="change_flag"/>
+        <result property="invoiceCode" column="invoice_code"/>
+        <result property="invoiceNumber" column="invoice_number"/>
+        <result property="invoiceDate" column="invoice_date"/>
+        <result property="logisticsCompanies" column="logistics_companies"/>
+        <result property="logisticsNumber" column="logistics_number"/>
+        <result property="fileUrl" column="file_url"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <select id="selectInvoicePage" resultType="com.leimingtech.modules.dto.invoice.OrderInvoiceDTO" parameterType="java.util.Map">
+      SELECT
+        loi.id,
+        loi.order_id,
+        loi.order_sn,
+        loi.member_name,
+        loi.store_id,
+        loi.pay_amount,
+        loi.create_order_date,
+        loi.apply_date,
+        loi.company_type,
+        loi.member_invoice_type,
+        loi.member_invoice_content,
+        loi.store_invoice_type,
+        loi.store_invoice_content,
+        loi.personal_name,
+        loi.addressee_name,
+        loi.addressee_phone,
+        loi.addressee_mail,
+        loi.addressee_address,
+        loi.detailed_address,
+        loi.province_id,
+        loi.city_id,
+        loi.district_id,
+        loi.street_id,
+        loi.company,
+        loi.duty_paragraph,
+        loi.registered_address,
+        loi.office_phone,
+        loi.bank_name,
+        loi.bank_number,
+        loi.invoice_evolve,
+        loi.change_flag,
+        loi.invoice_code,
+        loi.invoice_number,
+        loi.invoice_date,
+        loi.logistics_companies,
+        loi.logistics_number,
+        loi.file_url,
+        lo.order_status as order_status
+             FROM
+	    lmshop_order_invoice loi
+	    LEFT JOIN lmshop_order lo ON lo.id = loi.order_id
+	    <where>
+            loi.del_flag = 0 AND loi.company_type != 0  and loi.store_id = #{params.storeId}
+            and lo.order_status != 0 and lo.order_status != 10
+            <if test="null != params.orderSn and params.orderSn != ''">
+                and loi.order_sn like concat('%',#{params.orderSn},'%')
+            </if>
+            <if test="null != params.memberName and params.memberName != ''">
+                and loi.member_name like concat('%',#{params.memberName},'%')
+            </if>
+            <if test="null != params.memberInvoiceType and params.memberInvoiceType != ''">
+                and loi.member_invoice_type = #{params.memberInvoiceType}
+            </if>
+            <if test="null != params.invoiceEvolve and params.invoiceEvolve != ''">
+                and loi.invoice_evolve = #{params.invoiceEvolve}
+            </if>
+            <if test="null != params.orderStatus and params.orderStatus != ''">
+                and lo.order_status = #{params.orderStatus}
+            </if>
+            <if test="null != params.startInvoiceDate and params.startInvoiceDate != ''">
+                and loi.invoice_date &gt;= #{params.startInvoiceDate}
+            </if>
+            <if test="null != params.endInvoiceDate and params.endInvoiceDate != ''">
+                and loi.invoice_date &lt;= #{params.endInvoiceDate}
+            </if>
+        </where>
+        order By loi.apply_date desc
+    </select>
+</mapper>

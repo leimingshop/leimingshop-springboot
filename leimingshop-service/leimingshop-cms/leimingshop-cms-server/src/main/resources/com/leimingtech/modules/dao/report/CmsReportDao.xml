@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.report.CmsReportDao">
+
+    <resultMap type="com.leimingtech.modules.entity.report.CmsReportEntity" id="cmsReportMap">
+        <result property="id" column="id"/>
+        <result property="reportCreaterId" column="report_creater_id"/>
+        <result property="reportContent" column="report_content"/>
+        <result property="reportFlagId" column="report_flag_id"/>
+        <result property="reportFlag" column="report_flag"/>
+        <result property="reportStatus" column="report_status"/>
+        <result property="reportResult" column="report_result"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+    <select id="selectReportPage" resultType="com.leimingtech.modules.dto.report.CmsReportPageDto"  parameterType="java.util.Map">
+        SELECT
+        lcr.*,
+        lca.article_creater_id AS publishUserId,
+        lca.creator AS publishUserName,
+        IFNULL(lca.article_title,lca.article_content) reportFlagName
+        FROM
+        lmshop_cms_report lcr
+        LEFT JOIN lmshop_cms_article lca ON lcr.report_flag_id = lca.id
+        <where>
+            lcr.del_flag = 0
+            <if test="null != params.reportStatus">
+                AND lcr.report_status = #{params.reportStatus}
+            </if>
+            <if test="null != params.reportContent and ''!= params.reportContent">
+                AND instr(lcr.report_content,#{params.reportContent}) > 0
+            </if>
+            <if test="params.reportFlagName != null and params.reportFlagName != ''">
+                and (instr(lca.article_title,#{params.reportFlagName}) > 0 or instr(lca.article_content,#{params.reportFlagName}) > 0)
+            </if>
+            <if test="null != params.creator and ''!= params.creator">
+                AND instr(lcr.creator,#{params.creator}) > 0
+            </if>
+            <if test="params.beginTime != null and params.beginTime!=''">
+                AND lcr.create_date &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime!=''">
+                AND lcr.create_date &lt;= #{params.endTime}
+            </if>
+        </where>
+        ORDER BY lcr.create_date desc
+    </select>
+
+    <select id="selectArticleReportInfo" resultType="com.leimingtech.modules.dto.report.CmsArticleReportAdminInfoDTO" parameterType="java.lang.Long">
+        SELECT
+        lca.id articleId,
+        lca.article_title,
+        lca.article_content,
+        lca.creator,
+        lca.article_flag,
+        IFNULL( lcc.ac_name, '无' ) acName,
+        lca.topic_name topicName,
+        lca.video_url,
+        lca.article_picture,
+        lca.index_image,
+        lcr.id,
+        lcr.report_content reportContent,
+        lcr.creator reportCreator,
+        lcr.report_status reportStatus,
+        lcr.report_result reportResult
+        FROM
+        lmshop_cms_report lcr
+        LEFT JOIN lmshop_cms_article lca ON lca.id = lcr.report_flag_id
+        LEFT JOIN lmshop_cms_class lcc ON lca.ac_id = lcc.id
+        WHERE
+        lcr.id = #{id}
+        AND lca.ac_code = 1
+        AND lca.del_flag = 0
+    </select>
+
+    <update id="updateDelById" parameterType="java.lang.Long">
+        UPDATE lmshop_cms_report SET del_flag=1 WHERE id=#{id}
+    </update>
+
+    <select id="selectMemberAndFlag" resultType="com.leimingtech.modules.dto.report.CmsReportDTO" parameterType="java.util.Map">
+        SELECT
+        lcr.id,
+        lcr.report_creater_id reportCreaterId,
+        lcr.report_content reportContent,
+        lcr.report_flag_id reportFlagId,
+        lcr.report_flag reportFlag,
+        lcr.creator reportCreator,
+        lcr.report_status reportStatus,
+        lcr.report_result reportResult
+        FROM
+        lmshop_cms_report lcr
+        WHERE
+        lcr.report_flag_id = #{params.reportFlagId}
+        AND lcr.report_creater_id = #{params.reportCreaterId}
+        <if test="null != params.reportFlag">
+            AND lcr.report_flag = #{params.reportFlag}
+        </if>
+    </select>
+</mapper>

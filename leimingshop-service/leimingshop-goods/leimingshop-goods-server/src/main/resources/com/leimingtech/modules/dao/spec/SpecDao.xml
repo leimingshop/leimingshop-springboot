@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.spec.SpecDao">
+
+    <resultMap type="com.leimingtech.modules.entity.spec.SpecEntity" id="specMap">
+        <result property="id" column="id"/>
+        <result property="specName" column="spec_name"/>
+        <result property="specFormat" column="spec_format"/>
+        <result property="specValue" column="spec_value"/>
+        <result property="spSort" column="sp_sort"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.spec.SpecIdAndNameDTO" id="specIdAndNameMap">
+        <result property="id" column="id"/>
+        <result property="specName" column="spec_name"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        s.id,
+        s.spec_name,
+        s.spec_format,
+        s.spec_value,
+        s.sp_sort,
+        s.creator,
+        s.create_date,
+        s.updater,
+        s.update_date,
+        s.del_flag,
+        s.version
+    </sql>
+
+    <sql id="whereStatement">
+        <where>
+            <if test="specName != null and specName != ''">
+                AND s.spec_name like concat('%', #{specName}, '%')
+            </if>
+            <if test="specFormat != null">
+                AND s.spec_format = #{specFormat}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="whereStatementDel">
+        <where>
+            s.del_flag = 0
+            <if test="specName != null and specName != ''">
+                AND s.spec_name like concat('%', #{specName}, '%')
+            </if>
+            <if test="specFormat != null">
+                AND s.spec_format = #{specFormat}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findSpecList" resultMap="specMap">
+        select
+        <include refid="Base_Column_List"/>
+        from lmshop_spec s
+        <include refid="whereStatementDel"/>
+        order by s.sp_sort desc
+    </select>
+
+    <!--规格条件查询,可输入分组查询-->
+    <select id="findSpecListByGroupName" resultMap="specMap">
+        select distinct
+        <include refid="Base_Column_List"/>
+        from lmshop_spec s left join lmshop_spec_group_rel sgr on s.id = sgr.spec_id
+        left join lmshop_spec_group sg on sgr.group_id = sg.id
+        <where>
+            s.del_flag = 0
+            <if test="specName != null and specName != ''">
+                AND s.spec_name like concat('%', #{specName}, '%')
+            </if>
+            <if test="groupStatus != null">
+                and sgr.del_flag = 0 and sg.del_flag = 0
+                AND  sg.group_status=#{groupStatus}
+            </if>
+            <if test="groupName != null and groupName!=''">
+                and sgr.del_flag = 0 and sg.del_flag = 0
+                AND sg.group_name like concat('%', #{groupName}, '%')
+            </if>
+        </where>
+        order by s.sp_sort desc, s.create_date desc
+    </select>
+
+    <!--批量查询规格名称-->
+    <select id="selectNameBatchByids" resultMap="specIdAndNameMap">
+        select s.id, s.spec_name from lmshop_spec s
+        <where>
+            s.del_flag = 0 AND s.id IN
+            <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+    <!--查询规格关联后台分类数量-->
+    <select id="countClass" resultType="com.leimingtech.modules.dto.spec.SpecClassDTO" >
+        SELECT
+        s.id,
+        s.spec_name,
+        ifnull(a.number,0) as number
+        FROM
+        lmshop_spec s
+        LEFT JOIN (
+        SELECT
+        gcs.spec_id,
+        count(1) AS number
+        FROM
+        lmshop_goods_class_spec gcs
+        INNER JOIN lmshop_goods_class gc ON gcs.gc_class_id = gc.id
+        WHERE
+        gcs.del_flag = 0
+        AND gc.del_flag = 0
+        GROUP BY
+        gcs.spec_id
+        ) a ON s.id = a.spec_id
+        WHERE
+        s.del_flag = 0 and s.id in
+        <foreach collection="array" index="index" item="item"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by s.id
+    </select>
+
+</mapper>

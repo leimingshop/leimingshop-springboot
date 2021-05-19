@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.menu.StoreMenuDao">
+
+    <resultMap type="com.leimingtech.modules.entity.menu.StoreMenuEntity" id="storeMenuMap">
+        <result property="id" column="id"/>
+        <result property="menuName" column="menu_name"/>
+        <result property="menuUrl" column="menu_url"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="sort" column="sort"/>
+        <result property="menuPermission" column="menu_permission"/>
+        <result property="menuIcon" column="menu_icon"/>
+        <result property="menuType" column="menu_type"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <resultMap type="com.leimingtech.commons.tools.security.bo.StoreMenuDTOs" id="StoreMenuDTOsMap">
+        <result property="id" column="id"/>
+        <result property="name" column="menu_name"/>
+        <result property="url" column="menu_url"/>
+        <result property="pid" column="parent_id"/>
+        <result property="sort" column="sort"/>
+        <result property="permission" column="menu_permission"/>
+        <result property="icon" column="menu_icon"/>
+        <result property="type" column="menu_type"/>
+    </resultMap>
+    <select id="getParentName" resultType="java.lang.String">
+        select menu_name
+        from lmshop_store_menu
+        where del_flag=0 and id=#{parentId}
+    </select>
+    <select id="findRegisterMenu" resultMap="StoreMenuDTOsMap">
+        select *
+        from lmshop_store_menu
+        where del_flag=0 and id in (7,1207213361260847105)
+    </select>
+    <select id="defaultMenu" resultType="com.leimingtech.modules.dto.index.StoreUserFunctionDTO">
+        select lsm.id as menuId ,lsm.menu_name as menuName,lsrm.role_id as roleId,lsm.menu_icon as icon,lsm.menu_url as menuUrl
+        from lmshop_store_role_menu lsrm
+        left join lmshop_store_menu lsm on lsrm.menu_id=lsm.id
+        where lsrm.del_flag=0 and lsm.del_flag=0 	AND lsm.menu_type = 0
+        <if test="roleMark == 1">
+            and lsm.parent_id!=0 and   lsm.id in (9,22,13,1214017347947208705,1213744747609370626,1207213361260847105,36,38)
+            GROUP BY lsm.id
+            limit 8
+        </if>
+        <if test="roleMark==0">
+            and lsm.parent_id!=0  and lsrm.role_id=#{roleId}
+            limit 8
+        </if>
+
+
+    </select>
+    <select id="activityMenu" resultType="com.leimingtech.modules.dto.index.StoreUserFunctionDTO">
+        select lsm.id as menuId ,lsm.menu_name as menuName,lsm.menu_icon as icon,lsm.menu_url as menuUrl
+        from lmshop_store_menu lsm
+        where  lsm.del_flag=0 	AND lsm.menu_type = 0
+        and lsm.parent_id=1204344800908783617
+        order by lsm.sort asc
+        limit 3
+
+
+    </select>
+
+
+</mapper>

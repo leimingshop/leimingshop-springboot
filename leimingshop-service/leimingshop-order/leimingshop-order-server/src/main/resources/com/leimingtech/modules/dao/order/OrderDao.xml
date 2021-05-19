@@ -1,0 +1,922 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.order.OrderDao">
+
+    <resultMap type="com.leimingtech.modules.entity.order.OrderEntity" id="orderMap">
+        <result property="id" column="id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+        <result property="buyerEmail" column="buyer_email"/>
+        <result property="orderPlatform" column="order_platform"/>
+        <result property="shippingFee" column="shipping_fee"/>
+        <result property="couponAmount" column="coupon_amount"/>
+        <result property="reduceAmount" column="reduce_amount"/>
+        <result property="preferentialPrice" column="preferential_price"/>
+        <result property="goodsAmount" column="goods_amount"/>
+        <result property="orderAmount" column="order_amount"/>
+        <result property="memberCouponsId" column="member_coupons_id"/>
+        <result property="orderMessage" column="order_message"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="appStatus" column="app_status"/>
+        <result property="paymentId" column="payment_id"/>
+        <result property="paymentName" column="payment_name"/>
+        <result property="payId" column="pay_id"/>
+        <result property="paySn" column="pay_sn"/>
+        <result property="paymentStatus" column="payment_status"/>
+        <result property="paymentTime" column="payment_time"/>
+        <result property="paymentMessage" column="payment_message"/>
+        <result property="outSn" column="out_sn"/>
+        <result property="tradeSn" column="trade_sn"/>
+        <result property="completeTime" column="complete_time"/>
+        <result property="invoiceFlag" column="invoice_flag"/>
+        <result property="afterFlag" column="after_flag"/>
+        <result property="daddressId" column="daddress_id"/>
+        <result property="deliverExplain" column="deliver_explain"/>
+        <result property="addressId" column="address_id"/>
+        <result property="transportTime" column="transport_time"/>
+        <result property="devlierType" column="devlier_type"/>
+        <result property="transportCompanyId" column="transport_company_id"/>
+        <result property="trandportExpressCode" column="trandport_express_code"/>
+        <result property="transportCompanyName" column="transport_company_name"/>
+        <result property="transportCompanyPhone" column="transport_company_phone"/>
+        <result property="transportCode" column="transport_code"/>
+        <result property="evaluateStatus" column="evaluate_status"/>
+        <result property="evaluateTime" column="evaluate_time"/>
+        <result property="balanceStatus" column="balance_status"/>
+        <result property="balanceTime" column="balance_time"/>
+        <result property="causeId" column="cause_id"/>
+        <result property="cancelCause" column="cancel_cause"/>
+        <result property="cancelDate" column="cancel_date"/>
+        <result property="isSplit" column="is_split"/>
+        <result property="parentOrderSn" column="parent_order_sn"/>
+        <result property="showFlag" column="show_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+        <result property="sellerRemarkGrade" column="seller_remark_grade"/>
+        <result property="sellerRemark" column="seller_remark"/>
+        <result property="buyerGraderId" column="buyer_grader_id"/>
+        <result property="buyerGraderName" column="buyer_grader_name"/>
+        <result property="groupRecordId" column="group_record_id"/>
+        <result property="groupOverTime" column="group_over_time"/>
+        <result property="groupStatus" column="group_status"/>
+        <result property="groupNeedNum" column="group_need_num"/>
+        <result property="virtualFlag" column="virtual_flag"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.order.H5OrderPageDTO" id="orderDetailDTOMap">
+        <result property="id" column="id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+        <result property="goodsAmount" column="goods_amount"/>
+        <result property="orderAmount" column="order_amount"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="appStatus" column="app_status"/>
+        <result property="paySn" column="pay_sn"/>
+        <result property="invoiceFlag" column="invoice_flag"/>
+        <result property="afterFlag" column="after_flag"/>
+        <result property="devlierType" column="devlier_type"/>
+        <result property="evaluateStatus" column="evaluate_status"/>
+        <result property="evaluateTime" column="evaluate_time"/>
+        <result property="isSplit" column="is_split"/>
+        <result property="parentOrderSn" column="parent_order_sn"/>
+        <result property="createDate" column="create_date"/>
+        <result property="groupRecordId" column="group_record_id"/>
+        <result property="groupOverTime" column="group_over_time"/>
+        <result property="groupStatus" column="group_status"/>
+        <result property="groupNeedNum" column="group_need_num"/>
+        <result property="virtualFlag" column="virtual_flag"/>
+        <collection property="orderGoodsDTOList" column="order_sn" javaType="java.util.ArrayList"
+                    select="com.leimingtech.modules.dao.order.OrderGoodsDao.findByOrderSn"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.vo.order.PCOrderPageVO" id="pcOrderPageMap">
+        <result property="id" column="id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+        <result property="shippingFee" column="shipping_fee"/>
+        <result property="goodsAmount" column="goods_amount"/>
+        <result property="orderAmount" column="order_amount"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="appStatus" column="app_status"/>
+        <result property="paymentName" column="payment_name"/>
+        <result property="paySn" column="pay_sn"/>
+        <result property="invoiceFlag" column="invoice_flag"/>
+        <result property="afterFlag" column="after_flag"/>
+        <result property="devlierType" column="devlier_type"/>
+        <result property="evaluateStatus" column="evaluate_status"/>
+        <result property="evaluateTime" column="evaluate_time"/>
+        <result property="isSplit" column="is_split"/>
+        <result property="parentOrderSn" column="parent_order_sn"/>
+        <result property="createDate" column="create_date"/>
+        <result property="groupRecordId" column="group_record_id"/>
+        <result property="groupOverTime" column="group_over_time"/>
+        <result property="groupStatus" column="group_status"/>
+        <result property="groupNeedNum" column="group_need_num"/>
+        <result property="virtualFlag" column="virtual_flag"/>
+        <result property="trueName" column="true_name"/>
+        <collection property="orderGoodsDTOList" column="order_sn" javaType="java.util.ArrayList"
+                    select="com.leimingtech.modules.dao.order.OrderGoodsDao.findByOrderSn"/>
+<!--        <collection property="orderChildrenList" column="order_sn" javaType="java.util.ArrayList"-->
+<!--                    select="com.leimingtech.modules.dao.order.OrderDao.findChildrenOrderList"/>-->
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.order.EvaluateOrderPageDTO" id="evaluateMap">
+        <result property="orderSn" column="order_sn"/>
+        <collection property="orderGoodsDTOList" column="order_sn" javaType="java.util.ArrayList"
+                    select="com.leimingtech.modules.dao.order.OrderGoodsDao.fingNotOrderGoods"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.order.EvaluateOrderPageDTO" id="evaluatePageMap">
+        <result property="orderSn" column="order_sn"/>
+        <collection property="orderGoodsDTOList" column="order_sn" javaType="java.util.ArrayList"
+                    select="com.leimingtech.modules.dao.order.OrderGoodsDao.fingYesOrderGoods"/>
+    </resultMap>
+    <resultMap type="com.leimingtech.modules.dto.order.AdminOrderDetailDTO" id="orderChildrenDetailDTOMap">
+        <result property="id" column="id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+        <result property="buyerEmail" column="buyer_email"/>
+        <result property="orderPlatform" column="order_platform"/>
+        <result property="shippingFee" column="shipping_fee"/>
+        <result property="couponAmount" column="coupon_amount"/>
+        <result property="reduceAmount" column="reduce_amount"/>
+        <result property="preferentialPrice" column="preferential_price"/>
+        <result property="goodsAmount" column="goods_amount"/>
+        <result property="orderAmount" column="order_amount"/>
+        <result property="memberCouponsId" column="member_coupons_id"/>
+        <result property="orderMessage" column="order_message"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="appStatus" column="app_status"/>
+        <result property="paymentId" column="payment_id"/>
+        <result property="paymentName" column="payment_name"/>
+        <result property="payId" column="pay_id"/>
+        <result property="paySn" column="pay_sn"/>
+        <result property="paymentStatus" column="payment_status"/>
+        <result property="paymentTime" column="payment_time"/>
+        <result property="paymentMessage" column="payment_message"/>
+        <result property="outSn" column="out_sn"/>
+        <result property="tradeSn" column="trade_sn"/>
+        <result property="completeTime" column="complete_time"/>
+        <result property="invoiceFlag" column="invoice_flag"/>
+        <result property="afterFlag" column="after_flag"/>
+        <result property="daddressId" column="daddress_id"/>
+        <result property="deliverExplain" column="deliver_explain"/>
+        <result property="addressId" column="address_id"/>
+        <result property="transportTime" column="transport_time"/>
+        <result property="devlierType" column="devlier_type"/>
+        <result property="transportCompanyId" column="transport_company_id"/>
+        <result property="trandportExpressCode" column="trandport_express_code"/>
+        <result property="transportCompanyName" column="transport_company_name"/>
+        <result property="transportCode" column="transport_code"/>
+        <result property="evaluateStatus" column="evaluate_status"/>
+        <result property="evaluateTime" column="evaluate_time"/>
+        <result property="balanceStatus" column="balance_status"/>
+        <result property="balanceTime" column="balance_time"/>
+        <result property="cancelCause" column="cancel_cause"/>
+        <result property="cancelDate" column="cancel_date"/>
+        <result property="isSplit" column="is_split"/>
+        <result property="parentOrderSn" column="parent_order_sn"/>
+        <result property="createDate" column="create_date"/>
+        <result property="sellerRemarkGrade" column="seller_remark_grade"/>
+        <result property="sellerRemark" column="seller_remark"/>
+        <result property="buyerGraderId" column="buyer_grader_id"/>
+        <result property="buyerGraderName" column="buyer_grader_name"/>
+        <result property="groupRecordId" column="group_record_id"/>
+        <result property="groupOverTime" column="group_over_time"/>
+        <result property="groupStatus" column="group_status"/>
+        <result property="groupNeedNum" column="group_need_num"/>
+        <result property="virtualFlag" column="virtual_flag"/>
+        <result property="trueName" column="true_name"/>
+        <collection property="orderGoodsDTOList" column="order_sn" javaType="java.util.ArrayList"
+                    select="com.leimingtech.modules.dao.order.OrderGoodsDao.findByOrderSn"/>
+    </resultMap>
+
+    <sql id="whereStatement">
+        <where>
+            del_flag = 0
+            <if test="orderSn != null and orderSn != '' ">
+                and order_sn like concat('%',#{orderSn},'%')
+            </if>
+            <if test="storeName != null and storeName != '' ">
+                and store_name like concat('%',#{storeName},'%')
+            </if>
+            <if test="buyerName != null and buyerName != '' ">
+                and buyer_name like concat('%',#{buyerName},'%')
+            </if>
+            <if test="orderStatus != null and orderStatus != ''">
+                and order_status = #{orderStatus}
+            </if>
+            <if test="paymentCode != null and paymentCode != ''">
+                and payment_code = #{paymentCode}
+            </if>
+            <if test="paymentName != null and paymentName != ''">
+                and payment_name like concat('%',#{paymentName},'%')
+            </if>
+            <if test="paymentStatus != null and paymentStatus != ''">
+                and payment_status = #{paymentStatus}
+            </if>
+            <if test="startCreateDate != null and startCreateDate != ''">
+                and create_date &gt;= #{startCreateDate}
+            </if>
+            <if test="endCreateDate != null and endCreateDate != ''">
+                and create_Date &lt; #{endCreateDate}
+            </if>
+            <if test="startPaymentTime != null and startPaymentTime != ''">
+                and payment_time &gt;= #{startPaymentTime}
+            </if>
+            <if test="endPaymentTime != null  and endPaymentTime != ''">
+                and payment_time &lt; #{endPaymentTime}
+            </if>
+            <if test="buyerId != null and buyerId != ''">
+                and buyer_id = #{buyerId}
+            </if>
+            <if test="storeId != null">
+                and store_id = #{storeId}
+            </if>
+            <if test="storeIdOrName != null and storeIdOrName != ''">
+                and store_name like concat('%',#{storeIdOrName},'%')
+            </if>
+            <if test="virtualFlag != null and virtualFlag != ''">
+                and virtual_flag = #{virtualFlag}
+            </if>
+        </where>
+    </sql>
+
+    <resultMap id="availAftersaleMap" type="com.leimingtech.modules.dto.order.AvailableAfterSaleOrderDTO">
+        <result property="id" column="id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="completeTime" column="complete_time"/>
+        <result property="isSplit" column="is_split"/>
+        <result property="createDate" column="create_date"/>
+        <collection property="orderGoodsList" column="id" javaType="java.util.ArrayList"
+                    select="com.leimingtech.modules.dao.order.OrderGoodsDao.findOrderGoodsByOrderId">
+        </collection>
+        <!--        <collection property="orderGoodsList" javaType="java.util.ArrayList"-->
+        <!--                    ofType="com.leimingtech.modules.dto.order.AvailableAfterSaleOrderGoodsDTO">-->
+        <!--            <result property="id" column="orderGoodsId"/>-->
+        <!--            <result property="orderId" column="orderId"/>-->
+        <!--            <result property="buyerId" column="buyerId"/>-->
+        <!--            <result property="storeId" column="storeId"/>-->
+        <!--            <result property="goodsId" column="goodsId"/>-->
+        <!--            <result property="goodsName" column="goodsName"/>-->
+        <!--            <result property="specId" column="specId"/>-->
+        <!--            <result property="specSerial" column="specSerial"/>-->
+        <!--            <result property="specInfo" column="specInfo"/>-->
+        <!--            <result property="specAttrValueName" column="specAttrValueName"/>-->
+        <!--            <result property="specPrice" column="specPrice"/>-->
+        <!--            <result property="specPayPrice" column="specPayPrice"/>-->
+        <!--            <result property="goodsNum" column="goodsNum"/>-->
+        <!--            <result property="goodsImage" column="goodsImage"/>-->
+        <!--            <result property="aftersaleQuantity" column="aftersaleQuantity"/>-->
+        <!--            <result property="isGift" column="isGift"/>-->
+        <!--        </collection>-->
+
+    </resultMap>
+
+    <!-- 分页查询订单 -->
+    <select id="findOrderList" resultMap="orderMap">
+        select id, order_sn, buyer_name,store_id ,store_name, create_date, payment_time, payment_name,
+        order_amount,invoice_flag,after_flag,
+        order_status, app_status, group_record_id, group_over_time, group_status, group_need_num, virtual_flag
+        from lmshop_order
+        <include refid="whereStatement"/>
+        AND is_split = 0
+        order by create_date desc
+    </select>
+
+    <!-- 拼团分页查询订单 -->
+    <select id="findPageGroupOrderList" resultMap="orderMap">
+        select id, order_sn, buyer_name,store_id ,store_name, create_date, payment_time, payment_name, order_amount,
+        order_status, app_status, group_record_id, group_over_time, group_status, group_need_num, payment_status
+        from lmshop_order
+        <include refid="whereStatement"/>
+        <if test="groupStatus != null and groupStatus != ''">
+            and group_status = #{groupStatus} and payment_status = 1
+        </if>
+        AND is_split = 0
+        AND group_record_id is not null
+        order by create_date desc
+    </select>
+
+
+    <!-- 根据父订单号查询子订单集合 -->
+    <select id="findChildOrderList" resultType="com.leimingtech.modules.dto.order.OrderDTO">
+        select id, order_sn, buyer_name, store_name, create_date, payment_time, payment_name, order_amount, order_status, app_status
+        from lmshop_order
+        where del_flag = 0
+        AND parent_order_sn = #{parentOrderSn}
+        AND is_split = 0
+        order by store_id
+    </select>
+
+    <!-- h5分页查询订单 -->
+    <!--    <select id="findH5OrderList1" resultMap="orderDetailDTOMap">-->
+    <!--        select distinct lo.* from lmshop_order lo-->
+    <!--        left join lmshop_order_goods log on lo.id = log.order_id-->
+    <!--        <where>-->
+    <!--            lo.del_flag = 0 and lo.buyer_id = #{buyerId}-->
+    <!--            <if test="keyWord != null and keyWord != ''">-->
+    <!--                and (lo.order_sn like concat('%',#{keyWord},'%')-->
+    <!--                or ((log.goods_name like concat('%',#{keyWord},'%')-->
+    <!--                or log.spec_serial = #{keyWord})-->
+    <!--                and log.del_flag = 0))-->
+    <!--            </if>-->
+
+    <!--        </where>-->
+    <!--    </select>-->
+
+    <!-- lixiang 2019/7/9 13:50 H5订单分页-->
+    <select id="findH5OrderList" resultMap="orderDetailDTOMap" parameterType="java.util.Map">
+        SELECT
+        distinct
+        lo.id,
+        lo.out_sn,
+        lo.order_sn,
+        lo.order_status,
+        lo.app_status,
+        lo.parent_order_sn,
+        lo.pay_sn,
+        lo.order_amount,
+        lo.invoice_flag,
+        lo.after_flag,
+        lo.is_split,
+        lo.store_id,
+        lo.store_name,
+        lo.evaluate_status,
+        lo.create_date,
+        lo.group_record_id,
+        lo.group_over_time,
+        lo.group_status,
+        lo.group_need_num,
+        lo.devlier_type ,
+        lo.virtual_flag
+        FROM
+        lmshop_order lo
+        LEFT JOIN lmshop_order_goods log ON lo.id = log.order_id
+        <where>
+            lo.del_flag = 0 and lo.show_flag = 0
+            <if test="params.appStatus == null">
+                and ((lo.is_split = 0 AND lo.app_status NOT IN (10, 0) )
+                OR (lo.parent_order_sn IS NULL AND lo.app_status = 10)
+                OR (lo.parent_order_sn IS NULL AND lo.app_status = 0 AND lo.payment_status IN (0,2) )
+                OR (lo.is_split = 0 AND lo.app_status = 0 AND lo.payment_status = 1))
+            </if>
+            <if test="params.appStatus == 0">
+                and ((lo.app_status = #{params.appStatus} AND lo.parent_order_sn IS NULL AND lo.payment_status IN (0,2))
+                or (lo.app_status = #{params.appStatus} AND lo.is_split = 0 AND lo.payment_status = 1))
+            </if>
+            <if test="params.appStatus == 10">
+                and lo.app_status = #{params.appStatus} AND lo.parent_order_sn IS NULL
+            </if>
+            <if test="params.appStatus == 20 || params.appStatus == 30">
+                and (lo.app_status = 20 OR lo.app_status = 30) AND lo.is_split = 0
+            </if>
+            <if test="params.appStatus == 40">
+                and lo.app_status = #{params.appStatus} AND lo.is_split = 0
+                and lo.show_flag = 0
+            </if>
+            <if test="params.keyWord != null and params.keyWord != ''">
+                and (lo.order_sn like concat('%',#{params.keyWord},'%')
+                or ((log.goods_name like concat('%',#{params.keyWord},'%')
+                or log.spu_serial = #{params.keyWord})
+                and log.del_flag = 0))
+            </if>
+            <if test="params.buyerId != null">
+                and lo.buyer_id = #{params.buyerId}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- keyuan 2020/5/18 13:50 pc订单分页-->
+    <select id="findPcOrderList" resultMap="pcOrderPageMap" parameterType="java.util.Map">
+        SELECT
+        distinct
+        lo.id,
+        lo.out_sn,
+        lo.order_sn,
+        lo.order_status,
+        lo.app_status,
+        lo.parent_order_sn,
+        lo.pay_sn,
+        lo.order_amount,
+        lo.invoice_flag,
+        lo.after_flag,
+        lo.is_split,
+        lo.store_id,
+        lo.store_name,
+        lo.evaluate_status,
+        lo.create_date,
+        lo.group_record_id,
+        lo.group_over_time,
+        lo.group_status,
+        lo.group_need_num,
+        lo.devlier_type ,
+        lo.virtual_flag,
+        lo.shipping_fee,
+        lo.payment_name,
+        loa.true_name
+        FROM
+        lmshop_order lo
+        LEFT JOIN lmshop_order_goods log ON lo.id = log.order_id
+        LEFT JOIN lmshop_order_address loa ON lo.address_id = loa.id
+        <where>
+            lo.del_flag = 0 and lo.show_flag = 0
+            <if test="params.appStatus == null">
+                and ((lo.is_split = 0 AND lo.app_status NOT IN (10, 0) )
+                OR (lo.parent_order_sn IS NULL AND lo.app_status = 10)
+                OR (lo.parent_order_sn IS NULL AND lo.app_status = 0 AND lo.payment_status IN (0,2) )
+                OR (lo.is_split = 0 AND lo.app_status = 0 AND lo.payment_status = 1))
+            </if>
+            <if test="params.appStatus == 0">
+                and ((lo.app_status = #{params.appStatus} AND lo.parent_order_sn IS NULL AND lo.payment_status IN (0,2))
+                or (lo.app_status = #{params.appStatus} AND lo.is_split = 0 AND lo.payment_status = 1))
+            </if>
+            <if test="params.appStatus == 10">
+                and lo.app_status = #{params.appStatus} AND lo.parent_order_sn IS NULL
+            </if>
+            <if test="params.appStatus == 20 || params.appStatus == 30">
+                and (lo.app_status = 20 OR lo.app_status = 30) AND lo.is_split = 0
+            </if>
+            <if test="params.appStatus == 40">
+                and lo.app_status = #{params.appStatus} AND lo.is_split = 0
+                and lo.show_flag = 0
+            </if>
+            <if test="params.keyWord != null and params.keyWord != ''">
+                and (lo.order_sn like concat('%',#{params.keyWord},'%')
+                or lo.parent_order_sn like concat('%',#{params.keyWord},'%')
+                or ((log.goods_name like concat('%',#{params.keyWord},'%')
+                or log.spu_serial = #{params.keyWord})
+                and log.del_flag = 0))
+            </if>
+            <if test="params.buyerId != null">
+                and lo.buyer_id = #{params.buyerId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询pc的子订单数据 -->
+    <select id="findChildrenOrderList" resultMap="orderChildrenDetailDTOMap" parameterType="java.util.Map">
+        SELECT
+        distinct
+        lo.id,
+        lo.out_sn,
+        lo.order_sn,
+        lo.order_status,
+        lo.app_status,
+        lo.parent_order_sn,
+        lo.pay_sn,
+        lo.order_amount,
+        lo.invoice_flag,
+        lo.after_flag,
+        lo.is_split,
+        lo.store_id,
+        lo.store_name,
+        lo.evaluate_status,
+        lo.create_date,
+        lo.group_record_id,
+        lo.group_over_time,
+        lo.group_status,
+        lo.group_need_num,
+        lo.devlier_type ,
+        lo.virtual_flag,
+        lo.shipping_fee,
+        lo.payment_name,
+        loa.true_name
+        FROM
+        lmshop_order lo
+        LEFT JOIN lmshop_order_goods log ON lo.id = log.order_id
+        LEFT JOIN lmshop_order_address loa ON lo.address_id = loa.id
+        <where>
+            lo.del_flag = 0 and lo.show_flag = 0 and lo.parent_order_sn = #{parentOrderSn}
+        </where>
+    </select>
+
+    <!--h5查询订单数量-->
+    <select id="countOrder" resultType="int">
+        select count(1) from lmshop_order
+        <where>
+            del_flag = 0 and show_flag = 0
+            <if test="orderStatus == null">
+                and ((lo.is_split = 0 AND lo.app_status NOT IN (10, 0) )
+                OR (lo.parent_order_sn IS NULL AND lo.app_status = 10)
+                OR (lo.parent_order_sn IS NULL AND lo.app_status = 0 AND lo.payment_status IN (0,2) )
+                OR (lo.is_split = 0 AND lo.app_status = 0 AND lo.payment_status = 1))
+            </if>
+            <if test="params.appStatus == 0">
+                and ((lo.app_status = #{params.appStatus} AND lo.parent_order_sn IS NULL AND lo.payment_status IN (0,2))
+                or (lo.app_status = #{params.appStatus} AND lo.is_split = 0 AND lo.payment_status = 1))
+            </if>
+            <if test="params.appStatus == 10">
+                and lo.app_status = #{params.appStatus} AND lo.parent_order_sn IS NULL
+            </if>
+            <if test="orderStatus == 20 || orderStatus == 30">
+                and (order_status = 20 OR order_status = 30) AND is_split = 0
+            </if>
+            <if test="orderStatus == 40">
+                and order_status = #{params.orderStatus} AND is_split = 0
+                and show_flag = 0
+            </if>
+            <if test="orderSn != null and orderSn != '' ">
+                and order_sn like concat('%',#{orderSn},'%')
+            </if>
+            <if test="storeName != null and storeName != '' ">
+                and store_name like concat('%',#{storeName},'%')
+            </if>
+            <if test="buyerName != null and buyerName != '' ">
+                and buyer_name like concat('%',#{buyerName},'%')
+            </if>
+            <if test="orderStatus != null and orderStatus != ''">
+                and order_status = #{orderStatus}
+            </if>
+            <if test="paymentId != null and paymentId != ''">
+                and payment_id = #{paymentId}
+            </if>
+            <if test="paymentName != null and paymentName != ''">
+                and payment_name like concat('%',#{paymentName},'%')
+            </if>
+            <if test="paymentStatus != null and paymentStatus != ''">
+                and payment_status = #{paymentStatus}
+            </if>
+            <if test="startCreateDate != null and startCreateDate != ''">
+                and create_date &gt;= #{startCreateDate}
+            </if>
+            <if test="endCreateDate != null and endCreateDate != ''">
+                and create_Date &lt; #{endCreateDate}
+            </if>
+            <if test="startPaymentTime != null and startPaymentTime != ''">
+                and payment_time &gt;= #{startPaymentTime}
+            </if>
+            <if test="endPaymentTime != null  and endPaymentTime != ''">
+                and payment_time &lt; #{endPaymentTime}
+            </if>
+            <if test="buyerId != null and buyerId != ''">
+                and buyer_id = #{buyerId}
+            </if>
+            <if test="storeId != null">
+                and store_id = #{storeId}
+            </if>
+            <if test="storeIdOrName != null and storeIdOrName != ''">
+                and (store_id = #{storeIdOrName} or store_name like concat('%',#{storeIdOrName},'%'))
+            </if>
+        </where>
+    </select>
+
+    <select id="countMemberOrder" resultType="com.leimingtech.modules.dto.order.MemberOrderCountDTO">
+        SELECT
+        (SELECT COUNT(1) FROM lmshop_order
+        where del_flag = 0 AND show_flag = 0
+        AND buyer_id = #{buyerId} AND app_status = 10 AND parent_order_sn IS NULL) paymentNum,
+        (SELECT COUNT(1) FROM lmshop_order
+        where del_flag = 0 AND show_flag = 0
+        AND buyer_id = #{buyerId} AND order_status IN (20, 30) AND is_split = 0) receivingNum
+    </select>
+
+    <select id="findAvailAfterList" resultMap="availAftersaleMap">
+        SELECT
+        lmo.id,
+        lmo.order_sn,
+        lmo.store_id,
+        lmo.store_name,
+        lmo.buyer_id,
+        lmo.buyer_name,
+        lmo.order_status,
+        lmo.complete_time,
+        lmo.is_split,
+        lmo.create_date
+        FROM
+        lmshop_order lmo
+        <where>
+            lmo.order_status = 40 and lmo.show_flag = 0 and lmo.is_split=0
+            <if test="params.buyerId != null">
+                and lmo.buyer_id = #{params.buyerId}
+            </if>
+            <if test="params.orderSn != null and params.orderSn != ''">
+                and lmo.order_sn = #{params.orderSn}
+            </if>
+            <if test="params.buyTime != null and params.buyTime == 1">
+                and DATEDIFF(now(),lmo.create_date) &lt;=30
+            </if>
+            <if test="params.buyTime != null and params.buyTime == 2">
+                and DATEDIFF(now(),lmo.create_date) &gt;30 and DATEDIFF(now(),lmo.create_date) &lt;=180
+            </if>
+            <if test="params.buyTime != null and params.buyTime == 3">
+                and DATEDIFF(now(),lmo.create_date) &gt;180 and DATEDIFF(now(),lmo.create_date) &lt;=365
+            </if>
+            <if test="params.buyTime != null and params.buyTime == 4">
+                and DATEDIFF(now(),lmo.create_date) &gt;=365
+            </if>
+            <if test="params.buyTime == 5 and params.createTime != null and params.createTime != ''">
+                AND lmo.create_date &gt;= #{params.createTime}
+            </if>
+            <if test="params.buyTime == 5 and params.endTime != null and params.endTime != ''">
+                AND lmo.create_date &lt;= #{params.endTime}
+            </if>
+        </where>
+        order by lmo.create_date desc
+    </select>
+
+    <select id="findCompleteTimeById" resultType="java.lang.String">
+        select complete_time from lmshop_order where id = #{orderId}
+    </select>
+
+    <update id="updateOrderStatusByPaySn">
+        UPDATE lmshop_order
+        <set>
+            <if test="orderStatus!=null">
+                order_status = #{orderStatus},
+            </if>
+            <if test="appStatus!=null">
+                app_status = #{appStatus},
+            </if>
+            <if test="cancelCause!=null and cancelCause != ''">
+                cancel_cause = #{cancelCause},
+            </if>
+            <if test="cancelDate!=null">
+                cancel_date = #{cancelDate},
+            </if>
+        </set>
+        where order_sn in
+        <foreach collection="orderSnList" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+    <!--更新订单表中的评价状态-->
+    <update id="updateEvaluateStatus">
+     update lmshop_order set evaluate_status=1,evaluate_time=DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s') where id=#{orderId}
+    </update>
+
+    <!--根据订单orderSn删除订单和拆单子订单-->
+    <update id="updateOrderByOrderSnOrParent">
+        UPDATE lmshop_order
+        <set>
+            <if test="orderStatus!=null">
+                order_status = #{orderStatus},
+            </if>
+            <if test="appStatus!=null">
+                app_status = #{appStatus},
+            </if>
+            <if test="causeId!=null">
+                cause_id = #{causeId},
+            </if>
+            <if test="cancelCause!=null and cancelCause != ''">
+                cancel_cause = #{cancelCause},
+            </if>
+            <if test="cancelCause!=null and cancelCause != ''">
+                cancel_date = #{cancelDate},
+            </if>
+        </set>
+        where order_sn = #{orderSn} or parent_order_sn = #{orderSn}
+    </update>
+
+    <select id="findLastNoComplete" resultType="java.lang.Long">
+        select id from lmshop_order where order_status = 30 and buyer_id=#{buyerId} order by create_date desc LIMIT 1
+    </select>
+
+    <!-- 根据父订单号查询子订单留言-->
+    <select id="findOrderMessageByParentOrderSn" resultType="com.leimingtech.modules.dto.order.OrderDTO">
+        SELECT
+        store_id, order_message
+        FROM
+        lmshop_order
+        WHERE
+        parent_order_sn = #{parentOrderSn}
+    </select>
+
+    <!--根据paySn获取最上级订单信息，如果有父订单查询父订单，不存在父订单查询子订单-->
+    <select id="getParentOrderByPaySn" resultType="com.leimingtech.modules.dto.order.OrderDTO">
+        select id, pay_sn, is_split
+        from lmshop_order
+        where del_flag = 0
+        and pay_sn = #{paySn}
+        order by is_split desc
+        limit 1
+    </select>
+    <select id="findBillOrderList" resultType="com.leimingtech.modules.dto.order.OrderDTO">
+        select *
+        from lmshop_order
+        where
+        del_flag=0
+        and store_id=#{storeId}
+        and is_split=0
+        and payment_status=1
+        <if test="startDate!=null and startDate!=''">
+            and payment_time &gt; #{startDate}
+        </if>
+        and payment_time &lt;= #{endDate}
+    </select>
+    <select id="orderLive" resultType="com.leimingtech.modules.dto.order.OrderLiveDTO">
+
+    SELECT
+	( SELECT count( 1 ) FROM lmshop_order WHERE del_flag = 0 AND is_split = 0 AND order_status = 10 and store_id=#{storeId}) unpaidCount,
+	( SELECT count( 1 ) FROM lmshop_order WHERE del_flag = 0 AND is_split = 0 AND order_status = 20 and store_id=#{storeId}) pendingCount,
+	count(1) orderCount
+    FROM
+	lmshop_order
+	where del_flag = 0 AND to_days( create_date ) = to_days( now()) AND payment_status = 1 and store_id=#{storeId}
+
+
+    </select>
+    <select id="selectIndexOrderData" resultType="com.leimingtech.modules.dto.order.IndexOrderDataDTO">
+        SELECT
+            count( id ) AS orderCount,
+            SUM( order_amount ) AS subOrderAmount
+        FROM
+            `lmshop_order`
+        WHERE
+            is_split = 0
+            AND del_flag = 0
+            AND create_date &gt;= #{startDate}
+            AND create_date &lt;= #{endDate}
+    </select>
+    <select id="selectStoreSellRanking" resultType="com.leimingtech.modules.dto.order.IndexStoreSellRakingDTO">
+        SELECT
+        store_name as storeName,
+        SUM( order_amount ) as sellOrderAmount,
+        COUNT( id ) as sellOrderCount
+        FROM
+        lmshop_order
+        WHERE
+        payment_status = 1
+        AND is_split = 0
+        AND del_flag = 0
+        AND create_date &gt;= #{startDate}
+        AND create_date &lt;= #{endDate}
+        GROUP BY
+        store_id
+        <if test="null != orderBy and 1 == orderBy">
+            ORDER BY sellOrderAmount DESC
+        </if>
+        <if test="null != orderBy and 2 == orderBy">
+            ORDER BY sellOrderCount DESC
+        </if>
+        LIMIT 0,10
+    </select>
+
+    <!-- 查询拼团关联的订单-->
+    <select id="findGroupOrderList" resultType="com.leimingtech.modules.dto.order.GroupOrderDetailDTO">
+        SELECT
+        lo.id,lo.order_sn,log.goods_image,log.goods_name,log.spec_info,log.spu_name,log.spec_pay_price,log.goods_num,
+        lo.buyer_name,lo.payment_name,lo.payment_time,lo.app_status,lo.order_amount,lo.order_status,log.spec_id,
+        lo.seller_remark
+        from lmshop_order lo left JOIN lmshop_order_goods log on lo.id = log.order_id
+        WHERE lo.group_record_id = #{params.groupRecordId}
+        AND lo.store_id = #{params.storeId}
+        <if test="params.orderStatus!=null and params.orderStatus!=''">
+            and lo.order_status = #{params.orderStatus}
+        </if>
+        <if test="params.memberId !=null and params.memberId !=''">
+            and lo.buyer_id = #{params.memberId}
+        </if>
+        <if test="params.paymentStatus !=null and params.paymentStatus !=''">
+            and lo.payment_status = #{params.paymentStatus}
+        </if>
+        and lo.del_flag = 0
+        and log.del_flag = 0
+        ORDER BY lo.payment_time DESC
+    </select>
+
+    <select id="countSeckillOrderGoodsNum" resultType="java.lang.Integer">
+        SELECT IFNULL(SUM(log.goods_num), 0)
+        FROM lmshop_order lo
+        LEFT JOIN lmshop_order_goods log
+        ON lo.id = log.order_id
+        WHERE lo.del_flag = 0 AND log.del_flag = 0
+        AND log.activity_type = 3
+        AND log.spec_id = #{specId}
+        AND log.activity_id = #{activityId}
+        AND lo.buyer_id = #{buyerId}
+        AND (lo.payment_status = 1 OR lo.order_status = 10)
+    </select>
+
+    <!--用户订单完成（已购买）商品ID-->
+    <select id="getOrderGoodIds" resultType="java.lang.Long">
+        SELECT log.goods_id
+        FROM lmshop_order lo
+        left join lmshop_order_goods log
+        on lo.id = log.order_id
+        WHERE lo.del_flag = 0
+        and lo.show_flag = 0
+        and lo.app_status = 40
+        and lo.is_split = 0
+        and lo.buyer_id=#{memberId}
+        ORDER BY lo.update_date DESC
+    </select>
+    <select id="orderExport" resultType="com.leimingtech.modules.dto.order.EasyOrderExcelDTO">
+        select
+        order_sn as orderSn,
+        buyer_name as buyerName ,
+        store_id ,
+        store_name as storeName,
+        create_date as createDate ,
+        payment_time as paymentTime,
+        payment_name as paymentName,
+        order_amount as orderAmount,
+        order_status as orderStatus
+        from lmshop_order
+        <include refid="whereStatement"/>
+        AND is_split = 0
+        order by create_date desc
+    </select>
+    <select id="findNotEvaOrder" resultMap="evaluateMap">
+        select lo.*,loa.true_name as buyerName
+        from lmshop_order lo
+        left join lmshop_order_address loa on lo.address_id=loa.id
+        where
+         lo.del_flag=0
+        and lo.show_flag=0
+        and lo.is_split=0
+        and lo.evaluate_status=0
+        and lo.app_status=40
+        and lo.buyer_id=#{memberId}
+
+    </select>
+    <select id="pcEvaPage" resultMap="evaluatePageMap">
+        select lo.*,loa.true_name as buyerName
+        from lmshop_order lo
+        LEFT join lmshop_order_goods log on lo.id=log.order_id
+        left join lmshop_order_address loa on lo.address_id=loa.id
+        where  log.evaluation_status=1 and lo.del_flag=0
+        and lo.buyer_id=#{memberId}
+        and lo.is_split=0
+        and lo.app_status=40
+        and lo.show_flag=0
+        GROUP BY lo.id
+    </select>
+    <select id="findPcOrderInvoicePage" resultMap="pcOrderPageMap">
+        SELECT
+        distinct
+        lo.id,
+        lo.out_sn,
+        lo.order_sn,
+        lo.order_status,
+        lo.app_status,
+        lo.parent_order_sn,
+        lo.pay_sn,
+        lo.order_amount,
+        lo.invoice_flag,
+        lo.after_flag,
+        lo.is_split,
+        lo.store_id,
+        lo.store_name,
+        lo.evaluate_status,
+        lo.create_date,
+        lo.group_record_id,
+        lo.group_over_time,
+        lo.group_status,
+        lo.group_need_num,
+        lo.devlier_type ,
+        lo.virtual_flag,
+        lo.shipping_fee,
+        lo.payment_name,
+        loa.true_name
+        FROM
+        lmshop_order lo
+        LEFT JOIN lmshop_order_goods log ON lo.id = log.order_id
+        LEFT JOIN lmshop_order_address loa ON lo.address_id = loa.id
+        where
+            lo.del_flag = 0
+            and lo.after_flag = 0
+            and lo.is_split = 0
+            and lo.show_flag = 0
+            AND ((lo.app_status = 40) or(lo.app_status != 0 and lo.invoice_flag != 0))
+            AND lo.buyer_id=#{buyerId}
+    </select>
+    <select id="countFlashSaleOrderGoodsNum" resultType="java.lang.Integer">
+         SELECT IFNULL(SUM(log.goods_num), 0)
+        FROM lmshop_order lo
+        LEFT JOIN lmshop_order_goods log
+        ON lo.id = log.order_id
+        WHERE lo.del_flag = 0 AND log.del_flag = 0
+        AND log.activity_type = 5
+        AND log.spec_id = #{specId}
+        AND log.activity_id = #{activityId}
+        AND lo.buyer_id = #{buyerId}
+        AND lo.order_status != 0
+        AND (lo.payment_status = 1 OR lo.order_status = 10)
+    </select>
+<!--    -->
+
+</mapper>

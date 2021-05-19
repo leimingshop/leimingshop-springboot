@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.label.GoodsLabelRelDao">
+
+    <resultMap type="com.leimingtech.modules.entity.label.GoodsLabelRelEntity" id="goodsLabelRelMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="labelId" column="label_id"/>
+        <result property="labelName" column="label_name"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--查询标签关联的商品数量,店铺数量-->
+    <select id="findNumGoodsAndStore" resultType="com.leimingtech.modules.dto.goodslable.GoodsLabelRelDTO">
+        SELECT
+        COUNT( DISTINCT g.store_id ) AS storeNum,
+        ( SELECT count( 1 ) FROM `lmshop_goods_label_rel` WHERE goods_id = #{goodsId} ) goodsNum
+        FROM
+        lmshop_goods_label_rel glr
+        LEFT JOIN lmshop_goods g ON g.id = glr.goods_id
+        WHERE
+        g.del_flag = 0
+        AND glr.del_flag = 0
+        <if test="labelId !=null">
+            AND glr.label_id = #{labelId}
+        </if>
+    </select>
+
+
+    <!--根据商品ID删除数据-->
+    <delete id="deleteByGoodsId">
+        delete from lmshop_goods_label_rel
+        where del_flag = 0 and goods_id = #{goodsId}
+    </delete>
+
+    <!--根据标签ID查询商品列表-->
+    <select id="findGoodsByLabelId" parameterType="java.lang.Long"
+            resultType="com.leimingtech.modules.dto.goods.GoodsDTO">
+        SELECT
+           g.*
+        FROM
+            `lmshop_goods_label_rel` glr
+            LEFT JOIN lmshop_goods g ON glr.goods_id = g.id
+        WHERE
+           glr.del_flag = 0 and glr.label_id = #{labelId}
+    </select>
+    <insert id="saveBatch">
+        insert into lmshop_goods_label_rel (id,goods_id,label_id,label_name)
+        values
+        <foreach collection="goodsLabelRelEntityList" item="goodsLabelRelEntity" separator=",">
+            (
+            #{goodsLabelRelEntity.id},
+            #{goodsLabelRelEntity.goodsId},
+            #{goodsLabelRelEntity.labelId},
+            #{goodsLabelRelEntity.labelName}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

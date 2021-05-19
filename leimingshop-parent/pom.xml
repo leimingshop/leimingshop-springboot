@@ -1,0 +1,930 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.12.RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.leimingtech</groupId>
+    <artifactId>leimingshop-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <env.project.version>1.0.0-SNAPSHOT</env.project.version>
+        <knife4j.swagger.version>2.0.2</knife4j.swagger.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <spring.boot.version>2.1.12.RELEASE</spring.boot.version>
+        <maven.surefire.version>2.21.0</maven.surefire.version>
+        <swagger.version>2.7.0</swagger.version>
+        <docker.plugin.version>1.1.1</docker.plugin.version>
+        <spring.boot.admin.version>2.1.1</spring.boot.admin.version>
+        <maven.checkstyle.version>2.17</maven.checkstyle.version>
+        <flyway.core.version>5.0.7</flyway.core.version>
+        <bus.amqp.version>2.1.0.RELEASE</bus.amqp.version>
+        <google.guava.version>19.0</google.guava.version>
+        <easypoi.version>4.0.0</easypoi.version>
+        <jdom2.version>2.0.6</jdom2.version>
+        <quartz.version>2.3.2</quartz.version>
+        <wxpay.version>3.0.9</wxpay.version>
+        <guava.version>20.0</guava.version>
+        <bcprov.version>1.60</bcprov.version>
+        <hutool.version>4.5.10</hutool.version>
+        <elasticsearch.version>7.4.0</elasticsearch.version>
+        <jasypt.version>3.0.2</jasypt.version>
+        <commons.lang.version>3.7</commons.lang.version>
+        <commons.collections4.version>4.1</commons.collections4.version>
+        <fastjson.version>1.2.70</fastjson.version>
+        <lombok.version>1.18.4</lombok.version>
+        <jjwt.version>0.7.0</jjwt.version>
+        <captcha.version>1.6.2</captcha.version>
+        <gson.version>2.8.5</gson.version>
+        <mysql.version>5.1.38</mysql.version>
+        <druid.version>1.1.10</druid.version>
+        <sqlserver.version>4.0</sqlserver.version>
+        <spring.boot.mybatis.version>1.2.0</spring.boot.mybatis.version>
+        <aliyun.core.version>3.2.2</aliyun.core.version>
+        <aliyun.dysmsapi.version>1.1.0</aliyun.dysmsapi.version>
+        <qcloud.qcloudsms.version>1.0.5</qcloud.qcloudsms.version>
+        <freemarker.version>2.3.28</freemarker.version>
+        <qiniu.version>7.2.27</qiniu.version>
+        <aliyun.oss.version>2.8.3</aliyun.oss.version>
+        <aliyun.core.version>3.2.2</aliyun.core.version>
+        <qcloud.cos.version>5.4.4</qcloud.cos.version>
+        <fastdfs.version>1.26.2</fastdfs.version>
+        <cglib.version>2.2</cglib.version>
+        <hibernate.validator.version>6.0.12.Final</hibernate.validator.version>
+        <jsoup.version>1.11.3</jsoup.version>
+        <commons.fileupload.version>1.3.3</commons.fileupload.version>
+        <commons.io.version>2.6</commons.io.version>
+        <joda.time.version>2.9.9</joda.time.version>
+        <mybatisplus.version>3.3.0</mybatisplus.version>
+        <pinyin.version>2.5.0</pinyin.version>
+        <servlet.api.version>2.5</servlet.api.version>
+        <user.agent.version>1.21</user.agent.version>
+        <spring.boot.mongo.version>1.5.18.RELEASE</spring.boot.mongo.version>
+        <alipay.version>4.5.0.ALL</alipay.version>
+        <oracle.version>11.2.0.3</oracle.version>
+        <p6spy.version>3.8.2</p6spy.version>
+        <easyexcel.version>2.2.5</easyexcel.version>
+        <wxjava.version>3.6.0</wxjava.version>
+        <seata.version>1.1.0</seata.version>
+        <zxing.version>3.3.3</zxing.version>
+        <pinyin4j.version>2.5.0</pinyin4j.version>
+        <shardingsphere.version>4.0.0-RC1</shardingsphere.version>
+        <seata.version>1.1.0</seata.version>
+        <javacv.version>1.5.1</javacv.version>
+        <!-- 系统内部 -->
+        <activity.version>${env.project.version}</activity.version>
+        <after.sale.version>${env.project.version}</after.sale.version>
+        <base.upload.version>${env.project.version}</base.upload.version>
+        <base.mq.version>${project.version}</base.mq.version>
+        <base.lock.version>${project.version}</base.lock.version>
+        <base.message.version>${project.version}</base.message.version>
+        <cart.version>${env.project.version}</cart.version>
+        <leiming.elasticsearch.version>${env.project.version}</leiming.elasticsearch.version>
+        <goods.version>${env.project.version}</goods.version>
+        <index.sync.version>${env.project.version}</index.sync.version>
+        <index.sync.version>${env.project.version}</index.sync.version>
+        <logistics.version>${env.project.version}</logistics.version>
+        <leimingtech.log.version>${env.project.version}</leimingtech.log.version>
+        <member.version>${env.project.version}</member.version>
+        <nosql.version>${env.project.version}</nosql.version>
+        <operation.version>${env.project.version}</operation.version>
+        <order.version>${env.project.version}</order.version>
+        <payment.version>${env.project.version}</payment.version>
+        <statis.version>${env.project.version}</statis.version>
+        <leimingtech.wechat.version>${env.project.version}</leimingtech.wechat.version>
+        <settle.version>${env.project.version}</settle.version>
+        <store.version>${env.project.version}</store.version>
+        <sys.version>${env.project.version}</sys.version>
+        <third.party.version>${env.project.version}</third.party.version>
+        <admin.auth.version>${env.project.version}</admin.auth.version>
+        <recommend.version>${env.project.version}</recommend.version>
+        <front.auth.version>${env.project.version}</front.auth.version>
+        <sys.version>${env.project.version}</sys.version>
+        <leimingtech.mongodb.version>${env.project.version}</leimingtech.mongodb.version>
+        <commons.datasource.version>${env.project.version}</commons.datasource.version>
+        <commons.mybatis.version>${env.project.version}</commons.mybatis.version>
+        <commons.tools.version>${env.project.version}</commons.tools.version>
+        <commons.core.version>${env.project.version}</commons.core.version>
+        <commons.seata.version>${env.project.version}</commons.seata.version>
+        <checkstyle.config.location>check-style.xml</checkstyle.config.location>
+        <!-- <snapshots.repo>http://192.168.1.108:18081/nexus/repository/maven-snapshots</snapshots.repo>
+        <releases.repo>http://192.168.1.108:18081/nexus/repository/maven-releases</releases.repo> -->
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+    <!--
+        只是声明依赖，并不实现引入，因此子项目需要显示的声明需要用的依赖。
+        如果不在子项目中声明依赖，是不会从父项目中继承下来的；
+        只有在子项目中写了该依赖项，并且没有指定具体版本，才会从父项目中继承该项，并且version和scope都读取自父pom;
+        另外如果子项目中指定了版本号，那么会使用子项目中指定的jar版本。
+        直接依赖优先级高于传递依赖优先级
+   -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- 活动模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-activity-client</artifactId>
+                <version>${activity.version}</version>
+            </dependency>
+
+            <!-- 售后模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-after-sale-client</artifactId>
+                <version>${after.sale.version}</version>
+            </dependency>
+
+            <!-- 基础服务 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-upload-client</artifactId>
+                <version>${base.upload.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-cms-client</artifactId>
+                <version>${env.project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-mq-client</artifactId>
+                <version>${base.mq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-message-client</artifactId>
+                <version>${base.message.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-mongodb</artifactId>
+                <version>${leimingtech.mongodb.version}</version>
+            </dependency>
+
+            <!-- 购物车模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-cart-client</artifactId>
+                <version>${cart.version}</version>
+            </dependency>
+
+            <!-- elasticsearch工具类模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-elasticsearch</artifactId>
+                <version>${leiming.elasticsearch.version}</version>
+            </dependency>
+
+            <!-- 商品模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-goods-client</artifactId>
+                <version>${goods.version}</version>
+            </dependency>
+            <!--结算模块-->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-settle-client</artifactId>
+                <version>${settle.version}</version>
+            </dependency>
+
+            <!--索引模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-index-sync</artifactId>
+                <version>${index.sync.version}</version>
+            </dependency>
+
+            <!--定时任务模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-quartz</artifactId>
+                <version>${env.project.version}</version>
+            </dependency>
+
+            <!-- 物流模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-logistics-client</artifactId>
+                <version>${logistics.version}</version>
+            </dependency>
+
+            <!-- 日志模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-logs</artifactId>
+                <version>${leimingtech.log.version}</version>
+            </dependency>
+
+            <!-- 用户模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-member-client</artifactId>
+                <version>${member.version}</version>
+            </dependency>
+
+            <!-- NoSQL模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-nosql</artifactId>
+                <version>${nosql.version}</version>
+            </dependency>
+
+            <!-- 操作模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-operation-client</artifactId>
+                <version>${operation.version}</version>
+            </dependency>
+
+            <!-- 订单模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-order-client</artifactId>
+                <version>${order.version}</version>
+            </dependency>
+
+            <!-- 支付模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-payment-client</artifactId>
+                <version>${payment.version}</version>
+            </dependency>
+
+            <!-- 统计模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-statis-client</artifactId>
+                <version>${statis.version}</version>
+            </dependency>
+
+            <!-- 微信模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-wechat-client</artifactId>
+                <version>${leimingtech.wechat.version}</version>
+            </dependency>
+
+            <!-- 店铺模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-store-client</artifactId>
+                <version>${store.version}</version>
+            </dependency>
+
+            <!-- 系统模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-sys-client</artifactId>
+                <version>${sys.version}</version>
+            </dependency>
+
+            <!-- 第三方模块 -->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-third-party-client</artifactId>
+                <version>${third.party.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-recommend-client</artifactId>
+                <version>${recommend.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-commons-dynamic-datasource</artifactId>
+                <version>${commons.datasource.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-commons-mybatis</artifactId>
+                <version>${commons.mybatis.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-commons-tools</artifactId>
+                <version>${commons.tools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-commons-core</artifactId>
+                <version>${commons.core.version}</version>
+            </dependency>
+
+            <!--<dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-commons-seata</artifactId>
+                <version>>${env.project.version}</version>
+            </dependency>-->
+            <dependency>
+                <groupId>com.leimingtech</groupId>
+                <artifactId>leimingshop-commons-lock</artifactId>
+                <version>${base.lock.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.leimingtech.front</groupId>
+                <artifactId>leimingshop-auth-client</artifactId>
+                <version>${front.auth.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security.oauth.boot</groupId>
+                <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+                <version>2.1.2.RELEASE</version>
+            </dependency>
+
+            <!-- flyway数据库版本控制 -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-amqp</artifactId>
+                <version>2.1.6.RELEASE</version>
+            </dependency>
+            <!-- Jdom2依赖架包 -->
+            <dependency>
+                <groupId>org.jdom</groupId>
+                <artifactId>jdom2</artifactId>
+                <version>${jdom2.version}</version>
+            </dependency>
+
+            <!--knife4j micro swagger-->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-micro-spring-boot-starter</artifactId>
+                <version>${knife4j.swagger.version}</version>
+            </dependency>
+
+            <!--knife4j swagger-->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j.swagger.version}</version>
+            </dependency>
+
+            <!--easypoi 依赖-->
+            <dependency>
+                <groupId>cn.afterturn</groupId>
+                <artifactId>easypoi-base</artifactId>
+                <version>${easypoi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.afterturn</groupId>
+                <artifactId>easypoi-web</artifactId>
+                <version>${easypoi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel.version}</version>
+            </dependency>
+
+
+            <!-- 微信支付依赖架包 -->
+            <dependency>
+                <groupId>com.github.wxpay</groupId>
+                <artifactId>wxpay-sdk</artifactId>
+                <version>${wxpay.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>${cglib.version}</version>
+            </dependency>
+            <!-- RSA加密 -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${bcprov.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+            <!-- jasypt 配置文件加密 -->
+            <dependency>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-spring-boot-starter</artifactId>
+                <version>${jasypt.version}</version>
+            </dependency>
+
+            <!-- elasticsearch -->
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+
+            <!-- commons工具包 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.lang.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>4.1</version>
+            </dependency>
+
+
+            <!-- fastjson工具包 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <!-- lombok工具包 -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+            <!-- SpringBootAdmin -->
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-client</artifactId>
+                <version>${spring.boot.admin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-server</artifactId>
+                <version>${spring.boot.admin.version}</version>
+            </dependency>
+
+            <!-- 验证码 -->
+            <dependency>
+                <groupId>com.github.whvcse</groupId>
+                <artifactId>easy-captcha</artifactId>
+                <version>${captcha.version}</version>
+            </dependency>
+
+            <!-- JWT -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+
+            <!-- gson -->
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+
+            <!-- alibaba druid -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <!--mysql驱动-->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <!--oracle驱动-->
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc6</artifactId>
+                <version>${oracle.version}</version>
+            </dependency>
+
+            <!-- spring boot mybatis -->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${spring.boot.mybatis.version}</version>
+            </dependency>
+
+            <!-- 阿里云短信 -->
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>aliyun-java-sdk-core</artifactId>
+                <version>${aliyun.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+                <version>${aliyun.dysmsapi.version}</version>
+            </dependency>
+
+            <!-- 腾讯云短信 -->
+            <dependency>
+                <groupId>com.github.qcloudsms</groupId>
+                <artifactId>qcloudsms</artifactId>
+                <version>${qcloud.qcloudsms.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${freemarker.version}</version>
+            </dependency>
+
+            <!-- aliyun OSS SDK -->
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>${aliyun.oss.version}</version>
+            </dependency>
+
+            <!-- 腾讯云 OSS SDK -->
+            <dependency>
+                <groupId>com.qcloud</groupId>
+                <artifactId>cos_api</artifactId>
+                <version>${qcloud.cos.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- FastDFS -->
+            <dependency>
+                <groupId>com.github.tobato</groupId>
+                <artifactId>fastdfs-client</artifactId>
+                <version>${fastdfs.version}</version>
+            </dependency>
+            <!--            poi 依赖-->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>3.17</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>3.17</version>
+            </dependency>
+            <!-- hibernate-validator -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate.validator.version}</version>
+            </dependency>
+
+            <!--汉语转拼音-->
+            <dependency>
+                <groupId>com.belerweb</groupId>
+                <artifactId>pinyin4j</artifactId>
+                <version>${pinyin.version}</version>
+            </dependency>
+
+            <!-- mongodb -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-mongodb</artifactId>
+                <version>${spring.boot.mongo.version}</version>
+            </dependency>
+
+            <!-- 支付宝支付SDK -->
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>${alipay.version}</version>
+            </dependency>
+
+            <!-- mongdb -->
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-mongodb</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
+            </dependency>
+
+            <!-- 开源封装对接微信公众号（包括订阅号和服务号） -->
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-mp</artifactId>
+                <version>${wxjava.version}</version>
+            </dependency>
+
+            <!-- 二维码依赖 -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+
+            <!--汉语转拼音-->
+            <dependency>
+                <groupId>com.belerweb</groupId>
+                <artifactId>pinyin4j</artifactId>
+                <version>${pinyin4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.qiniu</groupId>
+                <artifactId>qiniu-java-sdk</artifactId>
+                <version>${qiniu.version}</version>
+            </dependency>
+            <!--sharding-jdbc-->
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.bytedeco</groupId>
+                <artifactId>javacv-platform</artifactId>
+                <version>${javacv.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
+    <distributionManagement>
+        <!--        <repository>-->
+        <!--            <id>releases</id>-->
+        <!--            <url>${releases.repo}</url>-->
+        <!--        </repository>-->
+        <!--        <snapshotRepository>-->
+        <!--            <id>snapshots</id>-->
+        <!--            <url>${snapshots.repo}</url>-->
+        <!--        </snapshotRepository>-->
+    </distributionManagement>
+
+    <repositories>
+        <!-- 天津内网私服配置 -->
+        <!--        <repository>-->
+        <!--            <id>intranet-nexus</id>-->
+        <!--            <url>http://192.168.1.108:18081/nexus/repository/maven-public/</url>-->
+        <!--            <releases>-->
+        <!--                <enabled>true</enabled>-->
+        <!--            </releases>-->
+        <!--            <snapshots>-->
+        <!--                <enabled>true</enabled>-->
+        <!--            </snapshots>-->
+        <!--        </repository>-->
+
+        <!--        &lt;!&ndash; 外网私服配置 &ndash;&gt;-->
+        <!--        <repository>-->
+        <!--            <id>extranet-nexus</id>-->
+        <!--            <url>http://127.0.0.1:18081/nexus/repository/maven-public/</url>-->
+        <!--            <releases>-->
+        <!--                <enabled>true</enabled>-->
+        <!--            </releases>-->
+        <!--            <snapshots>-->
+        <!--                <enabled>true</enabled>-->
+        <!--            </snapshots>-->
+        <!--        </repository>-->
+
+        <repository>
+            <id>aliyun-nexus</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- add the elasticsearch repo -->
+        <repository>
+            <id>elasticsearch-releases</id>
+            <url>https://artifacts.elastic.co/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <active>dev</active>
+                <appid>appid</appid>
+                <secret>secret</secret>
+                <website>website</website>
+                <public>public</public>
+               <token>token</token>
+                <aesKey>aesKey</aesKey>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>test</id>
+            <properties>
+                <active>test</active>
+                <appid>appid</appid>
+                <secret>secret</secret>
+                <website>website</website>
+                <public>public</public>
+                <token>token</token>
+                <aesKey>aesKey</aesKey>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>prod</id>
+            <properties>
+                <active>prod</active>
+                <appid>appid</appid>
+                <secret>secret</secret>
+                <website>website</website>
+                <public>public</public>
+                <token>token</token>
+                <aesKey>aesKey</aesKey>
+            </properties>
+        </profile>
+    </profiles>
+
+
+    <build>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/bootstrap*.yml</include>
+                    <include>**/application*.yml</include>
+                    <include>**/application*.yaml</include>
+                    <include>**/application*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <excludes>
+                    <exclude>**/bootstrap*.yml</exclude>
+                    <exclude>**/application*.yml</exclude>
+                    <exclude>**/application*.yaml</exclude>
+                    <exclude>**/application*.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring.boot.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.version}</version>
+                    <configuration>
+                        <skipTests>true</skipTests>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${docker.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${docker.plugin.version}</version>
+                    <configuration>
+                        <imageName>leimingtech-cloud/${project.artifactId}</imageName>
+                        <dockerHost>http://192.168.1.240:2375</dockerHost>
+                        <dockerDirectory>${project.basedir}/</dockerDirectory>
+                        <forceTags>true</forceTags>
+                        <resources>
+                            <resource>
+                                <targetPath>/</targetPath>
+                                <directory>${project.build.directory}</directory>
+                                <include>${project.build.finalName}.jar</include>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven.checkstyle.version}</version>
+                <configuration>
+                    <configLocation>${checkstyle.config.location}</configLocation>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>checkstyle</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+
+
+</project>

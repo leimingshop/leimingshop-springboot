@@ -1,0 +1,1295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goods.GoodsDao">
+
+
+    <resultMap type="com.leimingtech.modules.entity.goods.GoodsEntity" id="goodsMap">
+        <result property="id" column="id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsSerial" column="goods_serial"/>
+        <result property="goodsSubTitle" column="goods_sub_title"/>
+        <result property="gcId" column="gc_id"/>
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="specCostPrice" column="spec_cost_price"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="firstGcId" column="first_gc_id"/>
+        <result property="firstGcName" column="first_gc_name"/>
+        <result property="secondGcId" column="second_gc_id"/>
+        <result property="secondGcName" column="second_gc_name"/>
+        <result property="thirdGcId" column="third_gc_id"/>
+        <result property="thirdGcName" column="third_gc_name"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="storeType" column="store_type"/>
+        <result property="goodsMainPicture" column="goods_main_picture"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="specId" column="spec_id"/>
+        <result property="goodsStorePrice" column="goods_store_price"/>
+        <result property="goodsShow" column="goods_show"/>
+        <result property="publishFlag" column="publish_flag"/>
+        <result property="goodsStatus" column="goods_status"/>
+        <result property="goodsKeywords" column="goods_keywords"/>
+        <result property="firstStoreGoodsGcId" column="first_store_goods_gc_id"/>
+        <result property="firstStoreGoodsGcName" column="first_store_goods_gc_name"/>
+        <result property="secondStoreGoodsGcId" column="second_store_goods_gc_id"/>
+        <result property="secondStoreGoodsGcName" column="second_store_goods_gc_name"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+    <resultMap type="com.leimingtech.modules.dto.esgoods.EsGoodsDTO" id="EsGoodsMap">
+        <result property="id" column="id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsSerial" column="goods_serial"/>
+        <result property="goodsSubTitle" column="goods_sub_title"/>
+        <result property="gcId" column="gc_id"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="specId" column="spec_id"/>
+        <result property="goodsStorePrice" column="goods_store_price"/>
+        <result property="goodsShow" column="goods_show"/>
+        <result property="goodsStatus" column="goods_status"/>
+        <result property="goodsKeywords" column="goods_keywords"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+    </resultMap>
+    <resultMap type="com.leimingtech.modules.dto.goods.GoodsDTO" id="goodsDTOmap">
+        <result property="id" column="id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsSerial" column="goods_serial"/>
+        <result property="goodsSubTitle" column="goods_sub_title"/>
+        <result property="gcId" column="gc_id"/>
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="specCostPrice" column="spec_cost_price"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="firstGcId" column="first_gc_id"/>
+        <result property="firstGcName" column="first_gc_name"/>
+        <result property="secondGcId" column="second_gc_id"/>
+        <result property="secondGcName" column="second_gc_name"/>
+        <result property="thirdGcId" column="third_gc_id"/>
+        <result property="thirdGcName" column="third_gc_name"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="storeType" column="store_type"/>
+        <result property="goodsMainPicture" column="goods_main_picture"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="specId" column="spec_id"/>
+        <result property="goodsStorePrice" column="goods_store_price"/>
+        <result property="goodsShow" column="goods_show"/>
+        <result property="publishFlag" column="publish_flag"/>
+        <result property="goodsStatus" column="goods_status"/>
+        <result property="goodsKeywords" column="goods_keywords"/>
+        <result property="createDate" column="create_date"/>
+        <result property="labelName" column="label_name"/>
+    </resultMap>
+
+
+    <!--商品列表-->
+    <resultMap id="goodsListMap" type="com.leimingtech.modules.dto.goods.GoodsListDTO">
+        <result property="id" column="id"/>
+        <result property="goodsSerial" column="goods_serial"/>
+        <result property="specId" column="spec_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="pictureUrl" column="picture_url"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="goodsShow" column="goods_show"/>
+        <result property="publishFlag" column="publish_flag"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="gcId" column="gc_id"/>
+        <result property="gcName" column="gc_name"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="specCostPrice" column="spec_cost_price"/>
+        <result property="goodsStatus" column="goods_status"/>
+        <result property="createDate" column="create_date"/>
+        <result property="remarks" column="remarks"/>
+        <result property="goodsStock" column="goods_stock"/>
+    </resultMap>
+
+
+    <resultMap id="GoodsExportDTOMap1" type="com.leimingtech.modules.dto.goods.GoodsExportDTO">
+        <result column="lgs_gc_name" property="gcName"/>
+        <result column="lgs_first_gc_name" property="firstGcName"/>
+        <result column="lgs_second_gc_name" property="secondGcName"/>
+        <result column="lgs_third_gc_name" property="thirdGcName"/>
+        <result column="lgs_first_store_goods_gc_name" property="firstStoreGoodsGcName"/>
+        <result column="lgs_second_store_goods_gc_name" property="secondStoreGoodsGcName"/>
+        <result column="lgs_goods_name" property="goodsName"/>
+        <result column="lgs_goods_sub_title" property="goodsSubTitle"/>
+        <result column="lgs_brand_name" property="brandName"/>
+        <result column="lgs_label_name" property="goodsLabelName"/>
+        <result column="lgs_spec_cost_price" property="specCostPrice"/>
+        <result column="lgs_spec_sell_price" property="specSellPrice"/>
+        <result column="lgs_devlier_type" property="devlierType"/>
+        <result column="lgs_template_name" property="freightTemplateName"/>
+        <result column="lgs_invoice_flag" property="invoiceFlag"/>
+        <result column="lgs_invoice_type" property="invoiceType"/>
+        <result column="lgs_invoice_content" property="invoiceContent"/>
+        <result column="lgs_id" property="goodsId"/>
+        <result column="lgs_express_flag" property="expressFlag"/>
+        <result column="lgs_freight_bear_type" property="freightBearType"/>
+        <association  property="goodsInfoDTO" javaType="com.leimingtech.modules.dto.goods.GoodsInfoDTO" >
+            <result column="lgi_mobile_body" property="mobileBody"/>
+            <result column="lgi_after_sale" property="afterSale"/>
+        </association>
+        <collection property="goodsAttributeDTOList" javaType="java.util.ArrayList" ofType="com.leimingtech.modules.dto.goods.spec.GoodsAttributeDTO" >
+            <result column="lga_attr_name" property="attrName" />
+            <result column="lga_attr_value" property="attrValue"/>
+        </collection>
+        <collection property="goodsSpecDetailDTOList" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.goods.detail.GoodsSpecDetailDTO" >
+            <result column="lgsp_spec_attr_name" property="specAttrName"/>
+            <result column="lgsp_spec_attr_value_name" property="specAttrValueName"/>
+            <result column="lgsp_spec_cost_price" property="specCostPrice"/>
+            <result column="lgsp_spec_sell_price" property="specSellPrice"/>
+            <result column="lgsp_spec_main_picture" property="specMainPicture"/>
+            <result column="lgsp_spec_storage" property="specStorage"/>
+        </collection>
+        <collection property="defaultSpecPictureDTOList" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.goods.spec.DefaultSpecPictureDTO">
+            <result column="lgsap_goods_id" property="goodsId"/>
+            <result column="lgsap_picture_url" property="pictureUrl"/>
+            <result column="lgsap_is_main_picture" property="isMainPicture"/>
+            <result column="lgsap_sort" property="sort"/>
+        </collection>
+    </resultMap>
+
+    <!--查询列表-->
+    <sql id="Base_Column_List">
+        g.id,
+        g.goods_serial,
+        g.spec_id,
+        g.goods_name,
+        g.brand_id,
+        g.brand_name,
+        g.gc_id,
+        g.gc_name,
+        g.goods_show,
+        g.publish_flag,
+        g.store_id,
+        g.store_name,
+        g.goods_status,
+        g.goods_main_picture as picture_url,
+        g.spec_sell_price,
+        g.spec_cost_price,
+        g.create_date
+    </sql>
+    <sql id="whereSql">
+        <where>
+            g.del_flag = 0 and goods_status &lt;&gt; 60
+            <if test="params.brandName != null and params.brandName != ''">
+                AND g.brand_name like concat('%', #{params.brandName}, '%')
+            </if>
+            <if test="params.gcId != null and params.gcId != ''">
+                AND g.gc_id = #{params.gcId}
+            </if>
+            <if test="params.storeId != null">
+                AND g.store_id = #{params.storeId}
+            </if>
+            <if test="params.goodsShow != null and params.goodsShow != ''">
+                AND g.goods_show = #{params.goodsShow}
+            </if>
+            <if test="params.goodsStatus != null and params.goodsStatus != ''">
+                AND g.goods_status = #{params.goodsStatus}
+            </if>
+            <if test="params.storeName != null and params.storeName != ''">
+                AND g.store_name like concat('%', #{params.storeName}, '%')
+            </if>
+            <if test="params.goodsName != null and params.goodsName != ''">
+                AND (g.goods_name like concat('%', #{params.goodsName}, '%') OR g.goods_serial = #{params.goodsName})
+            </if>
+            <if test="params.ignore != null ">
+                AND g.goods_status != #{params.ignore}
+            </if>
+            <if test="params.goodsShow != null">
+                and g.goods_show=#{params.goodsShow}
+            </if>
+            <if test="params.warnStorage != null ">
+                and #{params.warnStorage}>=(
+                SELECT
+                sum( spec_storage )
+                FROM
+                lmshop_goods_spec
+                WHERE
+                del_flag = 0 and spec_show=1
+                AND goods_id = g.id)
+            </if>
+        </where>
+    </sql>
+    <!--批量修改上下架状态-->
+    <!--    <update id="updateShows">-->
+    <!--        <foreach collection="idList" item="id" separator=";">-->
+    <!--            update lmshop_goods-->
+    <!--            SET goods_show = #{goodsShow} where id = #{id}-->
+    <!--        </foreach>-->
+    <!--    </update>-->
+
+    <!--修改上下架状态-->
+    <update id="updateShow">
+            update lmshop_goods
+            SET goods_show = #{goodsShow} where id = #{id}
+    </update>
+    <!--批量修改审核状态-->
+    <update id="updateBatch">
+        <foreach collection="coll" item="id" separator=";">
+            update lmshop_goods
+            SET goods_status = #{goodsStatus} where id = #{id} and goods_status = 10
+        </foreach>
+    </update>
+    <!--更新店铺名称-->
+    <update id="updateStoreName">
+        update lmshop_goods set store_name=#{storeName},store_type=#{storeType} where store_id=#{storeId}
+
+    </update>
+    <update id="deleteByStoreId">
+        update lmshop_goods set del_flag=1
+        where store_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+    <!--根据店铺ID 删除定时上下架-->
+    <delete id="deleteGoodsTime">
+        update  lmshop_goods_time set del_flag=1
+        where store_id=#{storeId}
+
+    </delete>
+
+    <!--查询列表-->
+    <select id="selectGoodsList" resultMap="goodsListMap">
+        SELECT
+        <include refid="Base_Column_List"/>,
+        sum(lmshop_goods_spec.spec_storage) as goods_stock
+        FROM lmshop_goods g
+        left join lmshop_goods_spec on g.id=lmshop_goods_spec.goods_id
+        <where>
+            g.del_flag = 0 and lmshop_goods_spec.del_flag=0
+            <if test="params.brandName != null and params.brandName != ''">
+                AND g.brand_name like concat('%', #{params.brandName}, '%')
+            </if>
+            <if test="params.goodsId != null and params.goodsId != ''">
+                AND g.id != #{params.goodsId}
+            </if>
+            <if test="params.gcId != null and params.gcId != ''">
+                AND g.gc_id = #{params.gcId}
+            </if>
+            <if test="params.storeId != null">
+                AND g.store_id = #{params.storeId}
+            </if>
+            <if test="params.goodsShow != null and params.goodsShow != ''">
+                AND g.goods_show = #{params.goodsShow}
+            </if>
+            <if test="params.goodsStatus != null and params.goodsStatus != ''">
+                AND g.goods_status = #{params.goodsStatus}
+            </if>
+            <if test="params.storeName != null and params.storeName != ''">
+                AND g.store_name like concat('%', #{params.storeName}, '%')
+            </if>
+            <if test="params.goodsName != null and params.goodsName != ''">
+                AND (g.goods_name like concat('%', #{params.goodsName}, '%') OR g.goods_serial = #{params.goodsName})
+            </if>
+            <if test="params.ignore != null ">
+                AND g.goods_status != #{params.ignore}
+            </if>
+            <if test="params.warnStorage != null ">
+                and #{params.warnStorage}>=(
+                SELECT
+                sum( spec_storage )
+                FROM
+                lmshop_goods_spec
+                WHERE
+                del_flag = 0 and spec_show=1
+                AND goods_id = g.id)
+            </if>
+        </where>
+        group by g.id
+        ORDER BY g.create_date desc
+    </select>
+
+    <!--查询商品计算库存-->
+    <select id="selectGoodsAndStorageList" resultType="com.leimingtech.modules.dto.goods.ActivitityGoodsInfoDTO">
+        SELECT
+        lg.id,
+        lg.goods_name,
+        lg.spec_sell_price,
+        lg.goods_main_picture,
+        lg.goods_show,
+        lg.spec_id,
+        lgi.sale_num,
+        (
+        SELECT
+        SUM(spec_storage)
+        FROM
+        lmshop_goods_spec
+        WHERE
+        goods_id = lg.id
+        AND del_flag = 0
+        ) AS specStorage
+        FROM
+        lmshop_goods lg
+        LEFT JOIN lmshop_goods_info lgi ON lg.id = lgi.id
+        WHERE
+        lg.del_flag = 0
+        AND lg.goods_status = 30
+        <if test="params.goodsShow != null and params.goodsShow != ''">
+            AND lg.goods_show = #{params.goodsShow}
+        </if>
+        <if test="params.gcId != null and params.gcId != ''">
+            AND lg.gc_id = #{params.gcId}
+        </if>
+        <if test="params.storeId != null">
+            AND lg.store_id = #{params.storeId}
+        </if>
+        <if test="params.goodsName != null and params.goodsName != ''">
+            AND (lg.goods_name like concat('%', #{params.goodsName}, '%') OR lg.goods_serial = #{params.goodsName})
+        </if>
+        ORDER BY
+        lg.create_date DESC
+    </select>
+
+    <select id="getDetail" parameterType="java.lang.Long"
+            resultType="com.leimingtech.modules.dto.goods.detail.GoodsDatailDTO">
+        SELECT
+            ( SELECT sum( spec_storage ) FROM lmshop_goods_spec WHERE goods_id = #{goodsId} and del_flag = 0 ) AS specStorage,
+            lg.id,
+            lg.gc_id,
+            lg.gc_name,
+            lg.first_gc_id,
+            lg.first_gc_name,
+            lg.second_gc_id,
+            lg.second_gc_name,
+            lg.third_gc_id,
+            lg.third_gc_name,
+            lg.goods_serial,
+            lg.goods_name,
+            lg.first_store_goods_gc_id,
+            lg.first_store_goods_gc_name,
+            lg.second_store_goods_gc_id,
+            lg.second_store_goods_gc_name,
+            lg.goods_sub_title,
+            lg.brand_id,
+            lg.brand_name,
+            lg.store_id,
+            lg.store_name,
+            lg.express_flag,
+            lg.freight_template_id,
+            lg.devlier_type,
+            lg.freight_bear_type,
+            lg.virtual_flag,
+            lg.code_valid_day,
+            lg.code_refund_flag,
+            lgi.id AS goodsInfoId,
+            lgi.goods_boby,
+            lgi.mobile_body,
+            lgi.after_sale,
+            lg.spec_sell_price,
+            lg.spec_cost_price,
+            lg.updater,
+            lg.goods_status,
+            lg.invoice_flag,
+            lg.invoice_type,
+            lg.invoice_content
+        FROM
+            lmshop_goods lg
+            LEFT JOIN lmshop_goods_info lgi ON lg.id = lgi.id
+            LEFT JOIN lmshop_goods_spec lgs ON lgs.id = lg.spec_id
+        WHERE
+            lg.id = #{goodsId} and lg.del_flag = 0
+    </select>
+
+    <select id="findGoodsBySpecId" resultMap="goodsMap">
+        select lg.* from lmshop_goods lg
+        inner join lmshop_goods_spec lgs on lgs.goods_id = lg.id
+        where lgs.id = #{specId} and lg.del_flag = 0
+    </select>
+
+    <!--<select id="createIndex" resultType="com.leimingtech.modules.dto.goods.search.SearchGoodsDTO">-->
+    <!--SELECT-->
+    <!--lg.id,-->
+    <!--lg.gc_id,-->
+    <!--lg.gc_name,-->
+    <!--lg.goods_serial,-->
+    <!--lg.goods_name,-->
+    <!--lg.goods_sub_title,-->
+    <!--lg.brand_id,-->
+    <!--lg.brand_name,-->
+    <!--lg.store_id,-->
+    <!--lg.store_name,-->
+    <!--lg.spec_id,-->
+    <!--lg.goods_show,-->
+    <!--lg.goods_status,-->
+    <!--lg.goods_keywords,-->
+    <!--lgs.spec_sell_price,-->
+    <!--lgs.spec_main_picture,-->
+    <!--(SELECT count(*) FROM lmshop_evaluate_goods WHERE goods_id = lg.id) as evaluateCount,-->
+    <!--(SELECT sum(spec_sale_num) FROM lmshop_goods_spec lgsp WHERE lgsp.goods_id = lg.id) as goodsSaleNum-->
+    <!--FROM-->
+    <!--lmshop_goods lg-->
+    <!--LEFT JOIN lmshop_goods_spec lgs ON lgs.id = lg.spec_id WHERE lg.goods_show = 1 AND lg.goods_status = 30 AND lg.del_flag = 0-->
+    <!--</select>-->
+
+
+    <sql id="Base_Column_List1">
+        gs.id,
+        gs.goods_serial,
+        gs.goods_name,
+        gs.brand_id,
+        gs.brand_name,
+        gs.gc_id,
+        gs.gc_name,
+        gs.goods_show,
+        gs.store_id,
+        gs.store_name,
+        gs.goods_status,
+        gs.spec_id,
+        ls.spec_sell_price AS specSellPrice,
+        ls.spec_main_picture AS specMainPicture,
+        ls.del_flag AS lsDelFlag,
+        gs.goods_show AS gsGoodsShow,
+        li.sale_num AS  saleNum,
+        li.comment_num AS commentNum
+    </sql>
+    <select id="findAllGoods" resultMap="EsGoodsMap">
+        SELECT
+        <include refid="Base_Column_List1"/>
+        FROM lmshop_goods gs
+        LEFT JOIN lmshop_goods_spec ls ON
+        gs.spec_id=ls.id
+        LEFT JOIN lmshop_goods_info li ON
+        li.goods_id = gs.id
+        WHERE gs.del_flag=0 AND gs.goods_show=1 AND gs.goods_status = 30
+    </select>
+
+
+    <select id="goodsAttr" parameterType="java.util.List"
+            resultType="com.leimingtech.modules.dto.esgoods.GoodsAddAttributeDTO">
+        SELECT laa.goods_id AS goodsId,laa.attribute_id AS attributeId,laa.attr_value AS attrValue FROM
+        lmshop_goods_attribute laa WHERE del_flag = 0
+        <if test="list != null and list.size > 0">
+            AND goods_id in
+            <foreach collection="list" item="item" separator="," open="(" close=")" index="index">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="attrIndex" resultType="com.leimingtech.modules.dto.attribute.AttributeDTO">
+        SELECT * FROM lmshop_goods_attribute lga WHERE   del_flag = 0
+    </select>
+
+    <!--根据品牌id查询品牌数量-->
+    <select id="findCountByBrandId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select COUNT(brand_id) from lmshop_goods
+        where brand_id =#{brandId} and  del_flag = 0
+    </select>
+
+    <!-- 根据分类id查询分类名称-->
+    <select id="findCountByClassId" parameterType="java.lang.Long" resultType="java.lang.String">
+        select distinct gc_name from lmshop_goods
+        WHERE
+        del_flag=0 and gc_id in
+        <foreach collection="array" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <!--查询店铺下商品数量-->
+    <select id="findStoreGoodsNum" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_goods
+        where del_flag=0 and store_id=#{storeId}
+        <if test="type!=null and type==1">
+            and goods_status=20
+        </if>
+        <if test="type!=null and type==2">
+            and goods_status=30 and goods_show=2
+        </if>
+        <if test="type==null">
+            and goods_show=1
+        </if>
+
+    </select>
+
+    <!--根据(默认)规格id修改商品价格-->
+    <update id="updatePriceBySpecId">
+        update lmshop_goods set spec_cost_price =#{specCostPrice},spec_sell_price =#{specSellPrice} where spec_id =#{specId} and del_flag = 0
+    </update>
+
+
+    <update id="updateUpShow">
+         update lmshop_goods
+            SET goods_show = #{goodsShow} ,
+                publish_flag = 1,
+                goods_up_time = #{uptime}
+             where id = #{id}
+    </update>
+    <update id="updateShowByStoreId" parameterType="java.lang.Long">
+        update lmshop_goods
+        set goods_show=0
+        where store_id=#{storeId} and goods_status=30
+    </update>
+    <update id="updateStatus">
+           update lmshop_goods set goods_status=20
+           where store_id=#{storeId} and goods_status=10
+
+    </update>
+    <update id="updateGoodsSpecShow">
+        update lmshop_goods_spec set spec_show =0
+        where goods_id in (select id from lmshop_goods where store_id=#{storeId})
+
+    </update>
+    <update id="updateGoodsShowBatch">
+        UPDATE lmshop_goods
+        SET goods_show = #{dto.goodsShow},
+        publish_flag = 1,
+        goods_up_time = #{date}
+        WHERE
+        id in
+        <foreach collection="dto.ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="selectCountByClassIds" resultType="java.util.Map">
+        SELECT
+        gc_id as gcId,
+        COUNT( id ) as num
+        FROM
+        lmshop_goods
+        WHERE
+        gc_id IN
+        <foreach collection="classLists" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        GROUP BY
+        gc_id
+    </select>
+    <!--查询商品审核列表-->
+    <select id="pageVerify" resultType="com.leimingtech.modules.dto.goods.GoodsListDTO">
+        SELECT
+        <include refid="Base_Column_List"/>,
+        (SELECT remarks FROM lmshop_goods_check gc WHERE gc.goods_id=g.id and gc.good_state = 20 ORDER BY
+        gc.create_date DESC LIMIT 0, 1 )remarks
+        FROM lmshop_goods g
+        <include refid="whereSql"/>
+        ORDER BY g.create_date desc
+    </select>
+
+    <!--根据标签推荐id查询关联商品信息并分页-->
+    <select id="findByLabelId" resultType="com.leimingtech.modules.dto.goods.GoodsListDTO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        lmshop_goods g
+        LEFT JOIN lmshop_label_recommend_rel lrr ON g.id = lrr.goods_id
+        LEFT JOIN lmshop_label_recommend lr ON lr.id = lrr.label_id
+        WHERE
+        g.del_flag = 0
+        AND lrr.del_flag = 0
+        AND lr.del_flag = 0
+        <if test="params.labelId !=null">
+            AND lr.id = #{params.labelId}
+        </if>
+        <if test="params.goodsName !=null and params.goodsName !=''">
+            AND g.goods_name like concat('%', #{params.goodsName}, '%')
+        </if>
+        ORDER BY lrr.create_date DESC
+    </select>
+
+    <!--查询未关联商品信息并分页-->
+    <select id="labelUnassociated" resultType="com.leimingtech.modules.dto.goods.GoodsListDTO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        lmshop_goods g
+        WHERE
+        g.del_flag = 0
+        AND g.id NOT IN (
+        SELECT
+        goods_id
+        FROM
+        lmshop_label_recommend_rel
+        WHERE
+        del_flag = 0
+        <if test="params.labelId !=null">
+            AND label_id = #{params.labelId}
+        </if>
+        )
+    </select>
+    <select id="goodsExport" resultType="com.leimingtech.modules.excel.goods.EasyGoodsExcel">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM lmshop_goods g
+        <include refid="whereSql"/>
+        ORDER BY g.create_date desc
+    </select>
+    <select id="goodsLive" resultType="com.leimingtech.modules.dto.goods.GoodsLiveDTO">
+       SELECT
+	( SELECT count( 1 ) FROM lmshop_goods WHERE del_flag = 0 AND goods_show = 1 and store_id=#{storeId}) goodsCount,
+	( SELECT count( 1 ) FROM lmshop_goods WHERE del_flag = 0 AND goods_status = 10 and store_id=#{storeId}) auditGoodsCount,
+	( SELECT count( 1 ) FROM lmshop_goods WHERE del_flag = 0 AND goods_status = 20 and store_id=#{storeId}) refusedAuditGoodsCount,
+	  count(1) sellOutGoods
+    FROM
+	lmshop_goods_spec lgs
+	left join lmshop_goods lg on lgs.goods_id=lg.id
+	where lgs.del_flag=0 and lgs.spec_show=1 and lgs.spec_storage=0 and lg.store_id=#{storeId}
+    </select>
+    <select id="selectIndexGoodsData" resultType="com.leimingtech.modules.dto.goods.index.IndexGoodsDataDTO">
+        SELECT count( id ) AS newGoodsCount,( SELECT count( id ) FROM lmshop_goods WHERE del_flag = 0 AND goods_status = 30 ) AS goodsCount
+        FROM
+        lmshop_goods
+        WHERE
+        del_flag = 0 and goods_status = 30
+        AND create_date &gt;= #{startDate}
+        AND create_date &lt;= #{endDate}
+    </select>
+
+    <!--指定商品分页搜索-->
+    <select id="circleGoodsSearch" resultType="com.leimingtech.modules.dto.goods.cms.CircleGoodsSearchDTO">
+        SELECT
+        id,
+        goods_name,
+        spec_sell_price,
+        goods_main_picture,
+        spec_id
+        FROM lmshop_goods
+        where id IN
+        <foreach collection="goodIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY create_date desc
+    </select>
+    <select id="goodsCheckExport" resultType="com.leimingtech.modules.excel.goods.EasyGoodsCheckExcel">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM lmshop_goods g
+        <include refid="whereSql"/>
+        ORDER BY g.create_date desc
+    </select>
+    <select id="findClassName" resultType="java.lang.String">
+        select first_store_goods_gc_name
+        from lmshop_goods
+        where del_flag=0 and first_store_goods_gc_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+
+    </select>
+
+    <select id="findClassGoodsCount" resultType="java.util.Map">
+        SELECT
+        second_store_goods_gc_id as storeGoodsGcId,
+        COUNT( id ) as num
+        FROM
+        lmshop_goods
+        WHERE
+        del_flag=0 and
+        second_store_goods_gc_id IN
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        group by second_store_goods_gc_id
+    </select>
+    <select id="findNamePricePic" resultType="com.leimingtech.modules.dto.goods.GoodsDTO">
+        select id,goods_name,goods_main_picture,spec_sell_price,goods_sub_title,spec_id
+        from lmshop_goods
+        where id in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+    <select id="storeGoodsRecommend" resultType="com.leimingtech.modules.dto.goods.GoodsDTO">
+        select lg.*,lgir.label_name as labelName
+        from lmshop_goods lg
+        left join lmshop_goods_info lgi on lg.id=lgi.id
+        left join lmshop_goods_label_rel lgir on lg.id=lgir.goods_id
+        where lg.del_flag=0 and lg.store_id=#{storeId} and lg.goods_show=1
+        <if test="storeGoodsFirstGcId != null">
+            and lg.first_store_goods_gc_id=#{storeGoodsFirstGcId}
+        </if>
+        order by lgi.sale_num desc
+        limit #{limit}
+    </select>
+
+    <update id="editGoods">
+        UPDATE lmshop_goods
+        SET
+        <if test="goodsName != null">
+            goods_name = #{goodsName},
+        </if>
+        <if test="goodsSerial != null">
+            goods_serial = #{goodsSerial},
+        </if>
+        <if test="goodsSubTitle != null">
+            goods_sub_title = #{goodsSubTitle},
+        </if>
+        <if test="gcId != null">
+            gc_id = #{gcId},
+        </if>
+        <if test="gcName != null">
+            gc_name = #{gcName},
+        </if>
+        <if test="firstGcId != null">
+            first_gc_id = #{firstGcId},
+        </if>
+        <if test="firstGcName != null">
+            first_gc_name = #{firstGcName},
+        </if>
+        <if test="secondGcId != null">
+            second_gc_id = #{secondGcId},
+        </if>
+        <if test="secondGcName != null">
+            second_gc_name = #{secondGcName},
+        </if>
+        <if test="thirdGcId != null">
+            third_gc_id = #{thirdGcId},
+        </if>
+        <if test="thirdGcName != null">
+            third_gc_name = #{thirdGcName},
+        </if>
+        <if test="specCostPrice != null">
+            spec_cost_price = #{specCostPrice},
+        </if>
+        <if test="specSellPrice != null">
+            spec_sell_price = #{specSellPrice},
+        </if>
+        <if test="goodsMainPicture != null">
+            goods_main_picture = #{goodsMainPicture},
+        </if>
+        <if test="brandId != null">
+            brand_id = #{brandId},
+        </if>
+        <if test="brandName != null">
+            brand_name = #{brandName},
+        </if>
+        <if test="storeId != null">
+            store_id = #{storeId},
+        </if>
+        <if test="storeName != null">
+            store_name = #{storeName},
+        </if>
+        <if test="storeType != null">
+            store_type = #{storeType},
+        </if>
+        <if test="specId != null">
+            spec_id = #{specId},
+        </if>
+        express_flag = #{expressFlag},
+        freight_template_id = #{freightTemplateId},
+        <if test="goodsStorePrice != null">
+            goods_store_price = #{goodsStorePrice},
+        </if>
+        <if test="goodsShow != null">
+            goods_show = #{goodsShow},
+        </if>
+        <if test="goodsStatus != null">
+            goods_status = #{goodsStatus},
+        </if>
+        <if test="goodsKeywords != null">
+            goods_keywords = #{goodsKeywords},
+        </if>
+        update_date = NOW()
+        WHERE
+        id = #{id} AND del_flag = 0
+    </update>
+    <select id="floorGoodsPage" resultType="com.leimingtech.modules.dto.goods.GoodsListDTO">
+        SELECT
+        ssq.*,ssq.GOODS_MAIN_PICTURE as pictureUrl
+        FROM  (
+        select * from lmshop_goods where del_flag =0 and goods_show = 1 and id = #{params.goodsId}
+        UNION all
+        select *
+        from lmshop_goods
+        where del_flag = 0 and goods_show=1 and id != #{params.goodsId}
+        ) ssq
+        <where>
+            ssq.del_flag = 0 or ssq.id = #{params.goodsId}
+
+            <if test="params.gcId != null ">
+                AND ssq.FIRST_GC_ID = #{params.gcId}
+            </if>
+            <if test="params.goodsName != null and params.goodsName != ''">
+                AND (ssq.goods_name like CONCAT(CONCAT('%',#{params.goodsName}),'%') )
+            </if>
+            <if test="params.goodsSerial != null ">
+                AND ssq.goods_serial like CONCAT(CONCAT('%',#{params.goodsSerial}),'%')
+            </if>
+            <if test="params.gcIds != null and params.gcIds != ''">
+                AND ssq.gc_ids like CONCAT(#{params.gcIds},'%')
+            </if>
+            <if test="params.sellFlag != null">
+                AND ssq.SELL_FLAG = #{params.sellFlag}
+            </if>
+            <if test="params.groupFlag != null">
+                AND ssq.GROUP_FLAG = #{params.groupFlag}
+            </if>
+            <if test="params.goodsType != null">
+                AND ssq.GOODS_TYPE = #{params.goodsType}
+            </if>
+        </where>
+    </select>
+
+    <select id="findBrandByName" resultType="java.lang.Long">
+        select id from lmshop_brand where brand_name=#{goodsBrandName}
+    </select>
+    <resultMap id="GoodsExportDTOMap" type="com.leimingtech.modules.dto.goods.GoodsExportDTO">
+        <result column="gc_name" property="gcName"/>
+        <result column="first_gc_name" property="firstGcName"/>
+        <result column="second_gc_name" property="secondGcName"/>
+        <result column="third_gc_name" property="thirdGcName"/>
+        <result column="first_store_goods_gc_name" property="firstStoreGoodsGcName"/>
+        <result column="second_store_goods_gc_name" property="secondStoreGoodsGcName"/>
+        <result column="goods_name" property="goodsName"/>
+        <result column="goods_sub_title" property="goodsSubTitle"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="label_name" property="goodsLabelName"/>
+        <result column="spec_cost_price" property="specCostPrice"/>
+        <result column="spec_sell_price" property="specSellPrice"/>
+        <result column="devlier_type" property="devlierType"/>
+        <result column="template_name" property="freightTemplateName"/>
+        <result column="invoice_flag" property="invoiceFlag"/>
+        <result column="invoice_type" property="invoiceType"/>
+        <result column="invoice_content" property="invoiceContent"/>
+        <result column="id" property="goodsId"/>
+        <result column="express_flag" property="expressFlag"/>
+        <result column="freight_bear_type" property="freightBearType"/>
+        <association property="goodsInfoDTO" javaType="com.leimingtech.modules.dto.goods.GoodsInfoDTO">
+            <result column="mobile_body" property="mobileBody"/>
+            <result column="after_sale" property="afterSale"/>
+        </association>
+        <collection property="goodsAttributeDTOS" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.goods.spec.GoodsAttributeDTO" select="queryAttr" column="id">
+        </collection>
+        <collection property="goodsSpecDetailDTOS" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.goods.detail.GoodsSpecDetailDTO" select="querySpec" column="id">
+        </collection>
+        <collection property="defaultSpecPictureDTOList" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.goods.spec.DefaultSpecPictureDTO" select="queryDefaultPic"
+                    column="id">
+
+        </collection>
+        <collection property="specAttributePictureDetailDTOS" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.goods.detail.SpecAttributePictureDetailDTO"
+                    select="queryPicList" column="id">
+        </collection>
+
+
+    </resultMap>
+    <sql id="whereSql1">
+        <where>
+            lgs.del_flag = 0
+            <if test="params.brandName != null and params.brandName != ''">
+                AND lgs.brand_name like concat('%', #{params.brandName}, '%')
+            </if>
+            <if test="params.gcId != null and params.gcId != ''">
+                AND lgs.gc_id = #{params.gcId}
+            </if>
+            <if test="params.storeId != null">
+                AND lgs.store_id = #{params.storeId}
+            </if>
+            <if test="params.goodsShow != null and params.goodsShow != ''">
+                AND lgs.goods_show = #{params.goodsShow}
+            </if>
+            <if test="params.goodsStatus != null and params.goodsStatus != ''">
+                AND lgs.goods_status = #{params.goodsStatus}
+            </if>
+            <if test="params.storeName != null and params.storeName != ''">
+                AND lgs.store_name like concat('%', #{params.storeName}, '%')
+            </if>
+            <if test="params.goodsName != null and params.goodsName != ''">
+                AND (lgs.goods_name like concat('%', #{params.goodsName}, '%') OR lgs.goods_serial = #{params.goodsName})
+            </if>
+            <if test="params.ignore != null ">
+                AND lgs.goods_status != #{params.ignore}
+            </if>
+            <if test="params.warnStorage != null ">
+                and #{params.warnStorage}>=(
+                SELECT
+                sum( spec_storage )
+                FROM
+                lmshop_goods_spec
+                WHERE
+                del_flag = 0 and spec_show=1
+                AND goods_id = lgs.id)
+            </if>
+        </where>
+    </sql>
+    <select id="selectGoodsToExcel" resultMap="GoodsExportDTOMap">
+        SELECT
+        lgs.id,
+        lgs.gc_name,
+        lgs.first_gc_name,
+        lgs.second_gc_name,
+        lgs.third_gc_name,
+        lgs.first_store_goods_gc_name,
+        lgs.second_store_goods_gc_name,
+        lgs.goods_name,
+        lgs.goods_sub_title,
+        lgs.brand_name,
+        lgs.spec_cost_price,
+        lgs.spec_sell_price,
+        lgs.invoice_flag,
+        lgs.invoice_type,
+        lgs.invoice_content,
+        lgs.devlier_type,
+        lgs.express_flag,
+        lgs.freight_bear_type,
+        lgi.mobile_body,
+        lgi.after_sale,
+        lft.template_name,
+        lglr.label_name
+        FROM
+        lmshop_goods lgs
+        LEFT JOIN lmshop_goods_info lgi ON lgs.id = lgi.id
+        left join lmshop_freight_template lft on lgs.freight_template_id=lft.id
+        left join lmshop_goods_label_rel lglr ON lgs.id = lglr.goods_id
+        <include refid="whereSql1"></include>
+    </select>
+    <select id="queryAttr" resultType="com.leimingtech.modules.dto.goods.spec.GoodsAttributeDTO">
+        select attr_name,attr_value from lmshop_goods_attribute  where goods_id=#{id} and del_flag=0
+    </select>
+    <select id="querySpec" resultType="com.leimingtech.modules.dto.goods.detail.GoodsSpecDetailDTO">
+    select spec_attr_name,
+	    spec_attr_value_name,
+	    spec_cost_price,
+        spec_sell_price,
+	    spec_main_picture,
+	    spec_storage
+        from lmshop_goods_spec where goods_id = #{id} and del_flag=0
+    </select>
+    <select id="queryDefaultPic" resultType="com.leimingtech.modules.dto.goods.spec.DefaultSpecPictureDTO">
+        SELECT
+            goods_id,
+            picture_url,
+            is_main_picture,
+            sort
+        FROM
+            lmshop_goods_spec_attr_pic
+        WHERE
+            goods_id = #{id}
+            AND spec_attr_value_id = 0
+            AND spec_attr_id = 0
+            AND del_flag = 0
+            order by sort asc
+    </select>
+    <select id="queryPicList" resultType="com.leimingtech.modules.dto.goods.detail.SpecAttributePictureDetailDTO">
+          SELECT
+            goods_id,
+            picture_url,
+            is_main_picture,
+            sort
+        FROM
+            lmshop_goods_spec_attr_pic
+        WHERE
+            goods_id = #{id}
+            AND spec_attr_value_id = 0
+            AND spec_attr_id = 0
+            AND del_flag = 0
+            order by sort asc
+    </select>
+
+    <select id="findValidationGoods" resultType="com.leimingtech.modules.dto.goods.ValidateGoodsDTO">
+        select
+        g.id,g.first_gc_id,g.brand_id,g.store_id,g.store_name,g.goods_status,g.goods_show,g.express_flag, g.freight_template_id,
+        gs.id as specId,gs.goods_id,gs.spec_serial,gs.spec_name,gs.spec_storage,gs.spec_sell_price,
+        gs.is_enable,gs.main_flag,gs.spec_show,gs.spec_main_picture,gs.spec_attr_name
+        from lmshop_goods_spec gs
+		left join
+		(select id,first_gc_id,brand_id,store_id,store_name,goods_status,goods_show, express_flag, freight_template_id from lmshop_goods where id=#{goodsId}) g
+		on g.id=gs.goods_id
+		where gs.id = #{specId}
+    </select>
+    <select id="getGoodsList" resultType="com.leimingtech.modules.dto.goods.GoodsRecommendDTO">
+        SELECT
+        lg.id,
+        lg.goods_name,
+        lg.store_id,
+        lg.store_name,
+        lg.spec_id,
+        lg.spec_sell_price AS goodsStorePrice,
+        lg.store_type,
+        lg.goods_main_picture AS specMainPicture,
+        lgi.comment_num,
+        lgi.sale_num,
+        label.label_name AS labelName
+        FROM
+        lmshop_goods lg
+        LEFT JOIN lmshop_goods_label_rel labelRel ON labelRel.goods_id = lg.id
+        LEFT JOIN lmshop_goods_label label ON label.id = labelRel.label_id
+        LEFT JOIN lmshop_goods_info lgi ON lgi.id = lg.id
+        WHERE
+        lg.goods_show = 1
+        AND lg.del_flag = 0
+        AND lg.id in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+
+    </select>
+    <insert id="insertBatch" parameterType="java.util.ArrayList" useGeneratedKeys="false">
+        insert into lmshop_goods (
+        id,
+        goods_name,
+        goods_serial,
+        goods_sub_title,
+        gc_id,
+        gc_name,
+        first_gc_id,
+        first_gc_name,
+        second_gc_id,
+        second_gc_name,
+        third_gc_id,
+        third_gc_name,
+        brand_id,
+        store_type,
+        brand_name,
+        store_id,
+        store_name,
+        goods_main_picture,
+        spec_id,
+        spec_sell_price,
+        spec_cost_price,
+        goods_store_price,
+        express_flag,
+        freight_bear_type,
+        freight_template_id,
+        goods_show,
+        goods_status,
+        goods_keywords,
+        invoice_flag,
+        invoice_type,
+        invoice_content,
+        first_store_goods_gc_id,
+        first_store_goods_gc_name,
+        second_store_goods_gc_id,
+        second_store_goods_gc_name,
+        devlier_type,
+        code_valid_day,
+        code_refund_flag,
+        virtual_flag,
+        creator,
+        create_date,
+        updater,
+        update_date
+        ) values
+        <foreach collection="goodsEntityList" item="goodsEntity" index="index" separator=",">
+            ( #{goodsEntity.id},
+            #{goodsEntity.goodsName},
+            #{goodsEntity.goodsSerial},
+            #{goodsEntity.goodsSubTitle},
+            #{goodsEntity.gcId},
+            #{goodsEntity.gcName},
+            #{goodsEntity.firstGcId},
+            #{goodsEntity.firstGcName},
+            #{goodsEntity.secondGcId},
+            #{goodsEntity.secondGcName},
+            #{goodsEntity.thirdGcId},
+            #{goodsEntity.thirdGcName},
+            #{goodsEntity.brandId},
+            #{goodsEntity.storeType},
+            #{goodsEntity.brandName},
+            #{goodsEntity.storeId},
+            #{goodsEntity.storeName},
+            #{goodsEntity.goodsMainPicture},
+            #{goodsEntity.specId},
+            #{goodsEntity.specSellPrice},
+            #{goodsEntity.specCostPrice},
+            #{goodsEntity.goodsStorePrice},
+            #{goodsEntity.expressFlag},
+            #{goodsEntity.freightBearType},
+            #{goodsEntity.freightTemplateId},
+            #{goodsEntity.goodsShow},
+            #{goodsEntity.goodsStatus},
+            #{goodsEntity.goodsKeywords},
+            #{goodsEntity.invoiceFlag},
+            #{goodsEntity.invoiceType},
+            #{goodsEntity.invoiceContent},
+            #{goodsEntity.firstStoreGoodsGcId},
+            #{goodsEntity.firstStoreGoodsGcName},
+            #{goodsEntity.secondStoreGoodsGcId},
+            #{goodsEntity.secondStoreGoodsGcName},
+            #{goodsEntity.devlierType},
+            #{goodsEntity.codeValidDay},
+            #{goodsEntity.codeRefundFlag},
+            #{goodsEntity.virtualFlag},
+            #{goodsEntity.creator},
+            #{goodsEntity.createDate},
+            #{goodsEntity.updater},
+            #{goodsEntity.updateDate}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectGoodsToExcelTest"  resultMap="GoodsExportDTOMap1">
+        SELECT
+        lgs.id as lgs_id,
+        lgs.gc_name as lgs_gc_name,
+        lgs.first_gc_name as lgs_first_gc_name,
+        lgs.second_gc_name as lgs_second_gc_name,
+        lgs.third_gc_name as lgs_third_gc_name,
+        lgs.first_store_goods_gc_name as lgs_first_store_goods_gc_name,
+        lgs.second_store_goods_gc_name as lgs_second_store_goods_gc_name,
+        lgs.goods_name as lgs_goods_name,
+        lgs.goods_sub_title as lgs_goods_sub_title,
+        lgs.brand_name as lgs_brand_name,
+        lgs.spec_cost_price as lgs_spec_cost_price,
+        lgs.spec_sell_price as lgs_spec_sell_price,
+        lgs.invoice_flag as lgs_invoice_flag,
+        lgs.invoice_type as lgs_invoice_type,
+        lgs.invoice_content as lgs_invoice_content,
+        lgs.devlier_type as lgs_devlier_type,
+        lgs.express_flag as lgs_express_flag,
+        lgs.freight_bear_type as lgs_freight_bear_type,
+        lgi.mobile_body as lgi_mobile_body,
+        lgi.after_sale as lgi_after_sale,
+        lft.template_name as lft_template_name,
+        lglr.label_name as lglr_label_name,
+        lga.attr_name as lga_attr_name,
+        lga.attr_value as lga_attr_value,
+        lgsp.spec_attr_name as lgsp_spec_attr_name,
+        lgsp.spec_attr_value_name as lgsp_spec_attr_value_name,
+        lgsp.spec_cost_price as lgsp_spec_cost_price,
+        lgsp.spec_sell_price as lgsp_spec_sell_price,
+        lgsp.spec_main_picture as lgsp_spec_main_picture,
+        lgsp.spec_storage as lgsp_spec_storage,
+        lgsap.goods_id as lgsap_goods_id,
+        lgsap.picture_url as lgsap_picture_url,
+        lgsap.is_main_picture as lgsap_is_main_picture,
+        lgsap.sort as lgsap_sort
+        FROM
+        (
+        SELECT
+        id,
+        gc_name,
+        first_gc_name,
+        second_gc_name,
+        third_gc_name,
+        first_store_goods_gc_name,
+        second_store_goods_gc_name,
+        goods_name,
+        goods_sub_title,
+        brand_name,
+        spec_cost_price,
+        spec_sell_price,
+        invoice_flag,
+        invoice_type,
+        invoice_content,
+        devlier_type,
+        express_flag,
+        freight_bear_type,
+        freight_template_id
+        FROM
+        lmshop_goods
+        <where>
+            del_flag = 0
+            <if test="params.brandName != null and params.brandName != ''">
+                AND brand_name like concat('%', #{params.brandName}, '%')
+            </if>
+            <if test="params.gcId != null and params.gcId != ''">
+                AND gc_id = #{params.gcId}
+            </if>
+            <if test="params.storeId != null">
+                AND store_id = #{params.storeId}
+            </if>
+            <if test="params.goodsShow != null and params.goodsShow != ''">
+                AND goods_show = #{params.goodsShow}
+            </if>
+            <if test="params.goodsStatus != null and params.goodsStatus != ''">
+                AND goods_status = #{params.goodsStatus}
+            </if>
+            <if test="params.storeName != null and params.storeName != ''">
+                AND store_name like concat('%', #{params.storeName}, '%')
+            </if>
+            <if test="params.goodsName != null and params.goodsName != ''">
+                AND (goods_name like concat('%', #{params.goodsName}, '%') OR goods_serial = #{params.goodsName})
+            </if>
+            <if test="params.ignore != null ">
+                AND goods_status != #{params.ignore}
+            </if>
+            <if test="params.warnStorage != null ">
+                and #{params.warnStorage}>=(
+                SELECT
+                sum( spec_storage )
+                FROM
+                lmshop_goods_spec
+                WHERE
+                del_flag = 0 and spec_show=1
+                AND goods_id = id)
+            </if>
+        </where>
+        LIMIT #{params.start},
+        #{params.limit}
+        ) AS lgs
+        LEFT JOIN lmshop_goods_info lgi ON lgs.id = lgi.id AND lgi.del_flag = 0
+        LEFT JOIN lmshop_freight_template lft ON lgs.freight_template_id = lft.id AND lft.del_flag = 0
+        LEFT JOIN lmshop_goods_label_rel lglr ON lgs.id = lglr.goods_id AND lglr.del_flag = 0
+        LEFT JOIN lmshop_goods_attribute lga ON lgs.id = lga.goods_id and lga.del_flag = 0
+        LEFT JOIN lmshop_goods_spec lgsp ON lgsp.goods_id = lgs.id AND lgsp.del_flag = 0
+        LEFT JOIN lmshop_goods_spec_attr_pic lgsap ON lgs.id = lgsap.goods_id	 AND lgsap.spec_attr_value_id = 0 AND lgsap.spec_attr_id = 0 AND lgsap.del_flag = 0
+    </select>
+<select id="selectByPage" resultMap="goodsDTOmap">
+    select g.* from lmshop_goods  g <include refid="whereSql"></include>
+</select>
+    <select id="getGoodsInfo" resultType="com.leimingtech.modules.dto.goods.GoodsListDTO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM lmshop_goods g
+        where g.id=#{goodsId}
+    </select>
+    <select id="selectStoreCountByGoodsIds" resultType="java.lang.Integer">
+        SELECT
+            count( DISTINCT store_id )
+        FROM
+            lmshop_goods
+        WHERE
+            del_flag = 0 and
+            id IN
+        <foreach collection="goodsIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+    <select id="selectByIdToRec" resultMap="goodsDTOmap">
+        SELECT
+        lg.*,
+        lglr.label_name
+        FROM
+	`lmshop_goods` lg
+	LEFT JOIN lmshop_goods_label_rel lglr ON lg.id = lglr.goods_id
+	where  lg.id=#{goodsId}
+    </select>
+    <select id="selectGoodsInfoByGoodsId" resultType="com.leimingtech.modules.dto.goods.TopicGoodsDTO">
+        select
+        ig.id,
+        ig.spec_id,
+        ig.goods_name,
+        igi.comment_num,
+        ig.goods_main_picture,
+        ig.spec_id,
+        ig.spec_sell_price,
+        igi.sale_num,
+        ig.SPEC_COST_PRICE
+        from lmshop_goods ig
+        left join lmshop_goods_info igi on ig.id=igi.id
+        where ig.del_flag=0 and ig.id in
+        <foreach collection="list" item="item" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+
+    </select>
+
+</mapper>

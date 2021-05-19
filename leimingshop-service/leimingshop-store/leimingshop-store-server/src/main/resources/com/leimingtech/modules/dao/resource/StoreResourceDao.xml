@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.resource.StoreResourceDao">
+
+    <resultMap type="com.leimingtech.modules.entity.resource.StoreResourceEntity" id="storeResourceMap">
+        <result property="id" column="id"/>
+        <result property="resourceCode" column="resource_code"/>
+        <result property="resourceName" column="resource_name"/>
+        <result property="resourceUrl" column="resource_url"/>
+        <result property="resourceMethod" column="resource_method"/>
+        <result property="menuFlag" column="menu_flag"/>
+        <result property="authLevel" column="auth_level"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <update id="deleteByCode">
+        update lmshop_store_resource set del_flag=1 where resource_code=#{value}
+
+    </update>
+    <select id="getResourceByMenuId" resultType="com.leimingtech.modules.dto.menu.StoreMenuResourceDTO">
+        select *
+        from lmshop_store_resource
+        where del_flag=0 and resource_code=#{menuId}
+    </select>
+
+    <!-- lixiang 2019/12/19 15:25 获取全部资源列表 -->
+    <select id="getResourceList" resultType="com.leimingtech.modules.entity.resource.StoreResourceEntity">
+        select resource_url, resource_method, auth_level from lmshop_store_resource
+        where del_flag = 0 order by auth_level desc
+    </select>
+
+    <!-- lixiang 2019/12/19 15:55 根据用户信息查询用户的授权资源-->
+    <select id="getUserResourceList" resultType="com.leimingtech.commons.tools.security.bo.ResourceBO">
+        SELECT
+            t3.resource_url,
+            t3.resource_method
+        FROM
+            lmshop_store_user_manage t1
+            LEFT JOIN lmshop_store_role_menu t2 ON t1.role_id = t2.role_id
+            INNER JOIN lmshop_store_resource t3 ON t2.menu_id = t3.resource_code
+        WHERE
+            t1.store_user_id = #{userId}
+    </select>
+    <select id="findRegisterResource" resultType="com.leimingtech.commons.tools.security.bo.StoreMenuDTOs">
+        select id,menu_permission as permission
+        from lmshop_store_menu
+        where id in (1207213361260847105,1218787993108635650)
+    </select>
+
+
+</mapper>

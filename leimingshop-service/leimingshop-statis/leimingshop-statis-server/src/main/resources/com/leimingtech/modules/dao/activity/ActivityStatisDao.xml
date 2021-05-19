@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.activity.ActivityStatisDao">
+
+
+    <select id="getStoreId" resultType="java.lang.Long">
+        select store_id
+        from lmshop_reduce_activity
+        where id=#{activityId}
+
+    </select>
+    <select id="getCouponsList" resultType="com.leimingtech.modules.entity.activity.ActivityStatisEntity">
+        select id as activityId,store_id,activity_name
+        from lmshop_coupons_activity
+        where del_flag=0 and audit_state=1 and  activity_state!=0
+
+    </select>
+    <select id="getPersonNum" resultType="java.lang.Integer">
+        select count(1)
+        from lmshop_member_coupons
+        where activity_id =#{activityId}
+        AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date}
+
+
+    </select>
+    <select id="getReduceActivity" resultType="com.leimingtech.modules.entity.activity.ActivityStatisEntity">
+        select id as activityId,store_id,activity_name
+        from lmshop_reduce_activity
+        where del_flag=0 and activity_state!=0
+    </select>
+    <select id="getCouponsActivityList" resultType="com.leimingtech.modules.entity.activity.ActivityStatisEntity">
+    SELECT
+	count(1) AS downOrderNum,
+	sum(goods_amount) AS orderAmount,
+	(select count(DISTINCT buyer_id) from lmshop_order where  id IN ( SELECT order_id  FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} )) as downOrderPerson,
+	(select count(DISTINCT buyer_id) from lmshop_order where payment_status = 1  and  id IN ( SELECT order_id  FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} )) as payPerson,
+	(SELECT count(1) FROM lmshop_order WHERE payment_status = 1 AND id IN ( SELECT order_id  FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} ) ) AS payOrderNum,
+	(SELECT sum(coupon_amount) FROM lmshop_order WHERE payment_status = 1 AND id IN ( SELECT order_id  FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} ) ) AS activityReduceAmount,
+	(SELECT sum(goods_amount) FROM lmshop_order WHERE payment_status = 1 AND id IN ( SELECT order_id  FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} ) ) AS realityAmount,
+	(SELECT sum(order_amount) FROM lmshop_order WHERE payment_status = 1 AND id IN ( SELECT order_id FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} ) ) AS payAmount
+	FROM
+	lmshop_order
+	WHERE
+	id IN (
+	SELECT
+	order_id
+	FROM
+	lmshop_order_activity
+	WHERE
+	activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date})
+
+    </select>
+    <select id="getReduceActivityList"
+            resultType="com.leimingtech.modules.entity.activity.ActivityStatisEntity">
+	SELECT
+	count(1) AS downOrderNum,
+	sum(goods_amount) AS orderAmount,
+	(select count(DISTINCT buyer_id) from lmshop_order where  id IN ( SELECT order_id  FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} )) as downOrderPerson,
+	(select count(DISTINCT buyer_id) from lmshop_order where payment_status = 1 and id IN ( SELECT order_id  FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} )) as payPerson,
+	(SELECT count(1) FROM lmshop_order WHERE payment_status = 1 and id IN ( SELECT order_id  FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} ) ) AS payOrderNum,
+	(SELECT sum(reduce_amount) FROM lmshop_order WHERE payment_status = 1 AND id IN ( SELECT order_id  FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} ) ) AS activityReduceAmount,
+	(SELECT sum(goods_amount) FROM lmshop_order WHERE payment_status = 1 AND id IN ( SELECT order_id  FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} ) ) AS realityAmount,
+	(SELECT sum(order_amount) FROM lmshop_order WHERE payment_status = 1 AND id IN ( SELECT order_id FROM lmshop_order_activity WHERE activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date} ) ) AS payAmount
+	FROM
+	lmshop_order
+	WHERE
+	id IN (
+	SELECT
+	order_id
+	FROM
+	lmshop_order_activity
+	WHERE
+	activity_id = #{activityId} AND DATE_FORMAT(create_date, '%Y-%m-%d' ) = #{date})
+
+
+	</select>
+    <select id="getActivityDetail"
+            resultType="com.leimingtech.modules.entity.activity.ActivityDetailStatisEntity">
+		select
+		log.activity_id,
+		log.store_id,
+		log.activity_type,
+		log.order_id,
+		log.order_sn,
+		log.buyer_id as memberId,
+		log.goods_id,
+		log.spec_id,
+		log.spu_name as goodsName,
+		log.goods_image,
+		log.goods_num,
+		if(log.activity_type=1,log.coupon_amount,log.reduce_amount) as activityReduceAmount,
+		lo.payment_status,
+		(log.spec_price*log.goods_num) as realityAmount
+		from  lmshop_order_goods log
+		left join  lmshop_order lo on lo.id=log.order_id
+		where log.activity_id=#{activityId} AND DATE_FORMAT(log.create_date, '%Y-%m-%d' ) = #{date}
+
+	</select>
+</mapper>

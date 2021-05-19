@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goods.spec.SpecAttributeDao">
+
+    <resultMap type="com.leimingtech.modules.entity.goods.spec.GoodsSpecAttrEntity" id="specAttributeMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="specAttrName" column="spec_attr_name"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="isMain" column="is_main"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap id="" type="com.leimingtech.modules.dto.goods.spec.SpecAttributeUpdateDTO">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="specAttrName" column="spec_attr_name"/>
+        <result property="isSelect" column="is_select"/>
+        <result property="isMain" column="is_main"/>
+            <collection property="specAttributeValueUpdateDTOList" javaType="java.util.ArrayList" ofType="com.leimingtech.modules.dto.goods.spec.SpecAttributeValueUpdateDTO">
+            <id property="id" column="gsavId"/>
+            <!--<result property="goodsId" column="gsavId"/>-->
+            <result property="specAttrId" column="spec_attr_id"/>
+            <result property="specAttrValue" column="spec_attr_value"/>
+            <result property="specPicture" column="spec_picture"/>
+            <result property="isSelect" column="gsavIsSelect"/>
+            <result property="isMain" column="gsavIsMain"/>
+                <collection property="specAttributePictureDTOList" javaType="java.util.ArrayList" ofType="com.leimingtech.modules.dto.goods.spec.SpecAttributePictureDTO">
+                <id property="id" column="gaspId"/>
+                <result property="specAttrValueId" column="gsapSpecAttrValId"/>
+                <result property="specAttrId" column="gsapSpecAttrId"/>
+                <result property="pictureUrl" column="picture_url"/>
+                <result property="isMainPicture" column="is_main_picture"/>
+                <result property="sort" column="sort"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="" parameterType="java.lang.Long" resultMap="detailMap">
+        SELECT
+            gsa.id,
+            gsa.goods_id,
+            gsa.spec_attr_name,
+            gsa.is_select,
+            gsa.is_main,
+            gsav.id as gsavId,
+            gsav.spec_attr_id,
+            gsav.spec_attr_value,
+            gsav.spec_picture,
+            gsav.is_select as gsavIsSelect,
+            gsav.is_main as gsavIsMain,
+            gsap.id as gaspId,
+            gsap.spec_attr_value_id as gsapSpecAttrValId,
+            gsap.spec_attr_id as gsapSpecAttrId,
+            gsap.picture_url,
+            gsap.is_main_picture
+        FROM
+            lmshop_goods_spec_attr gsa
+            LEFT JOIN lmshop_goods_spec_attr_value gsav ON gsa.id = gsav.spec_attr_id
+            LEFT JOIN lmshop_goods_spec_attr_pic gsap ON gsav.id = gsap.spec_attr_value_id
+        WHERE
+            gsa.goods_id = #{goodsId}
+    </select>
+
+
+    <resultMap id="detailMap" type="com.leimingtech.modules.dto.goods.detail.SpecAttributeDetailDTO">
+        <result property="id" column="id"/>
+        <result property="specAttrName" column="spec_attr_name"/>
+        <result property="isMain" column="is_main"/>
+        <collection property="specAttributeValueDetailDTOList" javaType="java.util.ArrayList" ofType="com.leimingtech.modules.dto.goods.detail.SpecAttributeValueDetailDTO">
+            <id property="specAttrValueId" column="specAttrValueId"/>
+            <result property="specAttrValue" column="spec_attr_value"/>
+            <result property="isSelect" column="is_select"/>
+            <result property="isMainValue" column="isMainValue"/>
+        </collection>
+    </resultMap>
+
+    <select id="getByGoodsId" parameterType="java.lang.Long" resultMap="detailMap">
+        SELECT
+            lgsa.id,
+            lgsa.spec_attr_name,
+            lgsa.is_main,
+            lgsav.id as specAttrValueId,
+            lgsav.spec_attr_value,
+            lgsav.is_select,
+            lgsav.is_main as isMainValue
+        FROM
+            lmshop_goods_spec_attr lgsa
+        LEFT JOIN lmshop_goods_spec_attr_value lgsav ON lgsa.id = lgsav.spec_attr_id
+        WHERE
+            lgsa.goods_id = #{goodsId} and lgsa.del_flag = 0
+    </select>
+    <select id="getNameListByGoodsId" resultType="com.leimingtech.modules.dto.goods.price.SpecAttrNameDTO"
+            parameterType="java.lang.Long">
+        SELECT
+            gsa.id,
+            gsa.spec_attr_name
+        FROM
+            lmshop_goods_spec_attr_value gsav
+            LEFT JOIN lmshop_goods_spec_attr gsa ON gsa.id = gsav.spec_attr_id
+            AND gsa.del_flag = 0
+        WHERE
+            gsav.goods_id = #{goodsId}
+            AND gsav.is_select = 1
+            AND gsav.del_flag = 0
+        GROUP BY
+            gsa.id
+    </select>
+
+    <delete id="deleteByGoodsId" parameterType="java.lang.Long">
+           DELETE
+            FROM
+            lmshop_goods_spec_attr
+            WHERE
+            goods_id = #{goodsId}
+    </delete>
+    <select id="findSpecNameByGoodsId" resultType="com.leimingtech.modules.dto.goods.spec.SpecAttributeDTO">
+        SELECT
+        lmshop_goods_spec_attr.id as id,
+        lmshop_goods_spec_attr.spec_attr_name as spec_attr_name,
+        lmshop_goods_spec_attr_value.spec_attr_value as spec_attr_value,
+        lmshop_goods_spec_attr_value.id as spec_attr_value_id
+        FROM
+        lmshop_goods_spec_attr
+        LEFT JOIN lmshop_goods_spec_attr_value ON lmshop_goods_spec_attr.id = lmshop_goods_spec_attr_value.spec_attr_id
+        WHERE
+        lmshop_goods_spec_attr_value.goods_id = #{goodsId}
+        and lmshop_goods_spec_attr_value.del_flag=0
+        and lmshop_goods_spec_attr_value.is_select=1
+        AND lmshop_goods_spec_attr_value.spec_attr_value in
+        <foreach collection="specValues" index="index" item="specValue" open="(" separator="," close=")">
+            #{specValue}
+        </foreach>
+    </select>
+    <insert id="insertBatch">
+        insert into lmshop_goods_spec_attr(
+        id,
+        goods_id,
+        spec_attr_name,
+        is_select,
+        is_main
+        ) values
+        <foreach collection="goodsSpecAttrEntities" item="goodsSpecAttrEntity" separator="," >
+            (#{goodsSpecAttrEntity.id},
+            #{goodsSpecAttrEntity.goodsId},
+            #{goodsSpecAttrEntity.specAttrName},
+            #{goodsSpecAttrEntity.isSelect},
+            #{goodsSpecAttrEntity.isMain}
+            )
+        </foreach>
+    </insert>
+</mapper>

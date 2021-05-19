@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.feedback.FeedbackDao">
+
+    <resultMap type="com.leimingtech.entity.feedback.FeedbackEntity" id="feedbackMap">
+        <result property="id" column="id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="memberId" column="member_id"/>
+        <result property="mobileNumber" column="mobile_number"/>
+        <result property="feedbackType" column="feedback_type"/>
+        <result property="detailedDescription" column="detailed_description"/>
+        <result property="imagesArr" column="images_arr"/>
+        <result property="feedbackSource" column="feedback_source"/>
+        <result property="decideType" column="decide_type"/>
+        <result property="servicesReply" column="services_reply"/>
+        <result property="disposeStatus" column="dispose_status"/>
+        <result property="disposeDate" column="dispose_date"/>
+        <result property="operator" column="operator"/>
+        <result property="remark" column="remark"/>
+        <result property="userDelFlag" column="user_del_flag"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+</mapper>

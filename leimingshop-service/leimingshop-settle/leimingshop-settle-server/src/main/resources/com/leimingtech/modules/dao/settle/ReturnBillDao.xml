@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.settle.ReturnBillDao">
+
+    <resultMap type="com.leimingtech.modules.entity.settle.ReturnBillEntity" id="returnBillMap">
+        <result property="id" column="id"/>
+        <result property="billTotalId" column="bill_total_id"/>
+        <result property="returnSn" column="return_sn"/>
+        <result property="returnTime" column="return_time"/>
+        <result property="returnAmount" column="return_amount"/>
+        <result property="specSerial" column="spec_serial"/>
+        <result property="specId" column="spec_id"/>
+        <result property="specMainPicture" column="spec_main_picture"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="paymentName" column="payment_name"/>
+        <result property="manageTime" column="manage_time"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.log.point.PointLogDao">
+
+    <resultMap type="com.leimingtech.modules.entity.log.point.PointLogEntity" id="pointLogMap">
+        <result property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="pointValue" column="point_value"/>
+        <result property="pointDesc" column="point_desc"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="pointType" column="point_type"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!-- lixiang 2019/12/26 10:22 根据时间查询用户成长值集合 -->
+    <select id="findGrowthbyTime" resultType="com.leimingtech.modules.dto.log.point.MemberGrowthValueDTO">
+        SELECT
+        sum( point_value ) AS growthValue,
+        member_id
+        FROM
+        lmshop_point_log
+        <where>
+            del_flag = 0
+            <if test="startTime != null">
+                and create_date &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and create_date &lt;= #{endTime}
+            </if>
+        </where>
+        GROUP BY
+        member_id
+    </select>
+
+    <select id="findByTime" resultType="com.leimingtech.modules.dto.log.point.PointLogDTO">
+        SELECT *
+        FROM
+        lmshop_point_log
+        <where>
+            del_flag = 0
+            and member_id = #{memberId}
+            <if test="sourceType != null">
+                and source_type = #{sourceType}
+            </if>
+            and create_date &gt;= #{startTime}
+            and create_date &lt; #{endTime}
+        </where>
+        ORDER BY create_date desc
+    </select>
+</mapper>

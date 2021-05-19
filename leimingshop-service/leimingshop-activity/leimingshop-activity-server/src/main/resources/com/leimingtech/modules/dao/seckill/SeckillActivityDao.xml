@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.seckill.SeckillActivityDao">
+
+    <resultMap type="com.leimingtech.modules.entity.seckill.SeckillActivityEntity" id="seckillActivityMap">
+        <result property="id" column="id"/>
+        <result property="sessionId" column="session_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="activityStartDate" column="activity_start_date"/>
+        <result property="activityEndDate" column="activity_end_date"/>
+        <result property="activityEffectiveTime" column="activity_effective_time"/>
+        <result property="memberGradeId" column="member_grade_id"/>
+        <result property="memberGradeName" column="member_grade_name"/>
+        <result property="memberGradeLimit" column="member_grade_limit"/>
+        <result property="restrictionQuantity" column="restriction_quantity"/>
+        <result property="browseNum" column="browse_num"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="auditState" column="audit_state"/>
+        <result property="activityState" column="activity_state"/>
+        <result property="pointFlag" column="point_flag"/>
+        <result property="balanceFlag" column="balance_flag"/>
+        <result property="couponsFlag" column="coupons_flag"/>
+        <result property="reduceFlag" column="reduce_flag"/>
+        <result property="freeShippingFlag" column="free_shipping_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--后台秒杀活动分页查询-->
+    <select id="adminPage" resultType="com.leimingtech.modules.dto.seckill.AdminSeckillActivityPageDTO">
+        SELECT
+            lsa.id,
+            lsa.session_id,
+            lsa.activity_name,
+            lsa.activity_start_date,
+            lsa.activity_end_date,
+            lsa.activity_effective_time,
+            lsa.browse_num,
+            lsa.order_num,
+            lsa.audit_state,
+            lsa.activity_state,
+            (
+                SELECT COUNT(DISTINCT lag.goods_id) FROM lmshop_activity_goods lag
+                WHERE lag.del_flag = 0 AND lag.activity_id = lsa.id
+                AND lag.activity_type = 3
+            ) as goodsNum
+        FROM
+            lmshop_seckill_activity lsa
+        <where>
+            del_flag = 0
+            <if test="params.storeId != null and params.storeId != ''">
+                AND lsa.store_id = #{params.storeId}
+            </if>
+            <if test="params.activityName != null and params.activityName != ''">
+                AND lsa.activity_name LIKE CONCAT('%', #{params.activityName}, '%')
+            </if>
+            <if test="params.activityState != null and params.activityState != ''">
+                AND lsa.activity_state = #{params.activityState}
+            </if>
+            <if test="params.activityStartDate != null and params.activityStartDate != ''">
+                AND lsa.activity_start_date &gt;= #{params.activityStartDate}
+            </if>
+            <if test="params.activityEndDate != null and params.activityEndDate != ''">
+                AND lsa.activity_end_date &lt;= #{params.activityEndDate}
+            </if>
+        </where>
+        ORDER BY lsa.create_date DESC
+    </select>
+
+    <!--秒杀活动编辑-->
+    <update id="editSeckillActivity">
+        UPDATE
+            lmshop_seckill_activity
+        SET
+            session_id = #{sessionId},
+            activity_name = #{activityName},
+            activity_start_date = #{activityStartDate},
+            activity_end_date = #{activityEndDate},
+            activity_effective_time = #{activityEffectiveTime},
+            member_grade_id = #{memberGradeId},
+            member_grade_id = #{memberGradeId},
+            member_grade_name = #{memberGradeName},
+            member_grade_limit = #{memberGradeLimit},
+            restriction_quantity = #{restrictionQuantity},
+            restriction_quantity = #{restrictionQuantity},
+            browse_num = #{browseNum},
+            order_num = #{orderNum},
+            audit_state = #{auditState},
+            activity_state = #{activityState},
+            point_flag = #{pointFlag},
+            balance_flag = #{balanceFlag},
+            coupons_flag = #{couponsFlag},
+            reduce_flag = #{reduceFlag},
+            free_shipping_flag = #{freeShippingFlag},
+            updater = #{updater},
+            update_date = NOW()
+        WHERE
+            del_flag = 0
+        AND id = #{id}
+    </update>
+
+    <!--秒杀活动商品浏览记录+1-->
+    <update id="increaseBrowserNum">
+        UPDATE
+            lmshop_seckill_activity
+        SET
+            browse_num = browse_num + 1
+        WHERE del_flag = 0 and id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--秒杀订单+1-->
+    <update id="increaseOrderNum">
+        UPDATE
+        lmshop_seckill_activity
+        SET
+        order_num = order_num + 1
+        WHERE del_flag = 0 and id in
+        <foreach collection="ids" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.goods.spec.GoodsSpecDao">
+
+    <resultMap type="com.leimingtech.modules.dto.goods.spec.GoodsSpecDTO" id="goodsSpecMap">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="specSerial" column="spec_serial"/>
+        <result property="specName" column="spec_name"/>
+        <result property="specStorage" column="spec_storage"/>
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="specCostPrice" column="spec_cost_price"/>
+        <result property="specAttrName" column="spec_attr_name"/>
+        <result property="specAttrValueName" column="spec_attr_value_name"/>
+        <result property="isEnable" column="is_enable"/>
+        <result property="specMainPicture" column="spec_main_picture"/>
+        <result property="specSaleNum" column="spec_sale_num"/>
+        <result property="specShow" column="spec_show"/>
+
+    </resultMap>
+
+    <!--商品SKU列表所需字段映射-->
+    <resultMap id="mapSku" type="com.leimingtech.modules.dto.goods.spec.list.GoodsSpecListDTO">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="specSerial" column="spec_serial"/>
+        <!--<result property="specStorage" column="spec_storage"/>-->
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="specCostPrice" column="spec_cost_price"/>
+        <result property="specAttrName" column="spec_attr_name"/>
+        <result property="specMainPicture" column="spec_main_picture"/>
+        <result property="specShow" column="spec_show"/>
+        <result property="gcName" column="gc_name"/>
+    </resultMap>
+
+    <!--查询商品SKU列表-->
+    <select id="findListSku" resultMap="mapSku" parameterType="java.util.Map">
+        SELECT
+        lgs.id,
+        lgs.goods_id,
+        lgs.spec_sell_price,
+        lgs.spec_cost_price,
+        lgs.spec_attr_name,
+        lgs.spec_show,
+        lgs.spec_serial,
+        lgs.spec_main_picture,
+        lg.brand_id,
+        lg.brand_name,
+        lg.goods_name,
+        lg.gc_name
+        FROM
+        lmshop_goods_spec lgs
+        LEFT JOIN lmshop_goods lg ON lgs.goods_id = lg.id
+        WHERE
+        lgs.goods_id = #{goodsId}
+        <if test="specShow != null and '' != specShow">
+            and lgs.spec_show = #{specShow}
+        </if>
+        AND lgs.del_flag = 0 ORDER BY lgs.create_date desc
+    </select>
+
+    <!--根据规格id修改商品规格上下架状态-->
+    <update id="updateShowBySpecId">
+            update lmshop_goods_spec
+            SET spec_show = #{specShow} where id = #{id} and del_flag = 0
+    </update>
+
+    <!--根据商品id修改商品规格上下架状态-->
+    <update id="updateShowByGoodsId">
+            update lmshop_goods_spec
+            SET spec_show = #{specShow} where goods_id = #{goodsId} and del_flag = 0
+    </update>
+
+    <!--规格详细信息-->
+    <resultMap id="detailMap" type="com.leimingtech.modules.dto.goods.detail.GoodsSpecDetailDTO">
+        <result property="id" column="id"/>
+        <result property="specSerial" column="spec_serial"/>
+        <result property="specName" column="spec_name"/>
+        <result property="specStorage" column="spec_storage"/>
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="specWeight" column="spec_weight"/>
+        <result property="specCostPrice" column="spec_cost_price"/>
+        <result property="specAttrName" column="spec_attr_name"/>
+        <result property="specMainPicture" column="spec_main_picture"/>
+        <result property="specAttrValueName" column="spec_attr_value_name"/>
+        <collection property="specAttributeValueDetailDTOList" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.goods.detail.SpecAttributeValueDetailDTO">
+            <id property="specAttrValueId" column="specAttrValueId"/>
+            <result property="specAttrValue" column="spec_attr_value"/>
+            <result property="isSelect" column="is_select"/>
+            <result property="isMainValue" column="isMainValue"/>
+        </collection>
+    </resultMap>
+    <!--根据商品id查询规格详细信息-->
+    <select id="selectByGoodsId" parameterType="java.lang.Long" resultMap="detailMap">
+        SELECT
+            lgs.id,
+            lgs.spec_serial,
+            lgs.spec_name,
+            lgs.spec_attr_value_name,
+            lgs.spec_storage,
+            lgs.spec_sell_price,
+            lgs.spec_cost_price,
+            lgs.spec_attr_name,
+            lgs.spec_main_picture,
+            lgs.spec_weight,
+            lgsav.id as specAttrValueId ,
+            lgsav.spec_attr_value,
+            lgsav.is_select,
+            lgsav.is_main as isMainValue
+        FROM
+            lmshop_goods_spec lgs
+            LEFT JOIN lmshop_goods_spec_attr_rel lgsar ON lgs.id = lgsar.spec_id
+            LEFT JOIN lmshop_goods_spec_attr_value lgsav ON lgsar.spec_attr_value_id = lgsav.id
+        WHERE
+            lgs.goods_id = #{goodsId} and lgs.del_flag = 0
+
+    </select>
+
+    <!-- 根据商品ID查询SKU价格和库存列表(所需映射)-->
+    <resultMap id="priceMap" type="com.leimingtech.modules.dto.goods.price.GoodsSpecPriceAndStorageDTO">
+        <result property="id" column="id"/>
+        <result property="specSerial" column="spec_serial"/>
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="specCostPrice" column="spec_cost_price"/>
+        <result property="specStorage" column="spec_storage"/>
+        <collection property="specAttrValueDTOList" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.goods.price.SpecAttrValueDTO">
+            <id property="specAttrValueId" column="spec_attr_value_id"/>
+            <result property="specAttrId" column="spec_attr_id"/>
+            <result property="specAttrValue" column="spec_attr_value"/>
+        </collection>
+    </resultMap>
+
+    <!--根据商品ID查询SKU价格和库存列表-->
+    <select id="selectListByGoodsId" parameterType="java.lang.Long" resultMap="priceMap">
+        SELECT
+            gs.id ,
+            gs.spec_serial,
+            gs.spec_sell_price,
+            gs.spec_cost_price,
+            gs.spec_storage,
+            gsav.id as  spec_attr_value_id,
+            gsav.spec_attr_id,
+            gsav.spec_attr_value
+        FROM
+            lmshop_goods_spec gs
+            LEFT JOIN lmshop_goods_spec_attr_rel gspr ON gspr.spec_id = gs.id
+            LEFT JOIN lmshop_goods_spec_attr_value gsav ON gsav.id = gspr.spec_attr_value_id
+        WHERE
+            gspr.goods_id = #{goodsId} and gs.del_flag = 0
+        ORDER BY gsav.spec_attr_id
+    </select>
+
+    <select id="selectDefaultByGoodsId" parameterType="java.lang.Long" resultMap="priceMap">
+        SELECT
+            gs.id ,
+            gs.spec_serial,
+            gs.spec_sell_price,
+            gs.spec_cost_price,
+            gs.spec_storage
+        FROM
+            lmshop_goods_spec gs where gs.goods_id = #{goodsId} and del_flag = 0
+    </select>
+
+    <resultMap id="mobileMap" type="com.leimingtech.modules.dto.goods.detail.GoodsMobileDTO">
+        <result property="id" column="id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="specName" column="spec_name"/>
+        <result property="specSellPrice" column="spec_sell_price"/>
+        <result property="specAttrName" column="spec_attr_name"/>
+        <result property="saleNum" column="sale_num"/>
+        <result property="mobileBody" column="mobile_body"/>
+        <result property="specStorage" column="spec_storage"/>
+        <!--<result property="specSaleNum" column="spec_sale_num"/>-->
+        <collection property="specAttributePictureUrlDTOList"
+                    ofType="com.leimingtech.modules.dto.goods.detail.SpecAttributePictureUrlDTO"
+                    javaType="java.util.ArrayList">
+            <result property="isMainPicture" column="is_main_picture"/>
+            <result property="pictureUrl" column="picture_url"/>
+        </collection>
+    </resultMap>
+
+    <select id="findMobeilGoodsInfo" parameterType="java.lang.Long" resultMap="mobileMap">
+        SELECT
+            lgs.id,
+            lgs.goods_id,
+            lgs.spec_name,
+            lgs.spec_sell_price,
+            lgs.spec_attr_name,
+            lgs.spec_storage,
+            lgi.mobile_body,
+            lgi.sale_num,
+            gsap.is_main_picture,
+            gsap.picture_url
+        FROM
+            lmshop_goods_spec lgs
+            LEFT JOIN lmshop_goods_info lgi on lgi.goods_id = lgs.goods_id
+            LEFT JOIN lmshop_goods_spec_attr_rel gsar ON gsar.spec_id = lgs.id AND gsar.is_main = 1
+            LEFT JOIN lmshop_goods_spec_attr_pic gsap ON gsap.spec_attr_value_id = gsar.spec_attr_value_id
+        WHERE
+            lgs.id = #{specId}
+    </select>
+
+    <!--修改默认规格主图 -->
+    <update id="updateSpecMainPic">
+        update lmshop_goods_spec
+        SET spec_main_picture = #{specMainPic}
+        where id = #{id} and del_flag = 0
+    </update>
+
+    <select id="selectSkuDetailById" resultType="com.leimingtech.modules.dto.goods.detail.GoodsSkuDetailDTO"
+            parameterType="java.lang.Long">
+        SELECT
+            id,
+            goods_id,
+            spec_name,
+            spec_storage,
+            spec_sell_price,
+            spec_cost_price,
+            spec_attr_name
+        FROM
+            lmshop_goods_spec
+        WHERE
+            lmshop_goods_spec.id = #{specId}
+            AND del_flag = 0
+    </select>
+
+
+    <select id="selectCountStorage" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select SUM(spec_storage) from lmshop_goods_spec where goods_id = #{goodsId} and del_flag = 0
+    </select>
+
+    <select id="selectSpecIdsByGoodsIds" resultType="java.lang.Long">
+        SELECT
+        id
+        FROM
+        lmshop_goods_spec
+        WHERE
+        del_flag =0 AND
+        goods_id IN
+        <foreach collection="goodsIds" index="index" item="goodsId" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+    </select>
+    <!--根据规格id查询出商品ID 包括已经删除的商品-->
+    <select id="findGoodsIdBySpecId" resultType="java.lang.Long">
+        select goods_id
+        from lmshop_goods_spec
+        where id=#{specId}
+
+    </select>
+    <select id="getStoreIdBySpecId" resultType="com.leimingtech.modules.dto.goods.GoodsDTO">
+        select lg.store_id,lg.store_name,lg.goods_name
+        from lmshop_goods_spec lgs
+        left join lmshop_goods lg on lgs.goods_id=lg.id
+        where lgs.del_flag=0 and  lgs.id=#{specId}
+    </select>
+    <select id="findCount" resultType="java.lang.Integer">
+    SELECT
+	count( 1 )
+    FROM
+	lmshop_goods lg
+    WHERE
+	lg.del_flag = 0 and lg.goods_show=1
+	AND lg.store_id = #{storeId}
+
+	AND #{storage} >=(
+	SELECT
+		sum( spec_storage )
+	FROM
+		lmshop_goods_spec
+	WHERE
+	del_flag = 0 and spec_show=1
+	AND goods_id = lg.id)
+    </select>
+
+    <select id="findGoodsSpecById" resultType="com.leimingtech.modules.dto.goods.PartGoodsSpecDTO">
+        select lgs.*,lg.store_id,lg.brand_id
+        from lmshop_goods_spec lgs
+        left join lmshop_goods lg on lgs.goods_id=lg.id
+        where lgs.id = #{id}
+    </select>
+    <select id="getWeight" resultType="java.lang.Double">
+        select sum(spec_weight)
+        from lmshop_goods_spec
+        where id in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+
+    </select>
+    <insert id="insertBatch">
+        insert into lmshop_goods_spec (
+        id,
+        goods_id,
+        spec_serial,
+        spec_name,
+        spec_storage,
+        spec_sell_price,
+        spec_cost_price,
+        spec_attr_name,
+        spec_attr_value_name,
+        main_flag,
+        spec_main_picture
+        ) values
+        <foreach collection="goodsSpecEntities" item="goodsSpecEntity" separator=",">
+            (
+            #{goodsSpecEntity.id},
+            #{goodsSpecEntity.goodsId},
+            #{goodsSpecEntity.specSerial},
+            #{goodsSpecEntity.specName},
+            #{goodsSpecEntity.specStorage},
+            #{goodsSpecEntity.specSellPrice},
+            #{goodsSpecEntity.specCostPrice},
+            #{goodsSpecEntity.specAttrName},
+            #{goodsSpecEntity.specAttrValueName},
+            #{goodsSpecEntity.mainFlag},
+            #{goodsSpecEntity.specMainPicture}
+            )
+        </foreach>
+    </insert>
+
+    <!--批量修改库存-->
+    <update id="updateStockBatchByIdAndVersion">
+        UPDATE lmshop_goods_spec
+        <set>
+            <if test="entityList != null and entityList.size() > 0">
+                spec_storage =
+                <foreach collection="entityList" item="entity" index="index"
+                         separator=" " open="case id" close="end">
+                    when #{entity.id} then
+                    #{entity.specStorage}
+                </foreach>,
+                version =
+                <foreach collection="entityList" item="entity" index="index"
+                         separator=" " open="case id" close="end">
+                    when #{entity.id} then
+                    #{entity.version}
+                </foreach>
+            </if>
+        </set>
+        <where>
+            <if test="entityList != null and entityList.size() > 0">
+                id in
+                <foreach collection="entityList" item="entity" index="index"
+                         separator="," open="(" close=")">
+                    #{entity.id}
+                </foreach>
+                and version =
+                <foreach collection="entityList" item="entity" index="index"
+                         separator=" " open="case id" close="end">
+                    when #{entity.id} then
+                    #{entity.version}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <!--批量修改销量-->
+    <update id="updateSaleBatchByIdAndVersion">
+        UPDATE lmshop_goods_spec
+        SET
+        spec_sale_num =
+        <foreach collection="entityList" item="entity" index="index"
+                 separator=" " open="case id" close="end">
+            when #{entity.id} then
+            #{entity.specSaleNum}
+        </foreach>
+        ,version =
+        <foreach collection="entityList" item="entity" index="index"
+                 separator=" " open="case id" close="end">
+            when #{entity.id} then
+            #{entity.version}
+        </foreach>
+        where id in
+        <foreach collection="entityList" item="entity" index="index"
+                 separator="," open="(" close=")">
+            #{entity.id}
+        </foreach>
+        and version =
+        <foreach collection="entityList" item="entity" index="index"
+                 separator=" " open="case id" close="end">
+            when #{entity.id} then
+            #{entity.version}
+        </foreach>
+        and spec_sale_num >= 0
+    </update>
+</mapper>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.store.StoreAuditDao">
+
+    <resultMap type="com.leimingtech.modules.entity.store.StoreAuditEntity" id="storeAuditMap">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="storeIntro" column="store_intro"/>
+        <result property="storeLogo" column="store_logo"/>
+        <result property="storeType" column="store_type"/>
+        <result property="linkmanPhone" column="linkman_phone"/>
+        <result property="storeLinkman" column="store_linkman"/>
+        <result property="infoAuditStatus" column="info_audit_status"/>
+        <result property="infoAuditCause" column="info_audit_cause"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="whereStatement">
+        <where>
+            ls.del_flag = 0 and lsum.del_flag=0  and lsr.role_mark=1 and lsum.store_user_id is not null
+            <if test="storeId != null and storeId!=''">
+                AND ls.id = #{storeId}
+            </if>
+            <if test="storeName != null and storeName != ''">
+                AND ls.store_name LIKE concat('%', #{storeName}, '%')
+            </if>
+            <if test="gradeId != null and gradeId!=''">
+                AND ls.grade_id = #{gradeId}
+            </if>
+            <if test="storeType != null and storeType!=''">
+                AND ls.store_type = #{storeType}
+            </if>
+            <if test="startTime != null and startTime!=''">
+                AND ls.create_date &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime!=''">
+                AND ls.create_date &lt;= #{endTime}
+            </if>
+
+            <if test="userName != null and userName!=''">
+                AND lsu.account= #{userName}
+            </if>
+
+            <if test="audit != null and audit!=''">
+                AND ls.info_audit_status= #{audit}
+            </if>
+        </where>
+    </sql>
+    <insert id="saveStoreClass">
+        INSERT INTO lmshop_store_class_audit
+        (id,
+        store_id,
+        class_id
+        )
+        VALUES
+        <foreach collection="list" item="list" index="index" separator=",">
+            ( #{list.id},
+            #{list.storeId},
+            #{list.classId} )
+        </foreach>
+    </insert>
+    <update id="updateStoreStatus">
+        update lmshop_store_audit set
+        info_audit_status=#{registerAuditStatus},
+        info_audit_cause=#{registerAuditCause},
+        update_date =NOW()
+        where del_flag=0 and info_audit_status=10 and id=#{id}
+
+
+    </update>
+    <delete id="deleteByStoreId">
+         delete from lmshop_store_class where store_id=#{id}
+    </delete>
+    <select id="getInfoByStoreId" resultType="com.leimingtech.modules.dto.store.StoreAuditDTO">
+        select *
+        from lmshop_store_audit
+        where del_flag=0 and store_id=#{storeId}
+        <if test="createDate!=null and createDate!=''">
+            and create_date=#{createDate}
+        </if>
+        order by update_date desc
+        limit 1
+    </select>
+    <select id="getStoreClass" resultType="java.lang.Long">
+        select class_id
+        from lmshop_store_class_audit
+        where del_flag=0 and id=#{storeId}
+    </select>
+    <select id="auditPage" resultType="com.leimingtech.modules.dto.store.StoreAuditPageDTO">
+        select
+        ls.id,ls.store_id,ls.store_name,ls.store_logo,ls.store_type,ls.create_date,lsu.account
+        as account,ls.info_audit_status,ls.store_linkman
+        from lmshop_store_audit ls
+        LEFT JOIN lmshop_store_user_manage lsum on ls.store_id=lsum.store_id
+        LEFT JOIN lmshop_store_user lsu on lsum.store_user_id = lsu.id
+        left join lmshop_store_role lsr on lsr.id=lsum.role_id
+        <include refid="whereStatement"/>
+        order by ls.info_audit_status asc,ls.create_date desc
+
+    </select>
+</mapper>

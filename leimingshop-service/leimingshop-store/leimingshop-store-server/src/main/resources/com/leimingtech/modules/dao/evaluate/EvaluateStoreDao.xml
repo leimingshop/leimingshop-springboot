@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.evaluate.EvaluateStoreDao">
+
+    <resultMap type="com.leimingtech.modules.entity.evaluate.EvaluateStoreEntity" id="evaluateStoreMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="memberId" column="member_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="sevalDesccredit" column="seval_desccredit"/>
+        <result property="sevalServicecredit" column="seval_servicecredit"/>
+        <result property="sevalDeliverycredit" column="seval_deliverycredit"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!--动态评分的算法-->
+    <sql id="Base_Column_List">
+		AVG(seval_desccredit) AS seval_desccredit,
+		AVG(seval_servicecredit) AS seval_servicecredit,
+		AVG(seval_deliverycredit) AS seval_deliverycredit,
+		COUNT(id) AS count
+	</sql>
+
+
+    <!--动态获取店铺的动态评分-->
+    <select id="findAvgPoint" resultType="com.leimingtech.modules.dto.evaluate.FindEvaluateStoreDTO">
+        select
+        <include refid="Base_Column_List"/>
+        from lmshop_evaluate_store where store_id = #{id} and
+        del_flag = 0
+
+    </select>
+
+
+</mapper>

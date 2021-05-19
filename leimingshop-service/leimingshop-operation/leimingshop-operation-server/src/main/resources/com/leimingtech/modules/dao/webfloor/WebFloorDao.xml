@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.webfloor.WebFloorDao">
+
+    <resultMap type="com.leimingtech.modules.entity.webfloor.WebFloorEntity" id="webFloorMap">
+        <result property="id" column="id"/>
+        <result property="floorName" column="floor_name"/>
+        <result property="showType" column="show_type"/>
+        <result property="floorImg" column="floor_img"/>
+        <result property="actionType" column="action_type"/>
+        <result property="actionParams" column="action_params"/>
+        <result property="nameIcon" column="name_icon"/>
+        <result property="actionName" column="action_name"/>
+        <result property="isShow" column="is_show"/>
+        <result property="sort" column="sort"/>
+        <result property="advKey" column="adv_key"/>
+        <result property="floorType" column="floor_type"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsClassName" column="goods_class_name"/>
+        <result property="classIds" column="class_ids"/>
+        <result property="storeId" column="store_id"/>
+        <result property="floorStyle" column="floor_style"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createDate" column="create_date"/>
+        <result property="creator" column="creator"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="updater" column="updater"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="webFloorMapColumnList">
+		id,
+		floor_name,
+		show_type,
+		floor_img,
+		action_type,
+		action_params,
+		name_icon,
+		action_name,
+		is_show,
+		sort,
+		adv_key,
+		goods_name,
+		goods_class_name,
+		class_ids,
+		del_flag,
+		store_id,
+		create_date,
+		creator,
+		update_date,
+		updater,
+		version
+	</sql>
+
+    <sql id="whereStatement">
+        <where>
+            <if test="floorName != null and floorName != ''">
+                AND floor_name LIKE concat('%', #{floorName}, '%')
+            </if>
+            <if test="isShow != null and isShow != ''">
+                AND is_show = #{isShow}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="whereStatementDel">
+        <where>
+            del_flag = 0
+            <if test="floorName != null and floorName != ''">
+                AND floor_name LIKE concat('%', #{floorName}, '%')
+            </if>
+            <if test="isShow != null and isShow != ''">
+                AND is_show = #{isShow}
+            </if>
+            <if test="storeId != null">
+                AND store_id = #{storeId}
+            </if>
+            <if test="storeId == null">
+                AND store_id is null
+            </if>
+            <if test="floorType != null">
+                AND floor_type = #{floorType}
+            </if>
+        </where>
+    </sql>
+
+    <!--分页查询-->
+    <select id="findShopWebFloorPagerList" resultMap="webFloorMap">
+        SELECT
+        <include refid="webFloorMapColumnList" />
+        FROM lmshop_web_floor
+        <include refid="whereStatementDel" />
+        ORDER BY sort ASC,
+        create_date DESC
+    </select>
+    <select id="findShopWebFloorPage" resultMap="webFloorMap">
+        SELECT
+        <include refid="webFloorMapColumnList" />
+        FROM lmshop_web_floor
+        <where>
+            del_flag = 0
+            <if test="params.floorName != null and params.floorName != ''">
+                AND floor_name LIKE concat('%', #{params.floorName}, '%')
+            </if>
+            <if test="params.isShow != null and params.isShow != ''">
+                AND is_show = #{params.isShow}
+            </if>
+            <if test="params.storeId != null ">
+                AND store_id = #{params.storeId}
+            </if>
+            <if test="params.storeId == null ">
+                AND store_id is null
+            </if>
+            <if test="params.floorType != null ">
+                AND floor_type =#{params.floorType}
+            </if>
+        </where>
+        ORDER BY sort ASC,
+        create_date DESC
+    </select>
+
+    <select id="findH5WebFloor" resultType="com.leimingtech.modules.entity.webfloor.WebFloorEntity">
+    select
+    	a.id,
+        a.floor_name,
+		a.show_type,
+		a.floor_img,
+        <if test="storeId!=null">
+            a.action_params,
+        </if>
+		a.action_type,
+        a.floor_style,
+		case when
+		action_type ='searchGoodsByClass'
+		then
+		(select class_id from lmshop_goods_class_custom where id =a.action_params) else a.action_params end as action_params,
+		a.name_icon,
+		a.action_name,
+		a.is_show,
+		a.sort,
+		a.adv_key,
+		a.goods_name,
+        a.store_id,
+        a.floor_type,
+		a.goods_class_name,
+		a.class_ids
+    from lmshop_web_floor a
+    where a.del_flag = 0 and a.is_show = 1
+    <if test="storeId!=null">
+       and  a.store_id=#{storeId}
+    </if>
+    <if test="storeId==null">
+        and  a.store_id IS NULL
+    </if>
+    order by a.sort asc,a.create_date desc
+
+    </select>
+
+    <!--楼层编辑页面修改-->
+    <update id="editShopWebFloorPagerList">
+        update lmshop_web_floor
+        <set>
+            floor_name = #{floorName},
+            action_type = #{actionType},
+            action_params = #{actionParams},
+            name_icon = #{nameIcon},
+            is_show = #{isShow},
+            sort = #{sort},
+            goods_name = #{goodsName},
+            goods_class_name = #{goodsClassName},
+            class_ids = #{classIds},
+            update_date = #{updateDate},
+            updater = #{updater},
+            floor_style=#{floorStyle}
+        </set>
+        where id = #{id}
+ </update>
+
+</mapper>

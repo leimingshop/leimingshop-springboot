@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.transport.TransportMessageDao">
+
+    <resultMap type="com.leimingtech.modules.entity.transport.TransportMessageEntity" id="transportMessageMap">
+        <result property="id" column="id"/>
+        <result property="state" column="state"/>
+        <result property="ischeck" column="ischeck"/>
+        <result property="com" column="com"/>
+        <result property="nu" column="nu"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <select id="getProgressList" resultType="com.leimingtech.modules.dto.transport.TransportMessageDTO">
+        SELECT id,state,ischeck,com,nu,creator,create_date,updater,update_date,del_flag,version FROM lmshop_transport_message
+        WHERE state IN (10,0,5)
+    </select>
+
+
+</mapper>

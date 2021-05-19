@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.dao.message.MessageTemplateDao">
+
+    <resultMap type="com.leimingtech.entity.message.MessageTemplateEntity" id="shopMessageTemplateMap">
+        <result property="id" column="id"/>
+        <result property="messageTypeId" column="message_type_id"/>
+        <result property="isSendInner" column="is_send_inner"/>
+        <result property="tempTitle" column="temp_title"/>
+        <result property="tempInnerContent" column="temp_inner_content"/>
+        <result property="isSendSms" column="is_send_sms"/>
+        <result property="tempSmsContent" column="temp_sms_content"/>
+        <result property="tempSmsCode" column="temp_sms_code"/>
+        <result property="tempCode" column="temp_code"/>
+        <result property="selectValue" column="select_value"/>
+        <result property="isSendUmeng" column="is_send_umeng"/>
+        <result property="umengTitle" column="umeng_title"/>
+        <result property="tempUmengContent" column="temp_umeng_content"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <update id="updateIsSend" parameterType="map">
+        UPDATE sys_message_template
+        <set>
+            <if test="param.isSendInner != null and param.isSendInner != ''">
+                is_send_inner=#{param.isSendInner},
+            </if>
+            <if test="param.isSendSms != null and param.isSendSms != ''">
+                is_send_sms=#{param.isSendSms},
+            </if>
+            <if test="param.isSendUmeng != null and param.isSendUmeng != ''">
+                is_send_umeng=#{param.isSendUmeng},
+            </if>
+            <if test="param.templateType != null and param.templateType ==0">
+                <if test="param.messageContent != null and param.messageContent != ''">
+                    temp_inner_content=#{param.messageContent},
+                </if>
+                <if test="param.messageTitle != null and param.messageTitle != ''">
+                    temp_title=#{param.messageTitle},
+                </if>
+            </if>
+            <if test="param.templateType != null and param.templateType ==1">
+                <if test="param.messageContent != null and param.messageContent != ''">
+                    temp_umeng_content=#{param.messageContent},
+                </if>
+                <if test="param.messageTitle != null and param.messageTitle != ''">
+                    umeng_title=#{param.messageTitle},
+                </if>
+            </if>
+            <if test="param.templateType != null and param.templateType ==2">
+                <if test="param.messageTitle != null and param.messageTitle != ''">
+                    temp_sms_code=#{param.messageTitle},
+                </if>
+            </if>
+            <if test="param.isSendWechat != null and param.isSendWechat != ''">
+                is_send_wechat=#{param.isSendWechat},
+            </if>
+
+            <if test="param.wechatTemplateId != null and param.wechatTemplateId != ''">
+                wechat_template_id=#{param.wechatTemplateId},
+            </if>
+        </set>
+        <where>
+            <if test="param.id != null and param.id != ''">
+                id=#{param.id}
+            </if>
+            <if test="param.messageId != null and param.messageId != ''">
+                id=#{param.messageId}
+            </if>
+        </where>
+
+    </update>
+
+    <select id="listNoPage" resultType="com.leimingtech.dto.message.ShopMessageListVO">
+
+      SELECT smt.id AS id,smt.`is_send_inner` AS IsSendInner ,smt.`temp_title` AS tempTitle,
+            smt.`temp_inner_content` AS tempInnerContent,smt.`is_send_sms` AS isSendSms,
+            smt.`temp_sms_content` AS tempSmsContent,smt.`temp_sms_code` AS tempSmsCode,
+            smt.is_send_umeng AS isSendUmeng,smt.`umeng_title` AS umengTitle,
+            smt.`temp_umeng_content` AS tempUmengContent,
+            smt.is_send_wechat as isSendWechat,
+	        smt.wechat_template_id as wechatTemplateId,
+
+            CASE WHEN smt.`temp_inner_content` IS NULL THEN 0 ELSE 1 END AS innerCanOpen,
+            CASE WHEN smt.`temp_umeng_content` IS NULL THEN 0 ELSE 1 END AS umengCanOpen,
+            CASE WHEN smt.`temp_sms_code` IS NULL THEN 0 ELSE 1 END AS smsCanOpen
+            FROM  sys_message_template smt
+           WHERE smt.`del_flag`=0 ORDER BY smt.create_date ASC
+    </select>
+
+    <select id="selectLabel" resultType="string">
+       SELECT st.`label_name` FROM lmshop_message_template_label st WHERE st.`del_flag`=0
+    </select>
+
+    <select id="selectCount" resultType="int" parameterType="long">
+        SELECT COUNT(*) FROM sys_message_template st WHERE st.`message_type_id`=#{messageId}
+    </select>
+    <insert id="save" parameterType="map">
+        INSERT INTO sys_message_template
+                (id,
+                message_type_id,
+                is_send_inner,
+                temp_title,
+                temp_inner_content
+                ) values
+         (
+                  #{param.id},
+                 #{param.messageId},
+                 0,
+                 #{param.messageTitle},
+                 #{param.messageContent})
+   </insert>
+
+    <update id="updateByMessageId" parameterType="map">
+        UPDATE sys_message_template SET
+        <if test="param.templateType == 0">
+
+            temp_title = #{param.messageTitle},
+            temp_inner_content = #{param.messageContent}
+        </if>
+        <if test="param.templateType == 1">
+
+            umeng_title = #{param.messageTitle},
+            temp_umeng_content = #{param.messageContent}
+        </if>
+        <if test="param.templateType == 2">
+
+            temp_sms_code = #{param.messageTitle},
+            temp_sms_content = #{param.messageContent}
+        </if>
+        where message_type_id=#{param.messageId}
+    </update>
+
+
+    <insert id="saveSms" parameterType="map">
+        INSERT INTO sys_message_template
+                (id,
+                message_type_id,
+                is_send_sms,
+                temp_sms_content,
+                temp_sms_code
+                ) values
+         (
+                  #{param.id},
+                 #{param.messageId},
+                 0,
+                 #{param.messageContent},
+                 #{param.messageTitle})
+   </insert>
+    <insert id="saveApp" parameterType="map">
+        INSERT INTO sys_message_template
+                (id,
+                message_type_id,
+                is_send_umeng,
+                umeng_title,
+                temp_umeng_content
+                ) values
+         (
+                  #{param.id},
+                 #{param.messageId},
+                 0,
+                 #{param.messageTitle},
+                 #{param.messageContent})
+   </insert>
+
+
+    <insert id="saveBachShopMessageTemplate">
+        INSERT INTO sys_message_template
+        (id,
+        message_type_id,
+        is_send_inner,
+        temp_title,
+        temp_inner_content,
+        is_send_sms,
+        temp_sms_content,
+        temp_sms_code,
+        temp_code,
+        select_value,
+        is_send_umeng,
+        umeng_title,
+        temp_umeng_content,
+        creator,
+        create_date,
+        updater,
+        update_date,
+        del_flag,
+        version )
+        VALUES
+        <foreach collection="list" item="shopMessageTemplate" index="index" separator=",">
+            ( #{shopMessageTemplate.id},
+            #{shopMessageTemplate.messageTypeId},
+            #{shopMessageTemplate.isSendInner},
+            #{shopMessageTemplate.tempTitle},
+            #{shopMessageTemplate.tempInnerContent},
+            #{shopMessageTemplate.isSendSms},
+            #{shopMessageTemplate.tempSmsContent},
+            #{shopMessageTemplate.tempSmsCode},
+            #{shopMessageTemplate.tempCode},
+            #{shopMessageTemplate.selectValue},
+            #{shopMessageTemplate.isSendUmeng},
+            #{shopMessageTemplate.umengTitle},
+            #{shopMessageTemplate.tempUmengContent},
+            #{shopMessageTemplate.creator},
+            #{shopMessageTemplate.createDate},
+            #{shopMessageTemplate.updater},
+            #{shopMessageTemplate.updateDate},
+            #{shopMessageTemplate.delFlag},
+            #{shopMessageTemplate.version} )
+        </foreach>
+
+    </insert>
+
+
+    <update id="updateBachShopMessageTemplate">
+        UPDATE sys_message_template SET
+        id=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.id}
+        </foreach>
+        ,message_type_id=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.messageTypeId}
+        </foreach>
+        ,is_send_inner=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.isSendInner}
+        </foreach>
+        ,temp_title=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.tempTitle}
+        </foreach>
+        ,temp_inner_content=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.tempInnerContent}
+        </foreach>
+        ,is_send_sms=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.isSendSms}
+        </foreach>
+        ,temp_sms_content=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.tempSmsContent}
+        </foreach>
+        ,temp_sms_code=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.tempSmsCode}
+        </foreach>
+        ,temp_code=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.tempCode}
+        </foreach>
+        ,select_value=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.selectValue}
+        </foreach>
+        ,is_send_umeng=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.isSendUmeng}
+        </foreach>
+        ,umeng_title=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.umengTitle}
+        </foreach>
+        ,temp_umeng_content=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.tempUmengContent}
+        </foreach>
+        ,creator=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.creator}
+        </foreach>
+        ,create_date=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.createDate}
+        </foreach>
+        ,updater=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.updater}
+        </foreach>
+        ,update_date=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.updateDate}
+        </foreach>
+        ,del_flag=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.delFlag}
+        </foreach>
+        ,version=
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator=" " open="case id" close="end">
+            when #{shopMessageTemplate.id} then
+            #{shopMessageTemplate.version}
+        </foreach>
+        where id in
+        <foreach collection="list" item="shopMessageTemplate" index="index"
+                 separator="," open="(" close=")">
+            #{shopMessageTemplate.id}
+        </foreach>
+    </update>
+</mapper>

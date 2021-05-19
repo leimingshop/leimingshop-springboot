@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.topic.TopicDao">
+
+    <resultMap type="com.leimingtech.modules.entity.topic.TopicEntity" id="topicMap">
+        <result property="id" column="ID"/>
+        <result property="creator" column="CREATOR"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <result property="updater" column="UPDATER"/>
+        <result property="updateDate" column="UPDATE_DATE"/>
+        <result property="delFlag" column="DEL_FLAG"/>
+        <result property="version" column="VERSION"/>
+        <result property="topicName" column="TOPIC_NAME"/>
+        <result property="topicPicturePc" column="TOPIC_PICTURE_PC"/>
+        <result property="topicPictureH5" column="TOPIC_PICTURE_H5"/>
+    </resultMap>
+    <update id="deleteBatchByTopicId">
+         update lmshop_topic_rel set  DEL_FLAG = 1  where TOPIC_ID = #{id}
+
+    </update>
+    <select id="topicPage" resultType="com.leimingtech.modules.dto.topic.TopicPageDTO">
+        select it.TOPIC_NAME,it.CREATE_DATE,it.ID,
+        (select count(1) from lmshop_topic_rel where del_flag= 0 and TOPIC_ID=it.ID) as goodsNum
+        from lmshop_topic it
+        where it.del_flag=0
+        <if test="params.topicName != null and params.topicName != ''">
+           and  it.TOPIC_NAME LIKE  CONCAT(CONCAT('%',#{params.topicName}),'%')
+        </if>
+    </select>
+
+
+</mapper>

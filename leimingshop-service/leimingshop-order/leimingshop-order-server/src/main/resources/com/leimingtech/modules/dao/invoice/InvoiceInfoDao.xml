@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.invoice.InvoiceInfoDao">
+
+    <resultMap type="com.leimingtech.modules.entity.invoice.InvoiceInfoEntity" id="invoiceInfoMap">
+        <result property="id" column="id"/>
+        <result property="invoiceId" column="invoice_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="spu" column="spu"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsNum" column="goods_num"/>
+        <result property="specId" column="spec_id"/>
+        <result property="specInfo" column="spec_info"/>
+        <result property="specPayPrice" column="spec_pay_price"/>
+        <result property="specTotalPrice" column="spec_total_price"/>
+        <result property="firstGcId" column="first_gc_id"/>
+        <result property="firstGcName" column="first_gc_name"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+    <select id="selectGoodsIdsByInvoiceId" resultType="java.lang.Long">
+        select goods_id from  lmshop_invoice_info where invoice_id = #{id} and del_flag = 0
+
+    </select>
+
+
+</mapper>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.leimingtech.modules.dao.coupons.MemberCouponsDao">
+
+    <resultMap type="com.leimingtech.modules.entity.coupons.MemberCouponsEntity" id="memberCouponsMap">
+        <result property="id" column="id"/>
+        <result property="activityId" column="activity_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="couponsState" column="coupons_state"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="useDate" column="use_date"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="orderId" column="order_id"/>
+        <result property="goodsAmount" column="goods_amount"/>
+        <result property="orderAmount" column="order_amount"/>
+        <result property="creator" column="creator"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updater" column="updater"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <resultMap type="com.leimingtech.modules.dto.coupons.MemberCouponsIndexDTO" id="memberCouponsIndexMap">
+        <result property="id" column="id"/>
+        <result property="activityId" column="activity_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="couponsType" column="coupons_type"/>
+        <result property="limitAmount" column="limit_amount"/>
+        <result property="faceValue" column="face_value"/>
+        <result property="couponsState" column="coupons_state"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="useDate" column="use_date"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="orderId" column="order_id"/>
+        <result property="activityGoodsScope" column="activity_goods_scope"/>
+        <result property="createDate" column="create_date"/>
+        <collection property="goodsList" javaType="java.util.ArrayList"
+                    ofType="com.leimingtech.modules.dto.coupons.CouponsGoodsDTO">
+            <id property="id" column="couponsGoodsId" />
+            <result property="activityId" column="activity_id" />
+            <result property="activityGoodsScope" column="activity_goods_scope" />
+            <result property="relationId" column="relation_id" />
+            <result property="relationName" column="relation_name" />
+        </collection>
+    </resultMap>
+
+    <sql id="base_column">
+        lmc.id, lmc.activity_id, lmc.member_id, lmc.member_name, lmc.create_date, lmc.use_date, lmc.goods_amount, lmc.order_amount, lmc.coupons_state,
+        lmc.start_date, lmc.end_date, lmc.order_id, lmc.order_sn
+    </sql>
+
+    <select id="adminPage" resultType="com.leimingtech.modules.dto.coupons.AdminMemberCouponsPageDTO">
+        select
+            <include refid="base_column"/>
+        from lmshop_member_coupons lmc
+        left join lmshop_coupons_activity lca
+        on lmc.activity_id = lca.id
+        <where>
+            lmc.del_flag = 0
+            <if test="params.activityId != null and params.activityId != ''">
+                and lmc.activity_id = #{params.activityId}
+            </if>
+            <if test="params.storeId != null and params.storeId != ''">
+                and lca.store_id = #{params.storeId}
+            </if>
+            <if test="params.memberName != null and params.memberName != ''">
+                and lmc.member_name like concat('%',#{params.memberName},'%')
+            </if>
+            <if test="params.orderSn != null and params.orderSn != ''">
+                and lmc.order_sn = #{params.orderSn}
+            </if>
+            <if test="params.couponsState != null and params.couponsState != '' and params.couponsState == 0">
+                and lmc.coupons_state in (0,1)
+            </if>
+        <if test="params.couponsState != null and params.couponsState != '' and params.couponsState == 1">
+                and lmc.coupons_state in (0,1)
+            </if>
+            <if test="params.couponsState == 2">
+                and lmc.coupons_state = #{params.couponsState}
+            </if>
+            <if test="params.couponsState == 3">
+                and lmc.coupons_state = #{params.couponsState}
+            </if>
+        </where>
+        <choose>
+            <when test="params.couponsState == 2">
+                order by lmc.use_date desc
+            </when>
+            <otherwise>
+                order by lmc.create_date desc
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <!--获取front会员优惠券es数据-->
+    <select id="selectAllFrontMemberCoupons" resultMap="memberCouponsIndexMap">
+        select lmc.id, lmc.activity_id, lmc.member_id, lmc.member_name, lca.store_id, lca.store_name,
+            lca.coupons_type, lca.limit_amount, lca.face_value, lmc.coupons_state, lmc.start_date, lmc.end_date,
+            lmc.use_date, lmc.order_sn, lmc.order_id, lca.activity_goods_scope, lcg.relation_id, lcg.relation_name,
+            lmc.create_date, lcg.id as couponsGoodsId
+        from lmshop_member_coupons lmc
+        left join lmshop_coupons_activity lca
+        on lmc.activity_id = lca.id
+        left join lmshop_coupons_goods lcg
+        on lmc.activity_id = lcg.activity_id
+        where lmc.del_flag = 0 and (lcg.del_flag = 0 or lcg.del_flag is null) and lca.id is not null
+    </select>
+
+    <!--获取front会员优惠券es数据-->
+    <select id="selectMemberCouponsAndGoodsList" resultMap="memberCouponsIndexMap">
+        select lmc.id, lmc.activity_id, lmc.member_id, lmc.member_name, lca.store_id, lca.store_name,
+            lca.coupons_type, lca.limit_amount, lca.face_value, lmc.coupons_state, lmc.start_date, lmc.end_date,
+            lmc.use_date, lmc.order_sn, lmc.order_id, lca.activity_goods_scope, lcg.relation_id, lcg.relation_name,
+            lmc.create_date, lcg.id as couponsGoodsId
+        from lmshop_member_coupons lmc
+        left join lmshop_coupons_activity lca
+        on lmc.activity_id = lca.id
+        left join lmshop_coupons_goods lcg
+        on lmc.activity_id = lcg.activity_id
+        where lmc.del_flag = 0 and (lcg.del_flag = 0 or lcg.del_flag is null) and lca.id is not null
+        and lmc.id = #{id}
+    </select>
+
+    <!--批量返还优惠券-->
+    <update id="useCouponsBatch">
+        UPDATE lmshop_member_coupons SET
+        coupons_state=
+        <foreach collection="list" item="memberCoupons" index="index"
+                 separator=" " open="case id" close="end">
+            when #{memberCoupons.id} then
+            #{memberCoupons.couponsState}
+        </foreach>
+        ,use_date = NOW()
+        ,update_date = NOW()
+        ,order_id=
+        <foreach collection="list" item="memberCoupons" index="index"
+                 separator=" " open="case id" close="end">
+            when #{memberCoupons.id} then
+            #{memberCoupons.orderId}
+        </foreach>
+        ,order_sn=
+        <foreach collection="list" item="memberCoupons" index="index"
+                 separator=" " open="case id" close="end">
+            when #{memberCoupons.id} then
+            #{memberCoupons.orderSn}
+        </foreach>
+        ,order_amount=
+        <foreach collection="list" item="memberCoupons" index="index"
+                 separator=" " open="case id" close="end">
+            when #{memberCoupons.id} then
+            #{memberCoupons.orderAmount}
+        </foreach>
+        ,goods_amount=
+        <foreach collection="list" item="memberCoupons" index="index"
+                 separator=" " open="case id" close="end">
+            when #{memberCoupons.id} then
+            #{memberCoupons.goodsAmount}
+        </foreach>
+        where
+        del_flag = 0 and coupons_state = 1
+        and member_id =
+        <foreach collection="list" item="memberCoupons" index="index"
+                 separator=" " open="case id" close="end ">
+            when #{memberCoupons.id} then
+            #{memberCoupons.memberId}
+        </foreach>
+        and id in
+        <foreach collection="list" item="memberCoupons" index="index"
+                 separator="," open="(" close=")">
+            #{memberCoupons.id}
+        </foreach>
+    </update>
+
+    <!--批量使用优惠券-->
+    <update id="returnCouponsBatch">
+        UPDATE lmshop_member_coupons SET
+        coupons_state=
+        <foreach collection="list" item="memberCoupons" index="index"
+                 separator=" " open="case id" close="end">
+            when #{memberCoupons.id} then
+            #{memberCoupons.couponsState}
+        </foreach>
+        ,order_sn = null,
+        order_id = null,
+        order_amount = null,
+        goods_amount = null,
+        use_date = null,
+        update_date = NOW()
+        where
+        del_flag = 0
+        and member_id =
+        <foreach collection="list" item="memberCoupons" index="index"
+                 separator=" " open="case id" close="end ">
+            when #{memberCoupons.id} then
+            #{memberCoupons.memberId}
+        </foreach>
+        and id in
+        <foreach collection="list" item="memberCoupons" index="index"
+                 separator="," open="(" close=")">
+            #{memberCoupons.id}
+        </foreach>
+    </update>
+</mapper>
