@@ -1,0 +1,124 @@
+{
+  "name": "leimingshop-cloud-admin",
+  "version": "1.1.1",
+  "private": true,
+  "scripts": {
+    "release": "standard-version --no-verify",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "build:sit": "vue-cli-service build --mode production.sit",
+    "build:uat": "vue-cli-service build --mode production.uat",
+    "build:prod": "vue-cli-service build --mode production",
+    "build:press": "vue-cli-service build --mode production.press",
+    "lint": "vue-cli-service lint",
+    "et": "node_modules/.bin/et",
+    "et:init": "node_modules/.bin/et -i",
+    "et:list": "gulp themes"
+  },
+  "dependencies": {
+    "awe-dnd": "^0.3.4",
+    "axios": "^0.18.0",
+    "babel-plugin-component": "^1.1.1",
+    "clipboard": "^2.0.4",
+    "echarts": "^4.5.0",
+    "element-theme": "^2.0.1",
+    "element-theme-chalk": "^2.4.7",
+    "element-ui": "2.8.2",
+    "gulp-autoprefixer": "^6.0.0",
+    "gulp-clean-css": "^3.10.0",
+    "gulp-load-plugins": "^1.5.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "jquery": "^3.4.1",
+    "js-cookie": "^2.2.0",
+    "jsencrypt": "^3.0.0-rc.1",
+    "lodash": "^4.17.11",
+    "node-sass": "^4.9.3",
+    "qs": "^6.5.2",
+    "quill": "^1.3.6",
+    "sass-loader": "^7.1.0",
+    "screenfull": "^3.3.3",
+    "svg-sprite-loader": "^4.1.1",
+    "v-charts": "^1.19.0",
+    "vue": "^2.5.17",
+    "vue-cropperjs": "^3.0.0",
+    "vue-i18n": "^8.1.0",
+    "vue-photo-preview": "^1.1.3",
+    "vue-quill-editor": "^3.0.6",
+    "vue-router": "^3.0.1",
+    "vuedraggable": "^2.23.0",
+    "vuex": "^3.0.1",
+    "webpack": "^4.44.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^9.1.1",
+    "@commitlint/config-conventional": "^9.1.1",
+    "@vue/cli-plugin-babel": "^3.0.4",
+    "@vue/cli-plugin-eslint": "^3.0.4",
+    "@vue/cli-service": "^3.0.4",
+    "@vue/eslint-config-standard": "^3.0.4",
+    "commitizen": "^4.1.2",
+    "cz-customizable": "^6.3.0",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "standard-version": "^8.0.2",
+    "vue-image-swipe": "^1.0.5",
+    "vue-loader": "^15.9.3",
+    "vue-template-compiler": "^2.5.17"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-customizable"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "lint && lint:fix",
+      "prettier --write"
+    ]
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "@vue/standard"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "engines": {
+    "node": ">= 8.11.1",
+    "npm": ">= 5.6.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 10"
+  ],
+  "element-theme": {
+    "config": "./src/element-ui/theme-variables.scss",
+    "out": "./src/element-ui/theme",
+    "minimize": true,
+    "browsers": [
+      "> 1%",
+      "last 2 versions",
+      "not ie <= 10"
+    ]
+  }
+}

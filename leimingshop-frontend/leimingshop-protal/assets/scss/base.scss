@@ -1,0 +1,83 @@
+//表头统一黑色字
+.aui-wrapper .el-table th {
+    color: #303133;
+    background-color: #f5f7fa;
+}
+//所有按钮都是方形的
+.el-button {
+    border-radius: 4px !important;
+}
+//form里的 查询  重置  统一宽高
+.el-form--inline {
+    .el-input {
+        width: 160px !important;
+        //height: 35px !important;
+        .el-input__inner{
+            height: 35px;
+            line-height: 35px;
+        }
+    }
+    .el-form-item {
+        margin-right: 40px !important;
+    }
+}
+.el-button+.el-button {
+    margin-right: 0px;
+    margin-left: 20px;
+}
+//面包屑  
+.el-breadcrumb {
+    margin-bottom: 20px !important;
+}
+//table  的删除字体按钮
+.artdanger {  //删除  红
+    color: #ff0000 !important;
+}
+.artclose{   //关闭/下架     灰
+    // color: #909399;
+    color:#e6a23c;
+} 
+.artstart{  //启用/开启    绿色
+    color: #67c23a;
+}
+.artdisable{ //禁用 ，拒绝   橙
+    color:#e6a23c;
+}
+//页面输入  剧中
+.artinputcontent{
+    width: 1000px;
+    margin: 30px auto;
+//  margin-top: 30px;
+//  margin-left: 50px;
+}
+.el-form-item__label{
+    padding-right: 0px;
+}
+//form
+.grayLine {
+    margin-bottom: 8px;
+    // margin-top: 10px;
+}
+//时间输入框   统一缩小
+.el-date-editor--datetimerange.el-input__inner {
+    width: 375px;
+}
+.el-form-item__label{
+    color: #333;
+}
+//分页
+.aui-wrapper .el-pagination {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.aui-navbar__menu_right .el-menu-item{
+    background: transparent !important;
+    color: #fff !important;
+    span{
+        color: #fff !important;
+    }
+}
+//富文本里的img
+.ql-snow .ql-editor img {
+    width: 120px;
+}

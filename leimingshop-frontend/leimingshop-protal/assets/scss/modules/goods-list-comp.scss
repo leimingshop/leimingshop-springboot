@@ -1,0 +1,110 @@
+/deep/ .all-categories {
+        width: 1200px;
+        box-sizing: border-box;
+        margin: 0 auto;
+
+        .basic-style {
+                width: 100%;
+        }
+}
+
+.inner {
+        width: 1200px;
+        margin: 0 auto;
+        // .p-content{
+        // }
+}
+
+.product-wrap {
+        width: 100%;
+        overflow: hidden;
+}
+
+.goods-wrap {
+        width: 100%;
+        min-height: 300px;
+        overflow: hidden;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
+
+        /deep/ .goods-comp {
+                width: 232px;
+                margin: 0 10px 10px 0;
+
+                &:nth-of-type(5n) {
+                        margin-right: 0;
+                }
+
+                &.row-style {
+                        width: 100%;
+                }
+
+                .p-tag {
+                        top: 20px;
+                        left: 15px;
+                }
+        }
+
+        /deep/ .column-style {
+                .p-content {
+                        width: 100%;
+                        display: flex;
+                        flex-direction: column-reverse;
+
+                        // margin-top: 10px;
+                        .p-price {
+                                margin-top: 10px;
+                        }
+
+                        .p-text {
+                                /*display: table-header-group;*/
+                                margin-top: 10px;
+                        }
+
+                }
+        }
+}
+
+/deep/ .ivu-checkbox-focus {
+        box-shadow: none !important;
+}
+
+/deep/ .ivu-checkbox-checked .ivu-checkbox-inner {
+        background-color: #FFFFFF !important;
+
+        &::after {
+                border: 1px solid #dd2619 !important;
+                border-top: 0 !important;
+                border-left: 0 !important;
+        }
+}
+
+/deep/ .ivu-page .ivu-page-next {
+        border-radius: 0px !important;
+        border: 1px solid #dddddd;
+        height: 24px !important;
+        line-height: 23px !important;
+}
+
+/deep/ .ivu-page-item {
+        border-radius: 0px !important;
+        min-width: 24px !important;
+        height: 24px !important;
+        line-height: 22px !important;
+}
+
+/deep/ .ivu-page-prev {
+        border-radius: 0px !important;
+        height: 24px !important;
+        line-height: 23px !important;
+}
+
+// /deep/ .ivu-page-options-elevator input{
+//     height: 24px !important;
+// }
+/deep/ .confirm-btn {
+        width: 40px !important;
+        height: 24px !important;
+        // margin-top: -29px !important;
+}

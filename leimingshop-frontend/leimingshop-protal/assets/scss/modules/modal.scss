@@ -1,0 +1,105 @@
+$primary-color: #DD2619;
+
+/deep/ .ivu-modal {
+        max-height: 100%;
+        border: 4px solid rgba(0, 0, 0, .15);
+        border-radius: 12px;
+        top: 0;
+}
+
+/deep/ .ivu-modal-mask {
+        background-color: rgba(0, 0, 0, 0.13) !important;
+}
+
+/deep/ .ivu-modal-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+}
+
+/deep/ .ivu-modal-header {
+        border-bottom: 0;
+}
+
+/deep/ .ivu-modal-close {
+        right: 30px;
+        top: 20px;
+
+        .ivu-icon-ios-close {
+                display: block;
+                width: 21px;
+                height: 19px;
+                font-size: 26px;
+        }
+}
+
+/deep/ .ivu-modal-content {
+        height: 100%;
+        border-radius: 10px;
+}
+
+/deep/ .ivu-modal-body {
+        padding: 0;
+        height: calc(100% - 200px);
+
+        .content {
+                margin: 0 60px;
+        }
+}
+
+@media screen and (min-width: 1280px) {
+        .content {
+                max-height: 350px;
+        }
+}
+
+@media screen and (min-width: 1400px) {
+        .content {
+                max-height: 500px;
+        }
+}
+
+@media screen and (min-width: 1680px) {
+        .content {
+                max-height: 600px;
+        }
+}
+
+/deep/ .ivu-modal-footer {
+        // height: 116px;
+        line-height: 90px;
+        border-top: 0;
+        text-align: center;
+
+        button {
+                width: 96px;
+                height: 34px;
+                font-size: 15px;
+                border-radius: 0;
+                margin-left: 0;
+                border: none;
+
+                &:nth-of-type(1) {
+                        background: #F5F5F5;
+                        color: #333333;
+                        margin-right: 38px;
+                        transition: background .5s;
+
+                        &:hover {
+                                background: #F5F5F5;
+                        }
+                }
+        }
+}
+
+.h-title {
+        display: block;
+        width: 100%;
+        height: 56px;
+        line-height: 56px;
+        font-size: 24px;
+        text-align: center;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: bold;
+        color: #3A3A3A;
+}
