@@ -4,6 +4,7 @@
 雷铭电商7.0系统，是基于SpringBoot开发，运营端和商户端采用Element+Vue，买家使用采用Vue+Iview+nuxt服务端渲染。使用到的中间件有Redis、RabbitMQ、ElasticSearch、FastDFS、Mongodb等。主要功能包括有运营管理、商品管理、订单管理、售后管理、会员管理、财务管理、商户入驻、优惠券、满减活动、拼团活动、秒杀、限时抢购、虚拟商品、余额支付等。
 
 QQ群：754193730
+
 ##演示地址
 * 平台运营端 [http://b2b2c.leimingtech.com/admin](http://b2b2c.leimingtech.com/admin) 用户名/密码 admin/123456
 * 商户端 [http://b2b2c.leimingtech.com/seller](http://b2b2c.leimingtech.com/seller) 用户名/密码 leiming/123456
