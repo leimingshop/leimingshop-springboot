@@ -6,16 +6,18 @@
 
 QQ群：754193730 <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=18mv-PYr6VIoxvwz8KkC9JoM8OUIoGb2&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="雷铭商城官方交流群001" title="雷铭商城官方交流群001"></a>
 
+## 公司官网
+http://www.leimingtech.com/
 
 ## 演示地址
 * 平台运营端 [http://b2b2c.leimingtech.com/admin](http://b2b2c.leimingtech.com/admin) 用户名/密码 admin/123456
 * 商户端 [http://b2b2c.leimingtech.com/seller](http://b2b2c.leimingtech.com/seller) 用户名/密码 leiming/123456
-* 用户端（H5使用手机浏览器）[http://b2b2c.leimingtech.com](http://b2b2c.leimingtech.com) 
+* 用户端（H5使用手机浏览器）[http://b2b2c.leimingtech.com](http://b2b2c.leimingtech.com)
 * ![img.png](doc/image/applet.jpg)
 ## 技术体系
 ### 基础框架
 * Maven
-* Spring 
+* Spring
 * Mybatis-Plus
 * Spring Security
 ### 前端框架
@@ -23,7 +25,7 @@ QQ群：754193730 <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=18m
 * Element
 * iview
 * nuxt
-* uniapp   
+* uniapp
 ### 技术栈
 * mysql
 * fastdfs
@@ -99,6 +101,10 @@ leimingshop
 |--leimingshop-front PC端相关接口
     |--leimingshop-auth -- 登录认证模块
     |--leimingshop-web-api -- PC端接口模块
+|--leimingshop-frontend 前端代码
+    |--leimingshop-admin -- 平台端页面
+    |--leimingshop-protal -- pc端页面
+    |--leimingshop-seller -- 商家端页面
 |--leimingshop-monitor -- monitor监控中心
 |--leimingshop-mq-consumer -- MQ消费者模块
 |--leimingshop-parent -- 父工程，依赖管理
@@ -124,9 +130,143 @@ leimingshop
     |--leimingshop-upload -- 文件上传模块
     |--leimingshop-wechat -- 对接微信相关模块
 ~~~
+### 项目配置
+#### 后台项目
+* 确保电脑已经安装JDK1.8，Mysql 5.7， Redis，fastdfs， mongodb，elasticsearch，rabbitmq
+* 创建数据库
+* 运行sql文件 /db/sql/leimingshop.sql
+* 仓库中如果没有微信SDK，把微信SDK的jar包放进仓库中 /doc/lib/com/github/wxpay
+* 修改对应环境配置文件中的 Redis，fastdfs，mongodb，elasticsearch，rabbitmq，连接信息
+```
+  #数据库
+  datasource:
+    druid:
+      # 数据库连接地址
+      url: jdbc:mysql://127.0.0.1:3306/leimingshop?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+      # 用户名
+      username: root
+      # 密码
+      password: 123456
+  # RabbitMQ
+  rabbitmq:
+    # MQ连接地址
+    addresses: 127.0.0.1:5672
+    # MQ账号
+    username: guest
+    # MQ密码
+    password: guest
+  #redis 
+  redis:
+    # redis连接地址
+    host: 127.0.0.1
+    # 端口号
+    port: 6379
+    # 密码
+    password: 123456
+  #ES
+  elasticsearch:
+    # 节点名称
+    cluster-name: leimingshop
+    # 链接地址
+    host: 127.0.0.1:9200
+    # 账号
+    username: elastic
+    # 密码
+    password: elastic
+   # mongodb
+   data:
+    mongodb:
+      # 连接地址
+      uri: mongodb://127.0.0.1:27017/admin
+```
+* 修改微信公众号配置
+```
+wechat:
+  #微信公众号的app appid
+  appid: @appid@ 
+  secret: @secret@
+wx:
+  mp:
+    configs:
+        #微信公众号的app appid
+      - appid: @appid@
+        #微信公众号的app secret
+        secret: @secret@
+        #微信公众号的token
+        token: @token@
+        #微信公众号的EncodingAESKey
+        aesKey: @aesKey@
+```
+* 修改支付宝相关证书文件
+```
+# 应用公钥证书路径
+ALIPAY.APP.CERT_PATH=/APPCRT/appCertPublicKey_2021001151690379.crt
+# 支付宝公钥证书路径
+ALIPAY.APP.ALIPAY_PUBLIC_CERT_PATH=/APPCRT/alipayCertPublicKey_RSA2.crt
+# 支付宝根证书路径
+ALIPAY.APP.ROOT_CERT_PATH=/APPCRT/alipayRootCert.crt
+```
+* 启动项目
+    * 平台端接口文档：http://localhost:28081/admin-api/doc.html
+    * 商家端接口文档：http://localhost:28080/seller-api/doc.html
+    * PC端接口文档：http://localhost:17070/web/api/doc.html
 
-### 页面展示 
-#### App/H5/微信小程序展示
+* [修改短信配置](doc/image/msg.png)
+* [修改邮箱配置](doc/image/email.png)
+* [同步ES索引信息](doc/image/es.png)
+* [修改文件上传配置](doc/image/upload.png)
+#### 前端vue项目
+* 确保本地环境安装了node.js
+* 分别进入前端目录执行打包命令:
+
+  /leimingshop-frontend/leimingshop-admin
+
+  /leimingshop-frontend/leimingshop-seller
+
+  /leimingshop-frontend/leimingshop-protal
+
+``` 
+npm install 
+```
+* admin 和 seller 更改接口地址和图片地址
+``` 
+# 后台接口地址
+window.SITE_CONFIG['apiURL'] = 'http://leimingshop';
+# 图片地址
+window.SITE_CONFIG['imgURL'] = 'http://leimingshop';
+# PC端接口地址
+window.SITE_CONFIG['pcURL'] = 'http://leimingshop';
+```
+
+* protal 更改接口地址和图片地址
+``` 
+dev: {
+    MODE: 'develpment',
+    # 接口地址
+    ENV_API: 'http://leimingshop'   
+},
+```
+
+* admin 和 seller 启动命令
+``` 
+npm run serve 
+```
+* protal 端启动命令
+``` 
+npm run dev 
+```
+
+
+## 功能介绍
+* [平台端菜单](doc/md/adminMenu.md)
+* [商户端菜单](doc/md/sellerMenu.md)
+* [主体流程](doc/image/img_16.png)
+* [丰富的营销玩法](doc/image/img_19.png)
+* [丰富的商品模式](doc/image/img_20.png)
+* [灵活的四个“中心”](doc/image/img_21.png)
+* [多维度数据统计](doc/image/img_22.png)
+## 页面展示
+### App/H5/微信小程序展示
 ![img.png](doc/image/img.png)
 
 ![img_1.png](doc/image/img_1.png)
@@ -134,20 +274,20 @@ leimingshop
 ![img_3.png](doc/image/img_3.png)
 ![img_4.png](doc/image/img_4.png)
 ![img_5.png](doc/image/img_5.png)
-####  PC首页展示
+###  PC首页展示
 ![img.png](doc/image/img0.png)
-#### 搜索页面
+### 搜索页面
 ![img_1.png](doc/image/img_11.png)
-#### 商品详情页
+### 商品详情页
 ![img_2.png](doc/image/img_12.png)
-#### 购物车结算页
+### 购物车结算页
 ![img_3.png](doc/image/img_13.png)
-#### 店铺搜索页
+### 店铺搜索页
 ![img_4.png](doc/image/img_14.png)
-#### 平台运营端首页
+### 平台运营端首页
 ![img_5.png](doc/image/img_15.png)
-##### 商品管理
+### 商品管理
 ![img_6.png](doc/image/img_6.png)
-#### 订单管理
+### 订单管理
 ![img_7.png](doc/image/img_7.png)
 
