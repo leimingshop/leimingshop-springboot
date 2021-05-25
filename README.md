@@ -183,7 +183,7 @@ leimingshop
 * 运行sql文件 /db/sql/leimingshop.sql
 * 仓库中如果没有微信SDK，把微信SDK的jar包放进仓库中 /doc/lib/com/github/wxpay
 * 修改对应环境配置文件中的 Redis，fastdfs，mongodb，elasticsearch，rabbitmq，连接信息
-```
+```yaml
   #数据库
   datasource:
     druid:
@@ -226,7 +226,7 @@ leimingshop
       uri: mongodb://127.0.0.1:27017/admin
 ```
 * 修改微信公众号配置
-```
+```yaml
 wechat:
   #微信公众号的app appid
   appid: @appid@ 
@@ -244,7 +244,7 @@ wx:
         aesKey: @aesKey@
 ```
 * 修改支付宝相关证书文件
-```
+```properties
 # 应用公钥证书路径
 ALIPAY.APP.CERT_PATH=/APPCRT/appCertPublicKey_2021001151690379.crt
 # 支付宝公钥证书路径
@@ -271,7 +271,7 @@ ALIPAY.APP.ROOT_CERT_PATH=/APPCRT/alipayRootCert.crt
 
   /leimingshop-frontend/leimingshop-protal
 
-``` 
+``` shell script
 npm install 
 ```
 * admin 和 seller 更改接口地址和图片地址
@@ -285,7 +285,7 @@ window.SITE_CONFIG['pcURL'] = 'http://leimingshop';
 ```
 
 * protal 更改接口地址和图片地址
-``` 
+``` javascript 1.8
 dev: {
     MODE: 'develpment',
     # 接口地址
@@ -294,11 +294,11 @@ dev: {
 ```
 
 * admin 和 seller 启动命令
-``` 
+``` shell script
 npm run serve 
 ```
 * protal 端启动命令
-``` 
+``` shell script
 npm run dev 
 ```
 
