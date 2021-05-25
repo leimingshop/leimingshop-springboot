@@ -1,0 +1,117 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    druid:
+      url: jdbc:mysql://${LEIMINGSHOP_MYSQL_HOST:leimingshop-mysql}:${LEIMINGSHOP_MYSQL_PORT:3306}/${LEIMINGSHOP_MYSQL_DB_NAME:leimingshop}?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+      username: ${LEIMINGSHOP_MYSQL_USERNAME:root}
+      password: ${LEIMINGSHOP_MYSQL_PASSWORD:123456}
+      initial-size: 10
+      max-active: 100
+      min-idle: 10
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      connection-init-sqls: set names utf8mb4
+      filters : stat,wall,log4j
+      web-stat-filter:
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+        enabled: true
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        reset-enable: false
+        login-username: root
+        login-password: 123456
+  rabbitmq:
+    addresses: ${LEIMINGSHOP_RABBITMQ_ADDRESSES:leimingshop-rabbitmq}:${LEIMINGSHOP_RABBITMQ_PORT:5672}
+    username: ${LEIMINGSHOP_RABBITMQ_USERNAME:guest}
+    password: ${LEIMINGSHOP_RABBITMQ_PASSWORD:guest}
+    virtual-host: ${LEIMINGSHOP_RABBITMQ_VIRTUAL_HOST:leimingshop}
+    connection-timeout: 15000
+    publisher-confirms: true
+    publisher-returns: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+      direct:
+        acknowledge-mode: manual
+    cache:
+      channel:
+        size: 300
+        checkout-timeout: 200
+  data:
+    mongodb:
+      uri: ${LEIMINGSHOP_MONGODB_URI:mongodb://leimingshop-mongodb:27017/admin}
+  redis:
+    database: 1
+    host: ${LEIMINGSHOP_REDIS_HOST:leimingshop-redis}
+    port: ${LEIMINGSHOP_REDIS_PORT:6379}
+    timeout: 30s
+    password: ${LEIMINGSHOP_REDIS_PASSWORD:}
+  boot:
+    admin:
+      client:
+        enabled: true
+        url: ${SPRINGBOOT_ADMIN_URL:http://leimingshop-monitor:30101/monitor}
+        username: ${SPRINGBOOT_USERNAME:leiming}
+        password: ${SPRINGBOOT_PASSWORD:123456}
+        period: 10000
+        auto-registration: true
+        instance:
+          prefer-ip: true
+data:
+  elasticsearch:
+    cluster-name: ${LEIMINGSHOP_ES_CLUSER_NALME:leimingshop}
+    host: ${LEIMINGSHOP_ES_HOST:leimingshop-elasticsearch:9200}
+    username: ${LEIMINGSHOP_ES_USERNAME:elastic}
+    password: ${LEIMINGSHOP_ES_PASSWORD:elastic}
+    repositories:
+      enable: true
+    maxresout: 1000000
+    synonyms:
+      path:  ${LEIMINGSHOP_SYNONYMS_PATH:http://leimingshop-admin-api:28081/admin-api/synonym/es}
+# jasypt加密秘钥
+jasypt:
+  encryptor:
+    password: JasyptKey
+# 日志相关配置
+leimingtech:
+  log:
+    file-path: /app/logs
+    format: JSON
+  export:
+    local-path: /app/logs/video
+  local-path: /app/file
+image:
+  base:
+    url: ${LEIMINGSHOP_IMAGE_PATH:127.0.0.1}
+# 系统访问路径配置
+system:
+  address:
+    prefix: ${LEIMINGSHOP_ADDRESS_PREFIX:127.0.0.1}
+logging:
+  level:
+    com.leimingtech: debug
+fdfs:
+  so-timeout: 600000
+  connect-timeout: 6000
+  tracker-list:
+    - ${LEIMINGSHOP_TRACKER_LIST:leimingshop-fastdfs:22122}
+wechat:
+  appid: @appid@
+  secret: @secret@
+appidtype:
+  website: @website@
+  public: @public@
+wx:
+  mp:
+    configs:
+      - appid: @appid@
+        secret: @secret@
+        token: @token@
+        aesKey: @aesKey@

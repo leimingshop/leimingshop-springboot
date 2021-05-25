@@ -37,7 +37,7 @@ http://www.leimingtech.com/
 * docker
 ### 一键安装
 * 1.安装docker环境(centos)
-```shell
+```shell script
  # step 1: 安装必要的一些系统工具
  sudo yum install -y yum-utils device-mapper-persistent-data lvm2
  # Step 2: 添加软件源信息
@@ -49,7 +49,7 @@ http://www.leimingtech.com/
  sudo service docker start
 ```
 * 2.安装docker-compose
-```bash
+```shell script
 #下载docker-comose
 curl -L https://get.daocloud.io/docker/compose/releases/download/1.12.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 #授权
@@ -58,7 +58,7 @@ chmod +x /usr/local/bin/docker-compose
 docker-compose version    
 ```
 * 3.上传docker-compose.yml到服务器,在docker-compose.yml 文件目录下启动docker-compose
-```bash
+```shell script
 docker-compose up -d 
 ```
 * 4.服务启动成功后，配置hosts
@@ -78,11 +78,11 @@ docker-compose up -d
 
 ### docker项目构建
 * 1.首先需要先安装leimingshop-parent模块
-```bash
+```shell script
 mvn clean install -f leimingshop-parent/pom.xml
 ```
 * 2.构建全部工程
-```bash
+```shell script
 mvn clean install -P test  -DskipTests=true 
 ```
 
@@ -113,7 +113,7 @@ mvn clean install -P test  -DskipTests=true
     </plugin>
 ```
 * 3.构建docker镜像
-```bash
+```shell script
 #登录docker远程仓库
 docker login xxx.com
 # Tag： docker镜像版本号  

@@ -50,7 +50,7 @@ services:
       - ./redis/data:/data
   leimingshop-tracker:
     image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-tracker:1.0
-    container_name: leimingshop-fastdfs-tracker
+    container_name: lleimingshop-tracker
     restart: on-failure:10
     ports:
       - 22122:22122
@@ -60,7 +60,7 @@ services:
       - ./fdfs/tracker:/var/fdfs
   leimingshop-storage:
     image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-storage:1.0
-    container_name: leimingshop-fastdfs-storage
+    container_name: leimingshop-storage
     restart: on-failure:10
     ports:
       - 8888:8888
@@ -74,7 +74,7 @@ services:
     links:
       - leimingshop-tracker:tracker
   leimingshop-rabbtitmq:
-    image: rabbitmq:3.7.7-management
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-rabbitmq:1.0
     container_name: leimingshop-rabbitmq
     restart: on-failure:10
     ports:
@@ -164,7 +164,7 @@ services:
       - leimingshop-mysql:leimingshop-mysql
       - leimingshop-tracker:leimingshop-fastdfs
       - leimingshop-mongodb:leimingshop-mongodb
-      - leimingshop-rabbtitmq:leimingshop-rabbitmq
+      - leimingshop-rabbitmq:leimingshop-rabbitmq
       - leimingshop-elasticsearch:leimingshop-elasticsearch
       - leimingshop-redis:leimingshop-redis
   leimingshop-frontend:

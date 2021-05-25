@@ -1,0 +1,101 @@
+version: '3.3'
+services:
+  leimingshop-elasticsearch:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-elasticsearch:1.0
+    container_name: leimingshop-elasticsearch
+    environment:
+      - node.name=master
+      - cluster.name=leimingshop
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - TAKE_FILE_OWNERSHIP=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./es01/data:/usr/share/elasticsearch/data
+      - ./es01/logs:/usr/share/elasticsearch/logs
+    restart: on-failure:10
+    ports:
+      - 9200:9200
+    networks:
+      - leimingshop
+  leimingshop-mysql:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-mysql:1.0
+    container_name: leimingshop-mysql
+    restart: on-failure:10
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    ports:
+      - 3306:3306
+    networks:
+      - leimingshop
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+  leimingshop-redis:
+    image: redis
+    container_name: leimingshop-redis
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    restart: on-failure:10
+    command: redis-server /etc/redis/redis.conf --port 6379 --requirepass 123456  --appendonly yes
+    ports:
+      - 6379:6379
+    networks:
+      - leimingshop
+    volumes:
+      - ./redis/redis.conf:/etc/redis/redis.conf
+      - ./redis/data:/data
+  leimingshop-tracker:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-tracker:1.0
+    container_name: leimingshop-tracker
+    restart: on-failure:10
+    ports:
+      - 22122:22122
+    networks:
+      - leimingshop
+    volumes:
+      - ./fdfs/tracker:/var/fdfs
+  leimingshop-storage:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-storage:1.0
+    container_name: leimingshop-storage
+    restart: on-failure:10
+    ports:
+      - 8888:8888
+    environment:
+      - TRACKER_SERVER=tracker:22122
+      - GROUP_NAME=group1
+    networks:
+      - leimingshop
+    volumes:
+      - ./fdfs/storage:/var/fdfs
+    links:
+      - leimingshop-tracker:tracker
+  leimingshop-rabbitmq:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-rabbitmq:1.0
+    container_name: leimingshop-rabbitmq
+    restart: on-failure:10
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_VHOST=leimingshop
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - ./rabbitmq/data:/var/lib/rabbitmq
+      - ./rabbitmq/log:/var/log/rabbitmq
+    networks:
+      - leimingshop
+  leimingshop-mongodb:
+    image: mongo
+    container_name: leimingshop-mongodb
+    restart: on-failure:10
+    ports:
+      - 27017:27017
+    networks:
+      - leimingshop
+    volumes:
+      - ./mongodb:/data/db
