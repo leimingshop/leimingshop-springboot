@@ -819,7 +819,18 @@
                 <aesKey>aesKey</aesKey>
             </properties>
         </profile>
-
+        <profile>
+            <id>docker</id>
+            <properties>
+                <active>docker</active>
+                <appid>appid</appid>
+                <secret>secret</secret>
+                <website>website</website>
+                <public>public</public>
+                <token>token</token>
+                <aesKey>aesKey</aesKey>
+            </properties>
+        </profile>
         <profile>
             <id>prod</id>
             <properties>

@@ -1,0 +1,96 @@
+version: '3.3'
+services:
+  leimingshop-admin-api:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-admin-api:1.0
+    container_name: leimingshop-admin-api
+    volumes:
+      - ./leimingshop/logs:/app/logs
+    restart: on-failure:10
+    ports:
+      - 28081:28081
+    networks:
+      - leimingshop
+    extra_hosts:
+      - leimingshop-redis:192.168.0.7
+      - leimingshop-elasticsearch:192.168.0.7
+      - leimingshop-rabbitmq:192.168.0.7
+      - leimingshop-mysql:192.168.0.7
+      - leimingshop-mongodb:192.168.0.7
+      - leimingshop-fastdfs:192.168.0.7
+  leimingshop-seller-api:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-seller-api:1.0
+    container_name: leimingshop-seller-api
+    volumes:
+      - ./leimingshop/logs:/app/logs
+    restart: on-failure:10
+    ports:
+      - 28080:28080
+    networks:
+      - leimingshop
+    extra_hosts:
+      - leimingshop-redis:192.168.0.7
+      - leimingshop-elasticsearch:192.168.0.7
+      - leimingshop-rabbitmq:192.168.0.7
+      - leimingshop-mysql:192.168.0.7
+      - leimingshop-mongodb:192.168.0.7
+      - leimingshop-fastdfs:192.168.0.7
+  leimingshop-web-api:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-web-api:1.0
+    container_name: leimingshop-web-api
+    volumes:
+      - ./leimingshop/logs:/app/logs
+    restart: on-failure:10
+    ports:
+      - 17070:17070
+    networks:
+      - leimingshop
+    extra_hosts:
+      - leimingshop-redis:192.168.0.7
+      - leimingshop-elasticsearch:192.168.0.7
+      - leimingshop-rabbitmq:192.168.0.7
+      - leimingshop-mysql:192.168.0.7
+      - leimingshop-mongodb:192.168.0.7
+      - leimingshop-fastdfs:192.168.0.7
+  leimingshop-mq-consumer:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-mq-consumer:1.0
+    container_name: leimingshop-mq-consumer
+    volumes:
+      - ./leimingshop/logs:/app/logs
+    restart: on-failure:10
+    ports:
+      - 48080:48080
+    networks:
+      - leimingshop
+    extra_hosts:
+      - leimingshop-redis:192.168.0.7
+      - leimingshop-elasticsearch:192.168.0.7
+      - leimingshop-rabbitmq:192.168.0.7
+      - leimingshop-mysql:192.168.0.7
+      - leimingshop-mongodb:192.168.0.7
+      - leimingshop-fastdfs:192.168.0.7
+  leimingshop-frontend:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-frontend:1.0
+    container_name: leimingshop-frontend
+    restart: on-failure:10
+    ports:
+      - 80:80
+    networks:
+      - leimingshop
+    links:
+    extra_hosts:
+      - web.api.com:127.0.0.1
+      - seller.api.com:127.0.0.1
+      - admin.api.com:127.0.0.1
+      - pc.node.com:127.0.0.1
+      - image.nginx.com:127.0.0.1
+  leimingshop-pc:
+    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-pc:1.0
+    container_name: leimingshop-pc
+    restart: on-failure:10
+    ports:
+      - 8000:8000
+    networks:
+      - leimingshop
+networks:
+  leimingshop:
+    external: false
