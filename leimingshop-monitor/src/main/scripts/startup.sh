@@ -1,5 +1,5 @@
 #!/bin/sh
-SERVICE_NAME=leimingtech-monitor
+#SERVICE_NAME=leimingtech-monitor
 ## 添加日志目录
 LOG_DIR=/app/logs/LMB03
 

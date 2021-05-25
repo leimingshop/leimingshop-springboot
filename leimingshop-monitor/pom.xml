@@ -95,7 +95,7 @@
                 <configuration>
                     <imageName>harbor.shop7.leimingtech.com/leimingshop/${project.artifactId}:${Tag}</imageName>
                     <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
-                    <dockerHost>http://harbor.shop7.leimingtech.com:2375</dockerHost>
+                    <dockerHost>http://localhost:2375</dockerHost>
                     <resources>
                         <resource>
                             <targetPath>/</targetPath>
@@ -103,6 +103,10 @@
                             <include>${project.build.finalName}-${project.version}.zip</include>
                         </resource>
                     </resources>
+                    <buildArgs>
+                        <VERSION>${project.version}</VERSION>
+                        <PROJECT_NAME>${project.artifactId}</PROJECT_NAME>
+                    </buildArgs>
                 </configuration>
             </plugin>
             <plugin>

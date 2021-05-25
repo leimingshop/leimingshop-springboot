@@ -75,6 +75,52 @@ docker-compose up -d
   商户端接口地址：    http://leimingshop/seller/doc.html
   用户端：          http://leimingshop/web/api/doc.html
 ```
+
+### docker项目构建
+* 1.首先需要先安装leimingshop-parent模块
+```bash
+mvn clean install -f leimingshop-parent/pom.xml
+```
+* 2.构建全部工程
+```bash
+mvn clean install -P test  -DskipTests=true 
+```
+
+* 3.配置docker仓库地址
+```xml
+<plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <configuration>
+            <!-- 镜像名称-->
+            <imageName>harbor.shop7.leimingtech.com/leimingshop/${project.artifactId}:${Tag}</imageName>
+            <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
+            <!--<dockerHost>http://harbor.shop7.leimingtech.com:2375</dockerHost>-->
+            <!--dockerHost-->
+            <dockerHost>http://localhost:2375</dockerHost>
+            <resources>
+                <resource>
+                    <targetPath>/</targetPath>
+                    <directory>${project.build.directory}</directory>
+                    <include>${project.build.finalName}-${project.version}.zip</include>
+                </resource>
+            </resources>
+            <buildArgs>
+                <VERSION>${project.version}</VERSION>
+                <PROJECT_NAME>${project.artifactId}</PROJECT_NAME>
+            </buildArgs>
+        </configuration>
+    </plugin>
+```
+* 3.构建docker镜像
+```bash
+#登录docker远程仓库
+docker login xxx.com
+# Tag： docker镜像版本号  
+mvn clean install -P test  -DskipTests=true  -Dtag=1.0 docker:build
+```
+
+
 ### 项目结构
 ~~~
 leimingshop
@@ -102,9 +148,9 @@ leimingshop
     |--leimingshop-auth -- 登录认证模块
     |--leimingshop-web-api -- PC端接口模块
 |--leimingshop-frontend 前端代码
-    |--leimingshop-admin -- 平台端页面
-    |--leimingshop-protal -- pc端页面
-    |--leimingshop-seller -- 商家端页面
+    |--leimingshop-admin -- 平台运营端前端代码
+    |--leimingshop-protal -- PC端前端代码
+    |--leimingshop-seller -- 商户端前端代码
 |--leimingshop-monitor -- monitor监控中心
 |--leimingshop-mq-consumer -- MQ消费者模块
 |--leimingshop-parent -- 父工程，依赖管理
