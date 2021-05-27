@@ -13,22 +13,6 @@ docker pull harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-storage
 ```
 ##### 启动容器
 ```shell script
-docker run -d --name leimingshop-storage -p 8888:8888 -v /data/leimingshop/fdfs/storage:/var/fdfs -e TRACKER_SERVER=tracker:22122  -e GROUP_NAME=group1   --link leimingshop-tracker:tracker harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-storage:1.0
+#storage 使用host网络模式
+docker run -d --name leimingshop-storage --net=host -v /data/leimingshop/fdfs/storage:/var/fdfs  -e TRACKER_SERVER=192.168.0.7:22122  -e GROUP_NAME=group1  harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-storage:1.5
 ```
-
-
-  leimingshop-storage:
-    image: harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-storage:1.0
-    container_name: leimingshop-fastdfs-storage
-    restart: on-failure:10
-    ports:
-      - 8888:8888
-    environment:
-      - TRACKER_SERVER=tracker:22122
-      - GROUP_NAME=group1
-    networks:
-      - leimingshop
-    volumes:
-      - ./
-    links:
-      - leimingshop-tracker:tracker
