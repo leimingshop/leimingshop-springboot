@@ -14,5 +14,5 @@ docker pull harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-storage
 ##### 启动容器
 ```shell script
 #storage 使用host网络模式
-docker run -d --name leimingshop-storage --net=host -v /data/leimingshop/fdfs/storage:/var/fdfs  -e TRACKER_SERVER=192.168.0.7:22122  -e GROUP_NAME=group1  harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-storage:1.5
+docker run -d --name leimingshop-storage --net=host -v /data/leimingshop/fdfs/storage:/var/fdfs  -e TRACKER_SERVER=192.168.0.7:22122  -e GROUP_NAME=group1  harbor.shop7.leimingtech.com/leimingshop/leimingshop-fastdfs-storage:1.0
 ```
