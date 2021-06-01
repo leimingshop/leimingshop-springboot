@@ -6,7 +6,6 @@ package com.leimingtech.modules.index.goods.service.activity.coupons.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.leimingtech.modules.constant.IndexContant;
-import com.leimingtech.modules.dto.activity.coupons.CouponsActivityIndexVo;
 import com.leimingtech.modules.dto.activity.coupons.MemberCouponsIndexVo;
 import com.leimingtech.modules.dto.coupons.CouponsActivityIndexDTO;
 import com.leimingtech.modules.dto.coupons.MemberCouponsIndexDTO;
@@ -15,7 +14,6 @@ import com.leimingtech.modules.service.coupons.CouponsActivityService;
 import com.leimingtech.modules.service.coupons.MemberCouponsService;
 import com.leimingtech.modules.utils.EsDataUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,20 +58,20 @@ public class CouponActivityIndexServiceImpl implements CouponActivityIndexServic
         esDataUtils.deleteIndex(IndexContant.COUPONS_ACTIVITY_NAME);
         esDataUtils.deleteIndex(IndexContant.MEMBER_COUPONS_NAME);
 
-        //list 空值判断
-        if (CollectionUtils.isEmpty(couponsActivityIndexDTOList)) {
-            log.info("暂无数据更新");
-            return;
-        }
-        // 保存优惠券活动
-        esDataUtils.saveDataBatch(IndexContant.COUPONS_ACTIVITY_NAME, "id",
-                JSONArray.toJSONString(couponsActivityIndexDTOList), CouponsActivityIndexVo.class);
-
-        //list 空值判断
-        if (CollectionUtils.isEmpty(memberCouponsIndexDTOList)) {
-            log.info("暂无数据更新");
-            return;
-        }
+//        //list 空值判断
+//        if (CollectionUtils.isEmpty(couponsActivityIndexDTOList)) {
+//            log.info("暂无数据更新");
+//            return;
+//        }
+//        // 保存优惠券活动
+//        esDataUtils.saveDataBatch(IndexContant.COUPONS_ACTIVITY_NAME, "id",
+//                JSONArray.toJSONString(couponsActivityIndexDTOList), CouponsActivityIndexVo.class);
+//
+//        //list 空值判断
+//        if (CollectionUtils.isEmpty(memberCouponsIndexDTOList)) {
+//            log.info("暂无数据更新");
+//            return;
+//        }
 
         esDataUtils.saveDataBatch(IndexContant.MEMBER_COUPONS_NAME, "id",
                 JSONArray.toJSONString(memberCouponsIndexDTOList), MemberCouponsIndexVo.class);

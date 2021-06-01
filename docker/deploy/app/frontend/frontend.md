@@ -15,6 +15,6 @@ docker pull harbor.shop7.leimingtech.com/leimingshop/leimingshop-pc:1.0
 ```
 #####运行容器
 ```shell script
-docker run -d --name leimingshop-pc -p 8000:8000  harbor.shop7.leimingtech.com/leimingshop/leimingshop-pc:1.0
+docker run -d --name leimingshop-pc -p 8000:8000 --add-host=leimingshop:192.168.0.7 harbor.shop7.leimingtech.com/leimingshop/leimingshop-pc:1.0
  ```
 
